@@ -9,11 +9,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="450.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cbc_reportes.FXMLDocumentController">
+<AnchorPane id="AnchorPane" prefHeight="450.0" prefWidth="366.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cbb_reportes.FXMLDocumentController">
    <children>
       <Pane id="btn_iniciar_sesion" layoutY="-2.0" prefHeight="450.0" prefWidth="366.0" style="-fx-background-color: F5F5F5;">
          <children>
-            <ImageView fitHeight="191.0" fitWidth="207.0" layoutX="90.0" layoutY="81.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="191.0" fitWidth="207.0" layoutX="102.0" layoutY="83.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../img/cbc_logo.png" />
                </image>
@@ -28,12 +28,12 @@
                   <Image url="@../img/lock.png" />
                </image>
             </ImageView>
-            <Label layoutX="14.0" layoutY="14.0" maxHeight="61.0" maxWidth="338.0" minHeight="61.0" minWidth="338.0" prefHeight="61.0" prefWidth="338.0" text="Reporte de Permisos del Cuerpo de Bomberos de Colimes" textAlignment="CENTER" wrapText="true">
+            <Label layoutX="14.0" layoutY="14.0" maxHeight="61.0" maxWidth="338.0" minHeight="61.0" minWidth="338.0" prefHeight="61.0" prefWidth="338.0" text="Reporte de Permisos del Cuerpo de Bomberos de Balzar" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="System Bold" size="20.0" />
                </font>
             </Label>
-            <JFXButton layoutX="14.0" layoutY="370.0" onAction="#onLoggin" prefHeight="47.0" prefWidth="338.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Iniciar Sesión" textFill="WHITE">
+            <JFXButton fx:id="login_button" layoutX="14.0" layoutY="370.0" onAction="#onLoggin" prefHeight="47.0" prefWidth="338.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Iniciar Sesión" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -46,6 +46,7 @@
                <font>
                   <Font size="14.0" />
                </font></JFXPasswordField>
+            <ProgressIndicator fx:id="login_progress" layoutX="159.0" layoutY="370.0" prefHeight="47.0" prefWidth="47.0" visible="false" />
          </children>
       </Pane>
    </children>

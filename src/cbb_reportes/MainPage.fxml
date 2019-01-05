@@ -10,7 +10,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane id="BorderPane" fx:id="ap_main_page" prefHeight="627.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cbc_reportes.MainPageController">
+<BorderPane id="BorderPane" fx:id="ap_main_page" prefHeight="627.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cbb_reportes.MainPageController">
    <center>
        <Pane prefHeight="602.0" style="-fx-background-color: F5F5F5;">
          <children>

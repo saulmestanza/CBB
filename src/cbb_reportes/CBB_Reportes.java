@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cbc_reportes;
+package cbb_reportes;
 
 import javafx.geometry.Rectangle2D;
 import com.mysql.jdbc.Statement;
@@ -28,7 +28,7 @@ import mysql.MysqlConnect;
  *
  * @author saulmestanza
  */
-public class CBC_Reportes extends Application {
+public class CBB_Reportes extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -92,14 +92,14 @@ public class CBC_Reportes extends Application {
             }else{
                 root = FXMLLoader.load(getClass().getResource(fxml));
                 Scene scene = new Scene(root);
-                stage.getIcons().add(new Image(CBC_Reportes.class.getResourceAsStream("/img/cbc_logo.png")));
+                stage.getIcons().add(new Image(CBB_Reportes.class.getResourceAsStream("/img/cbc_logo.png")));
                 stage.setScene(scene);
                 stage.setResizable(false);
-                stage.setTitle("CBC - Permisos");
+                stage.setTitle("CBB - Permisos");
                 stage.show();
             }
         } catch (IOException ex) {
-            Logger.getLogger(CBC_Reportes.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CBB_Reportes.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     /**
