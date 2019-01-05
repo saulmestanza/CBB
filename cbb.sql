@@ -17,14 +17,15 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+CREATE DATABASE `cbb_db` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE USER 'cbb_user'@'localhost' IDENTIFIED BY 'cbb_password';
+GRANT ALL PRIVILEGES ON * . * TO 'cbb_user'@'localhost';
+FLUSH PRIVILEGES;
+
+
 --
 -- Table structure for table `clientes`
 --
-
-CREATE DATABASE `cbc_db` /*!40100 DEFAULT CHARACTER SET utf8 */;
-CREATE USER 'cbc_user'@'localhost' IDENTIFIED BY 'cbc_password';
-GRANT ALL PRIVILEGES ON * . * TO 'cbc_user'@'localhost';
-FLUSH PRIVILEGES;
 
 DROP TABLE IF EXISTS `clientes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -39,7 +40,7 @@ CREATE TABLE `clientes` (
   `is_active` tinyint(4) NOT NULL DEFAULT '1',
   `is_closed` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,6 +49,7 @@ CREATE TABLE `clientes` (
 
 LOCK TABLES `clientes` WRITE;
 /*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
+INSERT INTO `clientes` VALUES (1,'Saul','Mestanza','0927699074','Cdla Bellavista Mz 9 Villa 24','DogeSolutions',1,0),(2,'d','d','9393939392','d','ed',1,0);
 /*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -64,8 +66,8 @@ CREATE TABLE `config` (
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id_idx` (`user_id`),
-  CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `usuario` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,6 +76,7 @@ CREATE TABLE `config` (
 
 LOCK TABLES `config` WRITE;
 /*!40000 ALTER TABLE `config` DISABLE KEYS */;
+INSERT INTO `config` VALUES (1,1,1);
 /*!40000 ALTER TABLE `config` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -100,8 +103,8 @@ CREATE TABLE `permisos` (
   KEY `id_clientes_idx` (`id_clientes`),
   CONSTRAINT `id_clientes` FOREIGN KEY (`id_clientes`) REFERENCES `clientes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `id_tipo_permiso` FOREIGN KEY (`id_tipo_permiso`) REFERENCES `tipo_permiso` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `id_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8;
+  CONSTRAINT `id_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,13 +143,13 @@ INSERT INTO `tipo_permiso` VALUES (6,'INDUSTRIAS EN GENERAL - Grande',200,1),(7,
 UNLOCK TABLES;
 
 --
--- Table structure for table `usuario`
+-- Table structure for table `usuarios`
 --
 
-DROP TABLE IF EXISTS `usuario`;
+DROP TABLE IF EXISTS `usuarios`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `usuario` (
+CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) NOT NULL,
   `apellido` varchar(100) NOT NULL,
@@ -160,17 +163,17 @@ CREATE TABLE `usuario` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `usuario`
+-- Dumping data for table `usuarios`
 --
 
-LOCK TABLES `usuario` WRITE;
-/*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (1,'admin','admin','cbc_admin','cbc_password','2018-12-09 14:29:42',1,1),(2,'secretaria','cbc','cbc_permisos','cbc_permisos','2018-12-09 14:29:42',1,0),(3,'admin','cbc','cbc_root','cbc_root','2018-12-09 14:29:42',1,1);
-/*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
+LOCK TABLES `usuarios` WRITE;
+/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
+INSERT INTO `usuarios` VALUES (1,'admin','admin','cbb_admin','cbb_password','2018-12-09 14:29:42',1,1),(2,'secretaria','cbb','cbb_permisos','cbb_permisos','2018-12-09 14:29:42',1,0),(3,'admin','cbb','cbb_root','cbb_root','2018-12-09 14:29:42',1,1);
+/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'cbc_db'
+-- Dumping routines for database 'cbb_db'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -182,4 +185,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-12-09 14:45:36
+-- Dump completed on 2019-01-05 13:26:53
