@@ -21,6 +21,8 @@ public class Permiso {
     private String fecha_expiracion;
     private String ruta_pdf;
     private String modo_permiso;
+    private String numero_deposito;
+    private String fecha_documento;
     private Tipo_Permiso permiso;
     private Clientes clientes;
 
@@ -127,6 +129,30 @@ public class Permiso {
 
     public void setCliente(Clientes cliente) {
         this.clientes = cliente;
+    }
+
+    public String getNumero_deposito() {
+        return numero_deposito;
+    }
+
+    public void setNumero_deposito(String numero_deposito) {
+        this.numero_deposito = numero_deposito;
+    }
+
+    public String getFecha_documento() {
+        return fecha_documento;
+    }
+
+    public void setFecha_documento(String fecha_documento) {
+        this.fecha_documento = fecha_documento;
+    }
+
+    public Clientes getClientes() {
+        return clientes;
+    }
+
+    public void setClientes(Clientes clientes) {
+        this.clientes = clientes;
     }
     
     public String getFullName(){

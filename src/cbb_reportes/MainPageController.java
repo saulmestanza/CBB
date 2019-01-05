@@ -85,6 +85,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
@@ -100,215 +101,350 @@ import modelo.Clientes;
  * @author saulmestanza
  */
 public class MainPageController implements Initializable {
-    
+
     private ArrayList<Tipo_Permiso> tps;
     private ArrayList<Permiso> permisos;
-    
-    @FXML private MenuItem add_permiso;
-    @FXML private MenuItem edit_permiso;
-    
-    @FXML private Pane pane_emision_permiso;
-    @FXML private TextField emision_search_permiso;
-    @FXML private ComboBox emision_tipo_permiso;
-    @FXML private DatePicker emision_fecha;
-    @FXML private TextField emision_nombre;
-    @FXML private TextField emision_apellido;
-    @FXML private TextField emision_cedula;
-    @FXML private TextField emision_razon_social;
-    @FXML private TextField emision_direccion;
-    @FXML private TextArea emision_descripcion;
-    @FXML private RadioButton emision_rd_1;
-    @FXML private RadioButton emision_rd_2;
-    @FXML private RadioButton modo_permanente;
-    @FXML private RadioButton modo_ocasional;
-    @FXML private DatePicker fecha_ocasional;
-    @FXML private JFXButton emision_generar;
+
+    @FXML
+    private MenuItem add_permiso;
+    @FXML
+    private MenuItem edit_permiso;
+    @FXML
+    private MenuItem edit_permiso_generado;
+    @FXML
+    private MenuItem menu_liquidar_persona;
+
+    @FXML
+    private Pane pane_emision_permiso;
+    @FXML
+    private TextField emision_search_permiso;
+    @FXML
+    private ComboBox emision_tipo_permiso;
+    @FXML
+    private DatePicker emision_fecha;
+    @FXML
+    private TextField emision_nombre;
+    @FXML
+    private TextField emision_apellido;
+    @FXML
+    private TextField emision_cedula;
+    @FXML
+    private TextField emision_razon_social;
+    @FXML 
+    private RadioButton emision_rd_1;
+    @FXML 
+    private RadioButton emision_rd_2;
+    @FXML
+    private TextField emision_direccion;
+    @FXML
+    private TextArea emision_descripcion;
+    @FXML
+    private ChoiceBox modo_permiso;
+    @FXML
+    private DatePicker fecha_ocasional;
+    @FXML
+    private DatePicker fecha_documento;
+    @FXML
+    private TextField numero_deposito;
+    @FXML
+    private JFXButton emision_generar;
     private String _path_list_;
-    
-    @FXML private Pane pane_consultar_permiso;
-    @FXML private TextField consultar_search_permiso;
-    @FXML private TextField consultar_parametro;
-    @FXML private Label consultar_total_permiso;
-    @FXML private ComboBox consultar_tipo_permiso;
-    @FXML private TableView<Permiso> consultar_tv;
-    @FXML private TableColumn<Permiso, Integer> consultar_column_id;
-    @FXML private TableColumn<Permiso, String> consultar_column_permiso;
-    @FXML private TableColumn<Permiso, String> consultar_column_fecha_emision;
-    @FXML private TableColumn<Permiso, String> consultar_column_nombre;
-    @FXML private TableColumn<Permiso, String> consultar_column_cedula;
-    @FXML private TableColumn<Permiso, String> consultar_column_fecha_caducidad;
-    @FXML private TableColumn<Permiso, String> consultar_column_visualizar;
-    
-    @FXML private Pane pane_generado_editar_permiso;
-    @FXML private TextField generado_editar_search_permiso;
-    @FXML private ComboBox generado_editar_tipo_permiso;
-    @FXML private DatePicker generado_editar_fecha;
-    @FXML private TextField generado_editar_nombre;
-    @FXML private TextField generado_editar_apellido;
-    @FXML private TextField generado_editar_cedula;
-    @FXML private TextField generado_editar_razon_social;
-    @FXML private TextField generado_editar_direccion;
-    @FXML private TextArea generado_editar_descripcion;
-    @FXML private RadioButton generado_editar_rd_1;
-    @FXML private RadioButton generado_editar_rd_2;
-    @FXML private RadioButton generado_editar_modo_permanente;
-    @FXML private RadioButton generado_editar_modo_ocasional;
-    @FXML private DatePicker generado_editar_fecha_ocasional;
-    @FXML private Pane pane_generado_permiso;
-    @FXML private TextField generado_search_permiso;
-    @FXML private TextField generado_parametro;
-    @FXML private ComboBox generado_tipo_permiso;
-    @FXML private TableView<Permiso> editar_generados_tv;
-    @FXML private TableColumn<Permiso, Integer> generado_column_id;
-    @FXML private TableColumn<Permiso, String> generado_column_permiso;
-    @FXML private TableColumn<Permiso, String> generado_column_fecha_emision;
-    @FXML private TableColumn<Permiso, String> generado_column_nombre;
-    @FXML private TableColumn<Permiso, String> generado_column_cedula;
-    @FXML private TableColumn<Permiso, String> generado_column_editar;
-    @FXML private TableColumn<Permiso, String> generado_column_eliminar;
-    
-    @FXML private Pane pane_agregar_permiso;
-    @FXML private TextField agregar_permiso_nombre;
-    @FXML private TextField agregar_permiso_precio;
-    @FXML private CheckBox agregar_permiso_is_active;
-    
-    @FXML private Pane pane_editar_permiso;
-    @FXML private Button editar_actualizar;
-    @FXML private TableView<Tipo_Permiso> editar_tv;
-    @FXML private TableColumn<Tipo_Permiso, Integer> editar_column_id_permiso;
-    @FXML private TableColumn<Tipo_Permiso, String> editar_column_nombre_permiso;
-    @FXML private TableColumn<Tipo_Permiso, String> editar_column_precio_permiso;
-    @FXML private TableColumn<Tipo_Permiso, Boolean> editar_column_activo_permiso;
-    @FXML private TextField editar_nombre;
-    @FXML private TextField editar_precio;
-    @FXML private CheckBox editar_is_active;
+
+    @FXML
+    private Pane pane_consultar_permiso;
+    @FXML
+    private TextField consultar_search_permiso;
+    @FXML
+    private TextField consultar_parametro;
+    @FXML
+    private Label consultar_total_permiso;
+    @FXML
+    private ComboBox consultar_tipo_permiso;
+    @FXML
+    private TableView<Permiso> consultar_tv;
+    @FXML
+    private TableColumn<Permiso, Integer> consultar_column_id;
+    @FXML
+    private TableColumn<Permiso, String> consultar_column_permiso;
+    @FXML
+    private TableColumn<Permiso, String> consultar_column_fecha_emision;
+    @FXML
+    private TableColumn<Permiso, String> consultar_column_nombre;
+    @FXML
+    private TableColumn<Permiso, String> consultar_column_cedula;
+    @FXML
+    private TableColumn<Permiso, String> consultar_column_fecha_caducidad;
+    @FXML
+    private TableColumn<Permiso, String> consultar_column_visualizar;
+
+    @FXML
+    private Pane pane_generado_editar_permiso;
+    @FXML
+    private TextField generado_editar_search_permiso;
+    @FXML
+    private ComboBox generado_editar_tipo_permiso;
+    @FXML
+    private DatePicker generado_editar_fecha;
+    @FXML
+    private TextField generado_editar_nombre;
+    @FXML
+    private TextField generado_editar_apellido;
+    @FXML
+    private TextField generado_editar_cedula;
+    @FXML
+    private TextField generado_editar_razon_social;
+    @FXML
+    private TextField generado_editar_direccion;
+    @FXML
+    private TextArea generado_editar_descripcion;
+    @FXML
+    private RadioButton generado_editar_rd_1;
+    @FXML
+    private RadioButton generado_editar_rd_2;
+    @FXML
+    private RadioButton generado_editar_modo_permanente;
+    @FXML
+    private RadioButton generado_editar_modo_ocasional;
+    @FXML
+    private DatePicker generado_editar_fecha_ocasional;
+    @FXML
+    private Pane pane_generado_permiso;
+    @FXML
+    private TextField generado_search_permiso;
+    @FXML
+    private TextField generado_parametro;
+    @FXML
+    private ComboBox generado_tipo_permiso;
+    @FXML
+    private TableView<Permiso> editar_generados_tv;
+    @FXML
+    private TableColumn<Permiso, Integer> generado_column_id;
+    @FXML
+    private TableColumn<Permiso, String> generado_column_permiso;
+    @FXML
+    private TableColumn<Permiso, String> generado_column_fecha_emision;
+    @FXML
+    private TableColumn<Permiso, String> generado_column_nombre;
+    @FXML
+    private TableColumn<Permiso, String> generado_column_cedula;
+    @FXML
+    private TableColumn<Permiso, String> generado_column_editar;
+    @FXML
+    private TableColumn<Permiso, String> generado_column_eliminar;
+
+    @FXML
+    private Pane pane_agregar_permiso;
+    @FXML
+    private TextField agregar_permiso_nombre;
+    @FXML
+    private TextField agregar_permiso_precio;
+    @FXML
+    private CheckBox agregar_permiso_is_active;
+
+    @FXML
+    private Pane pane_editar_permiso;
+    @FXML
+    private Button editar_actualizar;
+    @FXML
+    private TableView<Tipo_Permiso> editar_tv;
+    @FXML
+    private TableColumn<Tipo_Permiso, Integer> editar_column_id_permiso;
+    @FXML
+    private TableColumn<Tipo_Permiso, String> editar_column_nombre_permiso;
+    @FXML
+    private TableColumn<Tipo_Permiso, String> editar_column_precio_permiso;
+    @FXML
+    private TableColumn<Tipo_Permiso, Boolean> editar_column_activo_permiso;
+    @FXML
+    private TextField editar_nombre;
+    @FXML
+    private TextField editar_precio;
+    @FXML
+    private CheckBox editar_is_active;
     private int _id_edit_permiso;
     private int _id_edit_row_;
-    
-    @FXML private Pane pane_detalle_permiso;
-    @FXML private TextField detalle_search_permiso;
-    @FXML private ComboBox detalle_tipo_permiso;
-    @FXML private DatePicker detalle_date_picker_desde;
-    @FXML private DatePicker detalle_date_picker_hasta;
-    @FXML private Label detalle_total_permiso;
-    @FXML private TableView<Permiso> detalle_tv;
-    @FXML private TableColumn<Permiso, Integer> detalle_column_id;
-    @FXML private TableColumn<Permiso, String> detalle_column_permiso;
-    @FXML private TableColumn<Permiso, String> detalle_column_fecha_emision;
-    @FXML private TableColumn<Permiso, String> detalle_column_nombre;
-    @FXML private TableColumn<Permiso, String> detalle_column_cedula;
-    @FXML private TableColumn<Permiso, String> detalle_column_fecha_caducidad;
-    @FXML private TableColumn<Permiso, String> detalle_column_visualizar;
-    
-    @FXML private Pane pane_arqueo_caja;
-    @FXML private TextField arqueo_search_permiso;
-    @FXML private ComboBox arqueo_tipo_permiso;
-    @FXML private DatePicker arqueo_date_picker_desde;
-    @FXML private DatePicker arqueo_date_picker_hasta;
-    @FXML private Label arqueo_total_permiso;
-    @FXML private Label arqueo_total_precio;
-    @FXML private TableView<Permiso> arqueo_tv;
-    @FXML private TableColumn<Permiso, Integer> arqueo_column_id;
-    @FXML private TableColumn<Permiso, String> arqueo_column_permiso;
-    @FXML private TableColumn<Permiso, String> arqueo_column_fecha_emision;
-    @FXML private TableColumn<Permiso, String> arqueo_column_nombre;
-    @FXML private TableColumn<Permiso, String> arqueo_column_cedula;
-    @FXML private TableColumn<Permiso, String> arqueo_column_valor;
-    @FXML private TableColumn<Permiso, String> arqueo_column_fecha_caducidad;
-    @FXML private TableColumn<Permiso, String> arqueo_column_visualizar;
-    
-    
-    @FXML private Menu usuariosMenu;
-    
-    @FXML private Pane pane_lista_usuarios;
-    @FXML private TableView<Usuario> usuario_tv;
-    @FXML private TableColumn<Usuario, String> usuario_column_nombre;
-    @FXML private TableColumn<Usuario, String> usuario_column_apellido;
-    @FXML private TableColumn<Usuario, String> usuario_column_usuario;
-    @FXML private TableColumn<Usuario, String> usuario_column_contrasena;
-    @FXML private TableColumn<Usuario, Boolean> usuario_column_activo;
-    @FXML private TableColumn<Usuario, Boolean> usuario_column_is_superuser;
-    @FXML private JFXTextField usuario_nombre;
-    @FXML private JFXTextField usuario_apellido;
-    @FXML private JFXTextField usuario_usuario;
-    @FXML private JFXPasswordField usuario_contrasena;
-    @FXML private JFXCheckBox usuario_active;
-    @FXML private JFXCheckBox usuario_is_superuser;
+
+    @FXML
+    private Pane pane_detalle_permiso;
+    @FXML
+    private TextField detalle_search_permiso;
+    @FXML
+    private ComboBox detalle_tipo_permiso;
+    @FXML
+    private DatePicker detalle_date_picker_desde;
+    @FXML
+    private DatePicker detalle_date_picker_hasta;
+    @FXML
+    private Label detalle_total_permiso;
+    @FXML
+    private TableView<Permiso> detalle_tv;
+    @FXML
+    private TableColumn<Permiso, Integer> detalle_column_id;
+    @FXML
+    private TableColumn<Permiso, String> detalle_column_permiso;
+    @FXML
+    private TableColumn<Permiso, String> detalle_column_fecha_emision;
+    @FXML
+    private TableColumn<Permiso, String> detalle_column_nombre;
+    @FXML
+    private TableColumn<Permiso, String> detalle_column_cedula;
+    @FXML
+    private TableColumn<Permiso, String> detalle_column_fecha_caducidad;
+    @FXML
+    private TableColumn<Permiso, String> detalle_column_visualizar;
+
+    @FXML
+    private Pane pane_arqueo_caja;
+    @FXML
+    private TextField arqueo_search_permiso;
+    @FXML
+    private ComboBox arqueo_tipo_permiso;
+    @FXML
+    private DatePicker arqueo_date_picker_desde;
+    @FXML
+    private DatePicker arqueo_date_picker_hasta;
+    @FXML
+    private Label arqueo_total_permiso;
+    @FXML
+    private Label arqueo_total_precio;
+    @FXML
+    private TableView<Permiso> arqueo_tv;
+    @FXML
+    private TableColumn<Permiso, Integer> arqueo_column_id;
+    @FXML
+    private TableColumn<Permiso, String> arqueo_column_permiso;
+    @FXML
+    private TableColumn<Permiso, String> arqueo_column_fecha_emision;
+    @FXML
+    private TableColumn<Permiso, String> arqueo_column_nombre;
+    @FXML
+    private TableColumn<Permiso, String> arqueo_column_cedula;
+    @FXML
+    private TableColumn<Permiso, String> arqueo_column_valor;
+    @FXML
+    private TableColumn<Permiso, String> arqueo_column_fecha_caducidad;
+    @FXML
+    private TableColumn<Permiso, String> arqueo_column_visualizar;
+
+    @FXML
+    private Menu usuariosMenu;
+
+    @FXML
+    private Pane pane_lista_usuarios;
+    @FXML
+    private TableView<Usuario> usuario_tv;
+    @FXML
+    private TableColumn<Usuario, String> usuario_column_nombre;
+    @FXML
+    private TableColumn<Usuario, String> usuario_column_apellido;
+    @FXML
+    private TableColumn<Usuario, String> usuario_column_usuario;
+    @FXML
+    private TableColumn<Usuario, String> usuario_column_contrasena;
+    @FXML
+    private TableColumn<Usuario, Boolean> usuario_column_activo;
+    @FXML
+    private TableColumn<Usuario, Boolean> usuario_column_is_superuser;
+    @FXML
+    private JFXTextField usuario_nombre;
+    @FXML
+    private JFXTextField usuario_apellido;
+    @FXML
+    private JFXTextField usuario_usuario;
+    @FXML
+    private JFXPasswordField usuario_contrasena;
+    @FXML
+    private JFXCheckBox usuario_active;
+    @FXML
+    private JFXCheckBox usuario_is_superuser;
     private int user_id;
     private ArrayList<Usuario> usuarioList;
-    
-    @FXML private Pane pane_agregar_usuario;
-    @FXML private JFXTextField usuario_agregar_nombre;
-    @FXML private JFXTextField usuario_agregar_apellido;
-    @FXML private JFXTextField usuario_agregar_usuario;
-    @FXML private JFXPasswordField usuario_agregar_contrasena;
-    @FXML private JFXCheckBox usuario_agregar_active;
-    @FXML private JFXCheckBox usuario_agregar_is_superuser;
-    
-    private Usuario usuario;    
-    
+
     @FXML
-    private void imprimirFichaInspeccion(ActionEvent event){
+    private Pane pane_agregar_usuario;
+    @FXML
+    private JFXTextField usuario_agregar_nombre;
+    @FXML
+    private JFXTextField usuario_agregar_apellido;
+    @FXML
+    private JFXTextField usuario_agregar_usuario;
+    @FXML
+    private JFXPasswordField usuario_agregar_contrasena;
+    @FXML
+    private JFXCheckBox usuario_agregar_active;
+    @FXML
+    private JFXCheckBox usuario_agregar_is_superuser;
+
+    private Usuario usuario;
+
+    @FXML
+    private void imprimirFichaInspeccion(ActionEvent event) {
         String directory = generateFichaPdf();
         goToPrintDialog(directory);
     }
-    
-    public String generateFichaPdf(){
+
+    public String generateFichaPdf() {
         String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
-        String directoryName = String.format("%s/pdfs/", _directory_);  
+        String directoryName = String.format("%s/pdfs/", _directory_);
         String path = String.format("%sficha_inspeccion.pdf", directoryName);
-        try{            
+        try {
             File directory = new File(directoryName);
-            if (! directory.exists()){
+            if (!directory.exists()) {
                 directory.mkdirs();
             }
 
             File _file_ = new File(path);
-            
-            if(_file_.exists()){
+
+            if (_file_.exists()) {
                 _file_.delete();
             }
-            
-            Document document = new Document();   
-            
+
+            Document document = new Document();
+
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(_file_));
-            
+
             document.setPageSize(PageSize.A4);
             document.setMargins(40, 40, 80, 100);
             document.open();
-            
+
             PdfContentByte cb = writer.getDirectContent();
             PdfReader reader = new PdfReader(this.getClass().getClassLoader().getResource("pdf/ficha_inspeccion_template.pdf").toString());
-            PdfImportedPage page = writer.getImportedPage(reader, 1); 
-            
+            PdfImportedPage page = writer.getImportedPage(reader, 1);
+
             document.newPage();
             cb.addTemplate(page, 0, 0);
 
             Font tinyFont = new Font(Font.FontFamily.TIMES_ROMAN, 9, Font.NORMAL);
-            
+
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
             _p1_.setFont(tinyFont);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             Calendar c = Calendar.getInstance();
-            _p1_.add(String.format("  %s",sdf.format(c.getTime())));
+            _p1_.add(String.format("  %s", sdf.format(c.getTime())));
             p1.setLeading(168);
-            p1.add(Chunk.TABBING);  p1.add(Chunk.TABBING);
-            p1.add(Chunk.TABBING);  p1.add(Chunk.TABBING);
-            p1.add(Chunk.TABBING);  p1.add(Chunk.TABBING);
-            p1.add(Chunk.TABBING);  p1.add(Chunk.TABBING);
-            p1.add(Chunk.TABBING);  p1.add(Chunk.TABBING);
-            p1.add(Chunk.TABBING);  p1.add(Chunk.TABBING);
-            p1.add(Chunk.TABBING); 
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
+            p1.add(Chunk.TABBING);
             p1.add(_p1_);
-            document.add(p1);  
+            document.add(p1);
             document.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return path;
     }
-    
+
     //EMISION PERMISOS
     @FXML
     private void emisionMenuAction(ActionEvent event) {
@@ -318,7 +454,7 @@ public class MainPageController implements Initializable {
                 emision_cedula.setText(newValue.replaceAll("[^\\d]", ""));
             }
         });
-        
+
         emision_nombre.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (emision_nombre.getText().length() >= Settings.LENGTH_NAMES) {
@@ -326,7 +462,7 @@ public class MainPageController implements Initializable {
                 }
             }
         });
-        
+
         emision_apellido.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (emision_apellido.getText().length() >= Settings.LENGTH_NAMES) {
@@ -334,7 +470,7 @@ public class MainPageController implements Initializable {
                 }
             }
         });
-        
+
         emision_razon_social.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (emision_razon_social.getText().length() >= Settings.LENGTH_NAMES) {
@@ -342,7 +478,7 @@ public class MainPageController implements Initializable {
                 }
             }
         });
-        
+
         emision_direccion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (emision_direccion.getText().length() >= Settings.LENGTH_NAMES) {
@@ -350,7 +486,7 @@ public class MainPageController implements Initializable {
                 }
             }
         });
-        
+
         emision_descripcion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (emision_descripcion.getText().length() >= Settings.LENGTH_DESCRIPTION) {
@@ -358,7 +494,7 @@ public class MainPageController implements Initializable {
                 }
             }
         });
-        
+
         emision_cedula.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (emision_cedula.getText().length() >= Settings.LENGTH_NATIONAL_ID) {
@@ -372,34 +508,34 @@ public class MainPageController implements Initializable {
                 ).toExternalForm()
         );
         emision_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if(!newValue.equals("")){
+            if (!newValue.equals("")) {
                 List<String> _tps_ = emision_tipo_permiso.getItems();
                 int _count_ = 0;
-                for(String tp:_tps_){
-                    if(tp.toLowerCase().contains(newValue.toLowerCase())){
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
                         emision_tipo_permiso.getSelectionModel().select(_count_);
-                        
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)emision_tipo_permiso.getSkin();
-                        ((ListView<?>)skin.getPopupContent()).scrollTo(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) emision_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
                         break;
                     }
                     _count_++;
                 }
-            }else{
+            } else {
                 emision_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)emision_tipo_permiso.getSkin();
-                ((ListView<?>)skin.getPopupContent()).scrollTo(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) emision_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
             }
         });
         tps = new ArrayList<>();
         ObservableList cursors = FXCollections.observableArrayList();
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT * FROM tipo_permiso WHERE is_active = True;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
@@ -410,9 +546,9 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         emision_tipo_permiso.setItems(cursors);
@@ -421,90 +557,90 @@ public class MainPageController implements Initializable {
         emision_tipo_permiso.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-              /*if(emision_tipo_permiso.getItems().get((Integer) number2).equals("De Construcción")){
+                /*if(emision_tipo_permiso.getItems().get((Integer) number2).equals("De Construcción")){
                   emision_razon_social.setDisable(true);
               }else{
                   emision_razon_social.setDisable(false);
               }*/
             }
-          });
+        });
         emision_fecha.setValue(LocalDate.now());
         
-        modo_ocasional.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> obs, Boolean wasPreviouslySelected, Boolean isNowSelected) {
-                if (isNowSelected) { 
-                    fecha_ocasional.setDisable(false);
-                    fecha_ocasional.setValue(LocalDate.now());
-                } else {
-                    fecha_ocasional.setDisable(true);
-                    fecha_ocasional.setValue(null);
-                }
+        ObservableList permisos = FXCollections.observableArrayList();
+        permisos.add("Transporte");
+        permisos.add("Ocasional");
+        permisos.add("Construcción");
+        permisos.add("Funcionamiento");
+        modo_permiso.setItems(permisos);
+        modo_permiso.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            if (newValue.equals("Ocasional")) {
+                fecha_ocasional.setDisable(false);
+                fecha_ocasional.setValue(LocalDate.now());
+            } else {
+                fecha_ocasional.setDisable(true);
+                fecha_ocasional.setValue(null);
             }
         });
     }
-    
+
     @FXML
-    private void emisionGenerarPermiso(ActionEvent event){
+    private void emisionGenerarPermiso(ActionEvent event) {
         _path_list_ = "";
-        if(emisionIsEmpty()){
+        if (emisionIsEmpty()) {
             showDialog("Error", "Debe de llenar todos los datos para poder generar un permiso", AlertType.ERROR);
-        }else if(emision_cedula.getText().length() != 10){
+        } else if (emision_cedula.getText().length() != 10) {
             showDialog("Error", "Ingrese un número de cédula válido", AlertType.ERROR);
-        }else{
+        } else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             Calendar c = Calendar.getInstance();
             String expiration_date = "";
-            String modo_permiso = "";
-            if(modo_ocasional.isSelected()){
-                modo_permiso = "Ocasional";
+            if (modo_permiso.getSelectionModel().getSelectedIndex() == 1) {
                 try {
                     sdf = new SimpleDateFormat("yyyy-mm-dd");
                     c.setTime(sdf.parse(fecha_ocasional.getValue().toString()));
-                    expiration_date = sdf.format(c.getTime()); 
+                    expiration_date = sdf.format(c.getTime());
                 } catch (ParseException ex) {
                     Logger.getLogger(MainPageController.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            }else if(modo_permanente.isSelected()){
-                modo_permiso = "Permanente";
+            } else if (modo_permiso.getSelectionModel().getSelectedIndex() == 0) {
                 try {
                     c.setTime(sdf.parse(emision_fecha.getValue().toString()));
-                    expiration_date = sdf.format(c.getTime()) + "-12-31"; 
+                    expiration_date = sdf.format(c.getTime()) + "-12-31";
                 } catch (ParseException ex) {
                     Logger.getLogger(MainPageController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             MysqlConnect mysqlConnect = new MysqlConnect();
             Clientes cliente = new Clientes();
-            String sql = "SELECT * FROM clientes WHERE cedula = '"+emision_cedula.getText()+"';";
+            String sql = "SELECT * FROM clientes WHERE cedula = '" + emision_cedula.getText() + "';";
             ResultSet rs;
             try {
                 Statement st = (Statement) mysqlConnect.connect().createStatement();
                 rs = st.executeQuery(sql);
-                if(rs.next()){
-                        cliente.setId(rs.getInt("id"));
-                        cliente.setNombre(rs.getString("nombre"));
-                        cliente.setApellido(rs.getString("apellido"));
-                        cliente.setCedula(rs.getString("cedula"));
-                        cliente.setRazon_social(rs.getString("razon_social"));
-                        cliente.setDireccion(rs.getString("direccion"));
-                        cliente.setIs_active(rs.getBoolean("is_active"));
-                        cliente.setIs_closed(rs.getBoolean("is_closed"));
-                }else{
+                if (rs.next()) {
+                    cliente.setId(rs.getInt("id"));
+                    cliente.setNombre(rs.getString("nombre"));
+                    cliente.setApellido(rs.getString("apellido"));
+                    cliente.setCedula(rs.getString("cedula"));
+                    cliente.setRazon_social(rs.getString("razon_social"));
+                    cliente.setDireccion(rs.getString("direccion"));
+                    cliente.setIs_active(rs.getBoolean("is_active"));
+                    cliente.setIs_closed(rs.getBoolean("is_closed"));
+                } else {
                     String query = "INSERT INTO clientes(nombre, apellido, cedula, razon_social, direccion)"
-                    + " values (?,?,?,?,?)";
+                            + " values (?,?,?,?,?)";
                     PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                    preparedStmt.setString (1, emision_nombre.getText());
-                    preparedStmt.setString (2, emision_apellido.getText());
-                    preparedStmt.setString (3, emision_cedula.getText());
-                    preparedStmt.setString (4, emision_razon_social.getText());
-                    preparedStmt.setString (5, emision_direccion.getText());
+                    preparedStmt.setString(1, emision_nombre.getText());
+                    preparedStmt.setString(2, emision_apellido.getText());
+                    preparedStmt.setString(3, emision_cedula.getText());
+                    preparedStmt.setString(4, emision_razon_social.getText());
+                    preparedStmt.setString(5, emision_direccion.getText());
                     preparedStmt.execute();
-                    sql = "SELECT * FROM clientes WHERE cedula = '"+emision_cedula.getText()+"';";
+                    sql = "SELECT * FROM clientes WHERE cedula = '" + emision_cedula.getText() + "';";
                     try {
                         st = (Statement) mysqlConnect.connect().createStatement();
                         rs = st.executeQuery(sql);
-                        while (rs.next()){
+                        while (rs.next()) {
                             cliente.setId(rs.getInt("id"));
                             cliente.setNombre(rs.getString("nombre"));
                             cliente.setApellido(rs.getString("apellido"));
@@ -514,25 +650,27 @@ public class MainPageController implements Initializable {
                             cliente.setIs_active(rs.getBoolean("is_active"));
                             cliente.setIs_closed(rs.getBoolean("is_closed"));
                         }
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            try{
-                String query = "INSERT INTO permisos(descripcion, fecha_emision, fecha_expiracion, modo_permiso, id_usuario, id_tipo_permiso, id_clientes)"
-                + " values (?,?,?,?,?,?,?)";
+            try {
+                String query = "INSERT INTO permisos(descripcion, fecha_emision, fecha_expiracion, modo_permiso, id_usuario, id_tipo_permiso, id_clientes, numero_deposito, fecha_documento)"
+                        + " values (?,?,?,?,?,?,?,?,?)";
                 PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                preparedStmt.setString (1, emision_descripcion.getText());
+                preparedStmt.setString(1, emision_descripcion.getText());
                 preparedStmt.setString(2, emision_fecha.getValue().toString());
                 preparedStmt.setString(3, expiration_date);
-                preparedStmt.setString(4, modo_permiso);
+                preparedStmt.setString(4, modo_permiso.getSelectionModel().getSelectedItem().toString());
                 preparedStmt.setInt(5, usuario.getId());
                 int position = emision_tipo_permiso.getSelectionModel().getSelectedIndex();
                 preparedStmt.setInt(6, tps.get(position).getId());
                 preparedStmt.setInt(7, cliente.getId());
+                preparedStmt.setString(8, numero_deposito.getText());
+                preparedStmt.setString(9, fecha_documento.getValue().toString());
                 preparedStmt.execute();
                 emision_nombre.setText("");
                 emision_apellido.setText("");
@@ -540,49 +678,52 @@ public class MainPageController implements Initializable {
                 emision_razon_social.setText("");
                 emision_direccion.setText("");
                 emision_descripcion.setText("para ");
+                fecha_documento.getEditor().setText("");
+                numero_deposito.setText("");
                 Alert alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("Cuerpo Bomberos de Balzar");
                 alert.setHeaderText(null);
                 alert.setContentText("Espere unos momentos....");
                 alert.show();
                 CompletableFuture.supplyAsync(() -> {
-                    getPermiso(); 
+                    getPermiso();
                     return null;
                 }).thenRun(() -> {
                     goToPrintDialog(_path_list_);
                 });
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
-            } finally{
+            } finally {
                 mysqlConnect.disconnect();
             }
         }
     }
-    
-    private boolean emisionIsEmpty(){
-        return emision_nombre.getText().isEmpty() || emision_apellido.getText().isEmpty() ||
-                emision_cedula.getText().isEmpty() ||
-                emision_direccion.getText().isEmpty() || emision_descripcion.getText().isEmpty() || 
-                emision_fecha.getEditor().getText().isEmpty();
+
+    private boolean emisionIsEmpty() {
+        return emision_nombre.getText().isEmpty() || emision_apellido.getText().isEmpty()
+                || emision_cedula.getText().isEmpty()
+                || emision_direccion.getText().isEmpty() || emision_descripcion.getText().isEmpty()
+                || emision_fecha.getEditor().getText().isEmpty() || fecha_documento.getEditor().getText().isEmpty()
+                || numero_deposito.getText().isEmpty();
     }
-    
-    private void getPermiso(){
+
+    private void getPermiso() {
         MysqlConnect mysqlConnect = new MysqlConnect();
         Permiso permiso = new Permiso();
-        try{
+        try {
             String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.modo_permiso, tipo_permiso.id as id_tipo_permiso, tipo_permiso.precio, tipo_permiso.is_active as tipo_permiso_is_active, tipo_permiso.tipo_permiso, clientes.id as id_clientes, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active as cliente_is_active, clientes.cedula FROM permisos , tipo_permiso, clientes  WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id  ORDER BY permisos.ID DESC LIMIT 1;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     permiso.setId(rs.getInt("id"));
                     permiso.setDescripcion(rs.getString("descripcion"));
                     permiso.setFecha_emision(rs.getString("fecha_emision"));
                     permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
                     permiso.setRuta_pdf(rs.getString("ruta_pdf"));
                     permiso.setModo_permiso(rs.getString("modo_permiso"));
-                    
+
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
                     cliente.setNombre(rs.getString("nombre"));
@@ -591,31 +732,31 @@ public class MainPageController implements Initializable {
                     cliente.setRazon_social(rs.getString("razon_social"));
                     cliente.setDireccion(rs.getString("direccion"));
                     cliente.setIs_active(rs.getBoolean("cliente_is_active"));
-                    
+
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id_tipo_permiso"));
                     tp.setIs_active(rs.getBoolean("tipo_permiso_is_active"));
                     tp.setPrecio(rs.getDouble("precio"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
-                    
+
                     permiso.setCliente(cliente);
                     permiso.setPermiso(tp);
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         generatePDF(permiso);
     }
-    
-    private void generatePDF(Permiso permiso){
+
+    private void generatePDF(Permiso permiso) {
         String prefijo = "";
-        if(emision_rd_1.isSelected()){
+        if (emision_rd_1.isSelected()) {
             prefijo = emision_rd_1.getText();
-        }else{
+        } else {
             prefijo = emision_rd_2.getText();
         }
         File _file_ = null;
@@ -624,14 +765,16 @@ public class MainPageController implements Initializable {
             Font normalboldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
             Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL);
             Font normalredFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.RED);
-            
+
             String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
-            String directoryName = String.format("%s/pdfs/", _directory_);            
+            String directoryName = String.format("%s/pdfs/", _directory_);
             File directory = new File(directoryName);
-            if (! directory.exists()){
+            if (!directory.exists()) {
                 directory.mkdirs();
-            }   
-            /*************** PERMISO ***************/
+            }
+            /**
+             * ************* PERMISO **************
+             */
             _file_ = new File(String.format("%spermiso_%s.pdf", directoryName, permiso.getFullCode()));
             OutputStream file = new FileOutputStream(_file_);
             Document document = new Document();
@@ -643,8 +786,10 @@ public class MainPageController implements Initializable {
             document.setMargins(80, 80, 150, 100);
             document.open();
             generatePermisoPDF(document, permiso, boldFont, normalFont, normalboldFont, prefijo);
-           
-            /*************** PERMISO COPIA ***************/
+
+            /**
+             * ************* PERMISO COPIA **************
+             */
             document.setPageSize(PageSize.A4);
             document.setMargins(80, 80, 150, 100);
             document.newPage();
@@ -654,12 +799,14 @@ public class MainPageController implements Initializable {
             image.setAbsolutePosition(0, 0);
             canvas.addImage(image);
             generatePermisoPDF(document, permiso, boldFont, normalFont, normalboldFont, prefijo);
-            
+
             document.close();
             _path_list_ = _file_.getAbsolutePath();
             file.close();
-            /*************** FUNCIONAMIENTO ***************/
-            
+            /**
+             * ************* FUNCIONAMIENTO **************
+             */
+
             _file_ = new File(String.format("%sfuncionamiento_%s.pdf", directoryName, permiso.getFullCode()));
             file = new FileOutputStream(_file_);
             document = new Document();
@@ -667,35 +814,37 @@ public class MainPageController implements Initializable {
             document.open();
             canvas = writer.getDirectContentUnder();
             image = null;
-            
+
             document.setPageSize(PageSize.A4);
             document.setMargins(40, 40, 66, 10);
             document.newPage();
             generateFuncionamientoPDF(document, writer, permiso);
-            
+
             canvas = writer.getDirectContentUnder();
             image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_funcionamiento_copia.png"));
             image.scaleAbsolute(PageSize.A4);
             image.setAbsolutePosition(0, 0);
             canvas.addImage(image);
-            
+
             generateFuncionamientoPDFCOPIA(document, writer, permiso);
-            /*************** CIERRE ***************/
+            /**
+             * ************* CIERRE **************
+             */
             document.close();
             _path_list_ = _path_list_ + "::" + _file_.getAbsolutePath();
             file.close();
             System.out.println(_path_list_);
             MysqlConnect mysqlConnect = new MysqlConnect();
-            try{
+            try {
                 int id = permiso.getId();
                 String query = "UPDATE permisos SET ruta_pdf = ? WHERE id = ?;";
                 PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                preparedStmt.setString (1, _path_list_);
+                preparedStmt.setString(1, _path_list_);
                 preparedStmt.setInt(2, id);
                 preparedStmt.executeUpdate();
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 e.printStackTrace();
-            }finally{
+            } finally {
                 mysqlConnect.disconnect();
             }
         } catch (Exception e) {
@@ -703,10 +852,10 @@ public class MainPageController implements Initializable {
 
         }
     }
-    
-    private void generatePermisoPDF(Document document, Permiso permiso, Font boldFont, Font normalFont, Font normalboldFont, String prefijo){
-        try{
-            Phrase _p1_ = new Phrase(); 
+
+    private void generatePermisoPDF(Document document, Permiso permiso, Font boldFont, Font normalFont, Font normalboldFont, String prefijo) {
+        try {
+            Phrase _p1_ = new Phrase();
             Paragraph p = new Paragraph("", boldFont);
             p.setAlignment(Element.ALIGN_CENTER);
             p.add(String.format("PERMISO DE FUNCIONAMIENTO %s", permiso.getFullCode()));
@@ -725,25 +874,25 @@ public class MainPageController implements Initializable {
             document.add(p);
             p.clear();
             document.add(Chunk.NEWLINE);
-            if(!permiso.getPermiso().getTipo_permiso().equals("De Construcción")){
+            if (!permiso.getPermiso().getTipo_permiso().equals("De Construcción")) {
                 p.add(String.format(
-                        "Esta jefatura extiende el permiso %s %s %s con CI %s %s denominado %s Ubicado en %s del Cantón Balzar.", 
-                        permiso.getPermiso().getTipo_permiso().toUpperCase(new Locale("es","ES")),
+                        "Esta jefatura extiende el permiso %s %s %s con CI %s %s denominado %s Ubicado en %s del Cantón Balzar.",
+                        permiso.getPermiso().getTipo_permiso().toUpperCase(new Locale("es", "ES")),
                         prefijo,
-                        permiso.getFullName().toUpperCase(new Locale("es","ES")), 
-                        permiso.getCliente().getCedula(), 
-                        permiso.getDescripcion(), 
-                        permiso.getCliente().getRazon_social(), 
+                        permiso.getFullName().toUpperCase(new Locale("es", "ES")),
+                        permiso.getCliente().getCedula(),
+                        permiso.getDescripcion(),
+                        permiso.getCliente().getRazon_social(),
                         permiso.getCliente().getDireccion()
                 ));
-            }else{
+            } else {
                 p.add(String.format(
-                        "Esta jefatura extiende el permiso %s %s %s con CI %s %s Ubicado en %s del Cantón Balzar.", 
-                        permiso.getPermiso().getTipo_permiso().toUpperCase(new Locale("es","ES")),
+                        "Esta jefatura extiende el permiso %s %s %s con CI %s %s Ubicado en %s del Cantón Balzar.",
+                        permiso.getPermiso().getTipo_permiso().toUpperCase(new Locale("es", "ES")),
                         prefijo,
-                        permiso.getFullName().toUpperCase(new Locale("es","ES")), 
-                        permiso.getCliente().getCedula(), 
-                        permiso.getDescripcion(), 
+                        permiso.getFullName().toUpperCase(new Locale("es", "ES")),
+                        permiso.getCliente().getCedula(),
+                        permiso.getDescripcion(),
                         permiso.getCliente().getDireccion()
                 ));
             }
@@ -790,21 +939,21 @@ public class MainPageController implements Initializable {
             p.clear();
             p.add("Tesorera del Cuerpo de Bomberos");
             document.add(p);
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
-    private void generateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso){
-        try{
+
+    private void generateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso) {
+        try {
             Font smallFont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
             Font smallWhiteFont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL, BaseColor.WHITE);
             Font smallBoldWhiteFont = new Font(Font.FontFamily.COURIER, 9, Font.BOLD, BaseColor.WHITE);
             Font bigBoldFont = new Font(Font.FontFamily.COURIER, 12, Font.BOLD);
-            
+
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
-            
+
             _p1_.setFont(bigBoldFont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -820,10 +969,10 @@ public class MainPageController implements Initializable {
             _p1_.add(permiso.getFullCode());
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             _p1_.clear();
-            
+
             _p1_.setFont(smallFont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -840,9 +989,9 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("  %s", permiso.getFullFechaEmision()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             document.add(Chunk.NEWLINE);
-            
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(5f);
@@ -860,7 +1009,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("     $%1$,.2f USD", permiso.getPermiso().getPrecio()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(6f);
@@ -868,7 +1017,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("  %s", permiso.getFullName()));
             p1.add(_p1_);
             document.add(p1);
-                        
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(4f);
@@ -877,7 +1026,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("     %s", permiso.getCliente().getRazon_social()));
             p1.add(_p1_);
             document.add(p1);
-                        
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(8f);
@@ -895,7 +1044,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("    %s", sdf.format(c.getTime())));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(8f);
@@ -904,7 +1053,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("  A %s", permiso.getPermiso().toSimple()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             p1.clear();
@@ -921,7 +1070,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("       %s", permiso.getModo_permiso()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
             c = Calendar.getInstance();
             p1.clear();
@@ -941,9 +1090,9 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("   %s", sdf.format(c.getTime())));
             p1.add(_p1_);
             document.add(p1);
-            
+
             document.add(Chunk.NEWLINE);
-            
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(3f);
@@ -951,7 +1100,7 @@ public class MainPageController implements Initializable {
             _p1_.add(" ");
             p1.add(_p1_);
             document.add(p1);
-                                    
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(21f);
@@ -959,35 +1108,34 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("CADUCA %s. ", permiso.getFullFechaExpiracion()));
             _p1_.setFont(smallWhiteFont);
             // if(permiso.getModo_permiso().equalsIgnoreCase("Permanente")){
-                _p1_.add("Renovable cada año");
+            _p1_.add("Renovable cada año");
             // }
             p1.add(_p1_);
             document.add(p1);
-            
-            
-        }catch (Exception e) {
-            
+
+        } catch (Exception e) {
+
             e.printStackTrace();
         }
     }
-    
-    private void generateFuncionamientoPDFCOPIA(Document document, PdfWriter writer, Permiso permiso){
-        try{
+
+    private void generateFuncionamientoPDFCOPIA(Document document, PdfWriter writer, Permiso permiso) {
+        try {
             Font smallFont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
             Font smallWhiteFont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL, BaseColor.WHITE);
             Font smallBoldWhiteFont = new Font(Font.FontFamily.COURIER, 9, Font.BOLD, BaseColor.WHITE);
             Font bigBoldFont = new Font(Font.FontFamily.COURIER, 12, Font.BOLD);
-            
+
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
-            
+
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
-            
+
             _p1_.setFont(bigBoldFont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -1004,10 +1152,10 @@ public class MainPageController implements Initializable {
             _p1_.add(permiso.getFullCode());
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             _p1_.clear();
-            
+
             _p1_.setFont(smallFont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -1024,9 +1172,9 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("  %s", permiso.getFullFechaEmision()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             document.add(Chunk.NEWLINE);
-            
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(5f);
@@ -1044,7 +1192,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("     $%1$,.2f USD", permiso.getPermiso().getPrecio()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(6f);
@@ -1052,7 +1200,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("  %s", permiso.getFullName()));
             p1.add(_p1_);
             document.add(p1);
-                        
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(4f);
@@ -1061,7 +1209,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("     %s", permiso.getCliente().getRazon_social()));
             p1.add(_p1_);
             document.add(p1);
-                        
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(6f);
@@ -1079,7 +1227,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("    %s", sdf.format(c.getTime())));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(8f);
@@ -1088,7 +1236,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("  A %s", permiso.getPermiso().toSimple()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             p1.clear();
@@ -1105,7 +1253,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("       %s", permiso.getModo_permiso()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
             c = Calendar.getInstance();
             p1.clear();
@@ -1125,9 +1273,9 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("   %s", sdf.format(c.getTime())));
             p1.add(_p1_);
             document.add(p1);
-            
+
             document.add(Chunk.NEWLINE);
-            
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(4f);
@@ -1135,7 +1283,7 @@ public class MainPageController implements Initializable {
             _p1_.add(" ");
             p1.add(_p1_);
             document.add(p1);
-                                    
+
             p1.clear();
             _p1_.clear();
             p1.setSpacingBefore(18f);
@@ -1143,35 +1291,32 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("CADUCA %s. ", permiso.getFullFechaExpiracion()));
             _p1_.setFont(smallWhiteFont);
             // if(permiso.getModo_permiso().equalsIgnoreCase("Permanente")){
-                _p1_.add("Renovable cada año");
+            _p1_.add("Renovable cada año");
             // }
             p1.add(_p1_);
             document.add(p1);
-            
-            
-        }catch (Exception e) {
-            
+
+        } catch (Exception e) {
+
             e.printStackTrace();
         }
     }
-    
-    
+
     // EDITAR PERMISOS GENERADOS
-    
     @FXML
-    private void editarGeneradosMenuAction(ActionEvent event){
+    private void editarGeneradosMenuAction(ActionEvent event) {
         setVisiblePane(false, false, false, false, false, false, false, false, true, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         generado_parametro.setText("");
         ObservableList cursors = FXCollections.observableArrayList();
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT * FROM tipo_permiso";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
@@ -1182,9 +1327,9 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         generado_tipo_permiso.getStylesheets().add(
@@ -1193,23 +1338,23 @@ public class MainPageController implements Initializable {
                 ).toExternalForm()
         );
         generado_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if(!newValue.equals("")){
+            if (!newValue.equals("")) {
                 List<String> _tps_ = generado_tipo_permiso.getItems();
                 int _count_ = 0;
-                for(String tp:_tps_){
-                    if(tp.toLowerCase().contains(newValue.toLowerCase())){
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
                         generado_tipo_permiso.getSelectionModel().select(_count_);
-                        
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)generado_tipo_permiso.getSkin();
-                        ((ListView<?>)skin.getPopupContent()).scrollTo(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
                         break;
                     }
                     _count_++;
                 }
-            }else{
+            } else {
                 generado_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)generado_tipo_permiso.getSkin();
-                ((ListView<?>)skin.getPopupContent()).scrollTo(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
             }
         });
         generado_tipo_permiso.setItems(cursors);
@@ -1226,24 +1371,24 @@ public class MainPageController implements Initializable {
         editar_generados_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if(editar_generados_tv.getSelectionModel().getSelectedItem() != null){
+                if (editar_generados_tv.getSelectionModel().getSelectedItem() != null) {
                     TableViewSelectionModel selectionModel = editar_generados_tv.getSelectionModel();
                     ObservableList selectedCells = selectionModel.getSelectedCells();
                     TablePosition tablePosition = (TablePosition) selectedCells.get(0);
                     Object val = tablePosition.getTableColumn().getCellData(newValue);
                     Permiso _permiso_ = editar_generados_tv.getSelectionModel().getSelectedItem();
-                    if(val.equals("Editar")){
+                    if (val.equals("Editar")) {
                         setVisiblePane(false, false, false, false, false, false, false, false, false, true);
                         setGeneradoEditarPane(_permiso_);
                     }
-                    
-                    if(val.equals("Eliminar")){
+
+                    if (val.equals("Eliminar")) {
                         Alert alert = new Alert(AlertType.CONFIRMATION);
                         alert.setTitle("Cuerpo Bomberos de Balzar");
                         alert.setHeaderText(null);
                         alert.setContentText(String.format("Está seguro que desea eliminar el permiso #%s?", _permiso_.getFullCode()));
                         Optional<ButtonType> result = alert.showAndWait();
-                        if (result.get() == ButtonType.OK){
+                        if (result.get() == ButtonType.OK) {
                             editar_generados_tv.getSelectionModel().clearSelection();
                             eliminarGenerado(_permiso_, event);
                         } else {
@@ -1254,8 +1399,8 @@ public class MainPageController implements Initializable {
             }
         });
     }
-    
-    private void setGeneradoEditarPane(Permiso _permiso_){
+
+    private void setGeneradoEditarPane(Permiso _permiso_) {
         generado_editar_cedula.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             if (!newValue.matches("\\d*")) {
                 generado_editar_cedula.setText(newValue.replaceAll("[^\\d]", ""));
@@ -1315,34 +1460,34 @@ public class MainPageController implements Initializable {
                 ).toExternalForm()
         );
         generado_editar_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if(!newValue.equals("")){
+            if (!newValue.equals("")) {
                 List<String> _tps_ = generado_editar_tipo_permiso.getItems();
                 int _count_ = 0;
-                for(String tp:_tps_){
-                    if(tp.toLowerCase().contains(newValue.toLowerCase())){
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
                         generado_editar_tipo_permiso.getSelectionModel().select(_count_);
-                        
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)generado_editar_tipo_permiso.getSkin();
-                        ((ListView<?>)skin.getPopupContent()).scrollTo(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_editar_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
                         break;
                     }
                     _count_++;
                 }
-            }else{
+            } else {
                 generado_editar_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)generado_editar_tipo_permiso.getSkin();
-                ((ListView<?>)skin.getPopupContent()).scrollTo(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_editar_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
             }
         });
         tps = new ArrayList<>();
         ObservableList cursors = FXCollections.observableArrayList();
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT * FROM tipo_permiso WHERE is_active = True;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
@@ -1353,20 +1498,20 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         generado_editar_tipo_permiso.setItems(cursors);
         generado_editar_tipo_permiso.getSelectionModel().selectFirst();
         generado_editar_tipo_permiso.setTooltip(new Tooltip("Elija un tipo de permiso"));
         generado_editar_fecha.setValue(LocalDate.now());
-        
+
         generado_editar_modo_ocasional.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> obs, Boolean wasPreviouslySelected, Boolean isNowSelected) {
-                if (isNowSelected) { 
+                if (isNowSelected) {
                     generado_editar_fecha_ocasional.setDisable(false);
                     generado_editar_fecha_ocasional.setValue(LocalDate.now());
                 } else {
@@ -1376,13 +1521,13 @@ public class MainPageController implements Initializable {
             }
         });
     }
-    
+
     @FXML
-    private void generarEditarPermiso(ActionEvent event){
-        
+    private void generarEditarPermiso(ActionEvent event) {
+
     }
-    
-    private void eliminarGenerado(Permiso _permiso_, ActionEvent event){
+
+    private void eliminarGenerado(Permiso _permiso_, ActionEvent event) {
         try {
             MysqlConnect mysqlConnect = new MysqlConnect();
             String query = "DELETE FROM permisos WHERE id = ?";
@@ -1392,11 +1537,11 @@ public class MainPageController implements Initializable {
             pstmt.executeUpdate();
             permisos = new ArrayList<Permiso>();
             String sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id ORDER BY permisos.id;";
-            try{
+            try {
                 ResultSet rs;
                 try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                     rs = st.executeQuery(sql);
-                    while (rs.next()){
+                    while (rs.next()) {
                         Permiso permiso = new Permiso();
                         permiso.setId(rs.getInt("id"));
                         permiso.setDescripcion(rs.getString("descripcion"));
@@ -1425,50 +1570,50 @@ public class MainPageController implements Initializable {
                     }
                 }
                 rs.close();
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 e.printStackTrace();
-            }finally{
+            } finally {
                 mysqlConnect.disconnect();
             }
             editar_generados_tv.refresh();
             editar_generados_tv.getItems().clear();
             editar_generados_tv.getItems().addAll(permisos);
-        } catch (SQLException  | IndexOutOfBoundsException ex) {
+        } catch (SQLException | IndexOutOfBoundsException ex) {
             ex.printStackTrace();
         }
     }
-    
+
     @FXML
-    private void buscarGenerado(ActionEvent event){
+    private void buscarGenerado(ActionEvent event) {
         String _parametro_ = generado_parametro.getText();
         String _ddl_ = "";
         String sql = "";
-        if(!_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() == null){
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%"+_parametro_+"%' OR cedula LIKE '%"+_parametro_+"%') ORDER BY permisos.id;";
-        }else if(_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() != null){
+        if (!_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
+        } else if (_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = generado_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%"+_ddl_+"%' ORDER BY permisos.id;";
-        }else if(!_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() != null){
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+        } else if (!_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = generado_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%"+_parametro_+"%' OR cedula LIKE '%"+_parametro_+"%') AND tipo_permiso.tipo_permiso LIKE '%"+_ddl_+"%' ORDER BY permisos.id;";
-        }else if(_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() == null){
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+        } else if (_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
             sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id ORDER BY permisos.id;";
         }
         permisos = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
         int _count_permiso_ = 0;
-        try{
+        try {
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Permiso permiso = new Permiso();
                     permiso.setId(rs.getInt("id"));
                     permiso.setDescripcion(rs.getString("descripcion"));
                     permiso.setFecha_emision(rs.getString("fecha_emision"));
                     permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
                     permiso.setRuta_pdf(rs.getString("ruta_pdf"));
-                    
+
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
                     cliente.setNombre(rs.getString("nombre"));
@@ -1476,34 +1621,34 @@ public class MainPageController implements Initializable {
                     cliente.setCedula(rs.getString("cedula"));
                     cliente.setRazon_social(rs.getString("razon_social"));
                     cliente.setDireccion(rs.getString("direccion"));
-                    
+
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id_tipo_permiso"));
                     tp.setIs_active(rs.getBoolean("is_active"));
                     tp.setPrecio(rs.getDouble("precio"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
-                    
+
                     permiso.setCliente(cliente);
                     permiso.setPermiso(tp);
-                    
+
                     permisos.add(permiso);
                     _count_permiso_++;
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         editar_generados_tv.refresh();
         editar_generados_tv.getItems().clear();
         editar_generados_tv.getItems().addAll(permisos);
-        if(_count_permiso_ == 0){
+        if (_count_permiso_ == 0) {
             showDialog("Error", "No se a encontrado resultados para la búsqueda solicitada", AlertType.CONFIRMATION);
         }
     }
-    
+
     // VISUALIZAR PERMISOS
     @FXML
     private void consultarMenuAction(ActionEvent event) {
@@ -1513,12 +1658,12 @@ public class MainPageController implements Initializable {
         consultar_parametro.setText("");
         ObservableList cursors = FXCollections.observableArrayList();
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT * FROM tipo_permiso";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
@@ -1529,9 +1674,9 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         consultar_tipo_permiso.getStylesheets().add(
@@ -1540,23 +1685,23 @@ public class MainPageController implements Initializable {
                 ).toExternalForm()
         );
         consultar_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if(!newValue.equals("")){
+            if (!newValue.equals("")) {
                 List<String> _tps_ = consultar_tipo_permiso.getItems();
                 int _count_ = 0;
-                for(String tp:_tps_){
-                    if(tp.toLowerCase().contains(newValue.toLowerCase())){
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
                         consultar_tipo_permiso.getSelectionModel().select(_count_);
-                        
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)consultar_tipo_permiso.getSkin();
-                        ((ListView<?>)skin.getPopupContent()).scrollTo(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) consultar_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
                         break;
                     }
                     _count_++;
                 }
-            }else{
+            } else {
                 consultar_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)consultar_tipo_permiso.getSkin();
-                ((ListView<?>)skin.getPopupContent()).scrollTo(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) consultar_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
             }
         });
         consultar_tipo_permiso.setItems(cursors);
@@ -1577,12 +1722,12 @@ public class MainPageController implements Initializable {
         consultar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if(consultar_tv.getSelectionModel().getSelectedItem() != null){
+                if (consultar_tv.getSelectionModel().getSelectedItem() != null) {
                     TableViewSelectionModel selectionModel = consultar_tv.getSelectionModel();
                     ObservableList selectedCells = selectionModel.getSelectedCells();
                     TablePosition tablePosition = (TablePosition) selectedCells.get(0);
                     Object val = tablePosition.getTableColumn().getCellData(newValue);
-                    if(val.equals("Ver")){
+                    if (val.equals("Ver")) {
                         Permiso permiso = consultar_tv.getSelectionModel().getSelectedItem();
                         goToPrintDialog(permiso.getRuta_pdf());
                     }
@@ -1590,39 +1735,39 @@ public class MainPageController implements Initializable {
             }
         });
     }
-    
+
     @FXML
     private void buscarConsultar(ActionEvent event) {
         String _parametro_ = consultar_parametro.getText();
         String _ddl_ = "";
         String sql = "";
-        if(!_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() == null){
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%"+_parametro_+"%' OR cedula LIKE '%"+_parametro_+"%') ORDER BY permisos.id;";
-        }else if(_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() != null){
+        if (!_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
+        } else if (_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = consultar_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%"+_ddl_+"%' ORDER BY permisos.id;";
-        }else if(!_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() != null){
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+        } else if (!_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = consultar_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%"+_parametro_+"%' OR cedula LIKE '%"+_parametro_+"%') AND tipo_permiso.tipo_permiso LIKE '%"+_ddl_+"%' ORDER BY permisos.id;";
-        }else if(_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() == null){
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+        } else if (_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
             sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id ORDER BY permisos.id;";
         }
         permisos = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
         int _count_permiso_ = 0;
         double _precio_permiso_ = 0;
-        try{
+        try {
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Permiso permiso = new Permiso();
                     permiso.setId(rs.getInt("id"));
                     permiso.setDescripcion(rs.getString("descripcion"));
                     permiso.setFecha_emision(rs.getString("fecha_emision"));
                     permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
                     permiso.setRuta_pdf(rs.getString("ruta_pdf"));
-                    
+
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
                     cliente.setNombre(rs.getString("nombre"));
@@ -1630,25 +1775,25 @@ public class MainPageController implements Initializable {
                     cliente.setCedula(rs.getString("cedula"));
                     cliente.setRazon_social(rs.getString("razon_social"));
                     cliente.setDireccion(rs.getString("direccion"));
-                    
+
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id_tipo_permiso"));
                     tp.setIs_active(rs.getBoolean("is_active"));
                     tp.setPrecio(rs.getDouble("precio"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
-                    
+
                     permiso.setCliente(cliente);
                     permiso.setPermiso(tp);
-                    
+
                     permisos.add(permiso);
                     _count_permiso_++;
                     _precio_permiso_ += permiso.getPermiso().getPrecio();
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         consultar_tv.refresh();
@@ -1656,23 +1801,23 @@ public class MainPageController implements Initializable {
         consultar_tv.getItems().addAll(permisos);
         consultar_total_permiso.setText(String.format("%d", _count_permiso_));
         // consultar_total_precio.setText(String.format("$%1$,.2f", _precio_permiso_));
-        if(_count_permiso_ == 0){
+        if (_count_permiso_ == 0) {
             showDialog("Error", "No se a encontrado resultados para la búsqueda solicitada", AlertType.CONFIRMATION);
         }
     }
-    
+
     // EDITAR PERMISOS
     @FXML
     private void editarMenuAction(ActionEvent event) {
         tps = new ArrayList<>();
         setVisiblePane(false, false, true, false, false, false, false, false, false, false);
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT * FROM tipo_permiso;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
@@ -1682,9 +1827,9 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         editar_precio.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
@@ -1703,30 +1848,30 @@ public class MainPageController implements Initializable {
         editar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if(editar_tv.getSelectionModel().getSelectedItem() != null){    
-                   TableViewSelectionModel selectionModel = editar_tv.getSelectionModel();
-                   ObservableList selectedCells = selectionModel.getSelectedCells();
-                   TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                   editar_nombre.setText(tps.get(tablePosition.getRow()).getTipo_permiso());
-                   editar_precio.setText(tps.get(tablePosition.getRow()).getPrecio().toString());
-                   editar_is_active.setSelected(tps.get(tablePosition.getRow()).isIs_active());
-                   _id_edit_permiso = tps.get(tablePosition.getRow()).getId();
-                   _id_edit_row_ = tablePosition.getRow();
+                if (editar_tv.getSelectionModel().getSelectedItem() != null) {
+                    TableViewSelectionModel selectionModel = editar_tv.getSelectionModel();
+                    ObservableList selectedCells = selectionModel.getSelectedCells();
+                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                    editar_nombre.setText(tps.get(tablePosition.getRow()).getTipo_permiso());
+                    editar_precio.setText(tps.get(tablePosition.getRow()).getPrecio().toString());
+                    editar_is_active.setSelected(tps.get(tablePosition.getRow()).isIs_active());
+                    _id_edit_permiso = tps.get(tablePosition.getRow()).getId();
+                    _id_edit_row_ = tablePosition.getRow();
                 }
             }
         });
     }
-    
+
     @FXML
     private void saveEditPermisos(ActionEvent event) {
-        if(editar_nombre.getText().isEmpty() || editar_precio.getText().isEmpty()){
+        if (editar_nombre.getText().isEmpty() || editar_precio.getText().isEmpty()) {
             showDialog("Error", "Elija un permiso para editar", AlertType.ERROR);
-        }else{
+        } else {
             MysqlConnect mysqlConnect = new MysqlConnect();
-            try{
+            try {
                 String query = "UPDATE tipo_permiso SET tipo_permiso = ?, precio = ?, is_active = ? WHERE id = ?;";
                 PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                preparedStmt.setString (1, editar_nombre.getText());
+                preparedStmt.setString(1, editar_nombre.getText());
                 preparedStmt.setDouble(2, Double.parseDouble(editar_precio.getText()));
                 preparedStmt.setBoolean(3, editar_is_active.isSelected());
                 preparedStmt.setInt(4, _id_edit_permiso);
@@ -1746,15 +1891,15 @@ public class MainPageController implements Initializable {
                 editar_tv.getItems().clear();
                 editar_tv.getItems().addAll(tps);
                 showDialog("Permiso Editado", "Permiso editado exitosamente", AlertType.INFORMATION);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
-            } finally{
+            } finally {
                 mysqlConnect.disconnect();
             }
         }
     }
-    
+
     // AGREGAR TIPO PERMISO
     @FXML
     private void agregarMenuAction(ActionEvent event) {
@@ -1768,48 +1913,48 @@ public class MainPageController implements Initializable {
             }
         });
     }
-    
+
     @FXML
     private void saveAgregarPermiso(ActionEvent event) {
-        if(agregar_permiso_precio.getText().isEmpty() || agregar_permiso_nombre.getText().isEmpty()){
+        if (agregar_permiso_precio.getText().isEmpty() || agregar_permiso_nombre.getText().isEmpty()) {
             showDialog("Error", "Debe de llenar todos los datos para crear un nuevo tipo de permiso", AlertType.ERROR);
-        }else{
+        } else {
             MysqlConnect mysqlConnect = new MysqlConnect();
-            try{
+            try {
                 String query = "INSERT INTO tipo_permiso(tipo_permiso, precio, is_active)"
-                + " values (?,?,?)";
+                        + " values (?,?,?)";
                 PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                preparedStmt.setString (1, agregar_permiso_nombre.getText());
+                preparedStmt.setString(1, agregar_permiso_nombre.getText());
                 preparedStmt.setDouble(2, Double.parseDouble(agregar_permiso_precio.getText()));
-                preparedStmt.setBoolean (3, agregar_permiso_is_active.isSelected());
+                preparedStmt.setBoolean(3, agregar_permiso_is_active.isSelected());
                 preparedStmt.execute();
                 agregar_permiso_nombre.setText("");
                 agregar_permiso_precio.setText("");
                 agregar_permiso_is_active.setSelected(false);
                 showDialog("Exitos", "Nuevo tipo permiso creado", AlertType.INFORMATION);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
-            } finally{
+            } finally {
                 mysqlConnect.disconnect();
             }
         }
     }
-    
+
     // DETALLE PERMISOS
     @FXML
     private void detalleMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, true, false, false, false, false, true, false);
+        setVisiblePane(false, false, false, true, false, false, false, false, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         ObservableList cursors = FXCollections.observableArrayList();
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT * FROM tipo_permiso";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
@@ -1820,9 +1965,9 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         detalle_tipo_permiso.getStylesheets().add(
@@ -1831,23 +1976,23 @@ public class MainPageController implements Initializable {
                 ).toExternalForm()
         );
         detalle_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if(!newValue.equals("")){
+            if (!newValue.equals("")) {
                 List<String> _tps_ = detalle_tipo_permiso.getItems();
                 int _count_ = 0;
-                for(String tp:_tps_){
-                    if(tp.toLowerCase().contains(newValue.toLowerCase())){
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
                         detalle_tipo_permiso.getSelectionModel().select(_count_);
-                        
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)detalle_tipo_permiso.getSkin();
-                        ((ListView<?>)skin.getPopupContent()).scrollTo(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) detalle_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
                         break;
                     }
                     _count_++;
                 }
-            }else{
+            } else {
                 detalle_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)detalle_tipo_permiso.getSkin();
-                ((ListView<?>)skin.getPopupContent()).scrollTo(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) detalle_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
             }
         });
         detalle_tipo_permiso.setItems(cursors);
@@ -1868,15 +2013,15 @@ public class MainPageController implements Initializable {
         detalle_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if(detalle_tv.getSelectionModel().getSelectedItem() != null){    
-                   TableViewSelectionModel selectionModel = detalle_tv.getSelectionModel();
-                   ObservableList selectedCells = selectionModel.getSelectedCells();
-                   TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                   Object val = tablePosition.getTableColumn().getCellData(newValue);
-                   if(val.equals("Ver")){
+                if (detalle_tv.getSelectionModel().getSelectedItem() != null) {
+                    TableViewSelectionModel selectionModel = detalle_tv.getSelectionModel();
+                    ObservableList selectedCells = selectionModel.getSelectedCells();
+                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                    Object val = tablePosition.getTableColumn().getCellData(newValue);
+                    if (val.equals("Ver")) {
                         Permiso permiso = detalle_tv.getSelectionModel().getSelectedItem();
                         goToPrintDialog(permiso.getRuta_pdf());
-                   }
+                    }
                 }
             }
         });
@@ -1884,89 +2029,90 @@ public class MainPageController implements Initializable {
         detalle_date_picker_desde.setValue(null);
         detalle_date_picker_hasta.setDisable(true);
         detalle_date_picker_hasta.setEditable(false);
-        
+
         // detalle_date_picker_desde.setValue(LocalDate.now());
-        final Callback<DatePicker, DateCell> dayCellFactory = 
-            new Callback<DatePicker, DateCell>() {
-                @Override
-                public DateCell call(final DatePicker datePicker) {
-                    return new DateCell() {
-                        @Override
-                        public void updateItem(LocalDate item, boolean empty) {
-                            super.updateItem(item, empty);
-                            try{
-                                if (item.isBefore(detalle_date_picker_desde.getValue())){
-                                    setDisable(true);
-                                    setStyle("-fx-background-color: #ffc0cb;");
-                                } 
-                            }catch(NullPointerException e){}
+        final Callback<DatePicker, DateCell> dayCellFactory
+                = new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        try {
+                            if (item.isBefore(detalle_date_picker_desde.getValue())) {
+                                setDisable(true);
+                                setStyle("-fx-background-color: #ffc0cb;");
+                            }
+                        } catch (NullPointerException e) {
+                        }
                     }
                 };
             }
         };
         detalle_date_picker_hasta.setDayCellFactory(dayCellFactory);
-        
-        final Callback<DatePicker, DateCell> desdeCellFactory = 
-            new Callback<DatePicker, DateCell>() {
-                @Override
-                public DateCell call(final DatePicker datePicker) {
-                    return new DateCell() {
-                        @Override
-                        public void updateItem(LocalDate item, boolean empty) {
-                            super.updateItem(item, empty);
-                            detalle_date_picker_hasta.setDisable(false);
+
+        final Callback<DatePicker, DateCell> desdeCellFactory
+                = new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        detalle_date_picker_hasta.setDisable(false);
                     }
                 };
             }
         };
         detalle_date_picker_desde.setDayCellFactory(desdeCellFactory);
     }
-    
+
     @FXML
-    private void buscarDetalle(ActionEvent event){
+    private void buscarDetalle(ActionEvent event) {
         String _desde_ = "";
-        if(detalle_date_picker_desde.getValue() != null){
+        if (detalle_date_picker_desde.getValue() != null) {
             _desde_ = detalle_date_picker_desde.getValue().toString();
         }
         String _hasta_ = "";
-        if(detalle_date_picker_hasta.getValue() != null){
+        if (detalle_date_picker_hasta.getValue() != null) {
             _hasta_ = detalle_date_picker_hasta.getValue().toString();
         }
-        if(!_desde_.isEmpty() && _hasta_.isEmpty()){
+        if (!_desde_.isEmpty() && _hasta_.isEmpty()) {
             showDialog("Error", "Debe de elegir una fecha de finalización de búsqueda", AlertType.ERROR);
-        }else{
+        } else {
             String _ddl_ = "";
             String sql = "";
             // RANGO TIEMPO
-            if(!_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() == null){
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '"+_desde_+"' AND '"+_hasta_+"' ORDER BY permisos.id;";
-            // TIPO PERMISO
-            }else if(_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() != null){
+            if (!_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
+                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
+                // TIPO PERMISO
+            } else if (_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = detalle_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%"+_ddl_+"%' ORDER BY permisos.id;";
-            // AMBOS
-            }else if(!_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() != null){
+                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                // AMBOS
+            } else if (!_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = detalle_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '"+_desde_+"' AND '"+_hasta_+"' AND tipo_permiso.tipo_permiso LIKE '%"+_ddl_+"%' ORDER BY permisos.id;";
-            // NINGUNO
-            }else if(_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() == null){
+                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                // NINGUNO
+            } else if (_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
                 sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
             }
             permisos = new ArrayList<>();
             MysqlConnect mysqlConnect = new MysqlConnect();
             int _count_permiso_ = 0;
-            try{
+            try {
                 ResultSet rs;
                 try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                     rs = st.executeQuery(sql);
-                    while (rs.next()){
+                    while (rs.next()) {
                         Permiso permiso = new Permiso();
                         permiso.setId(rs.getInt("id"));
                         permiso.setDescripcion(rs.getString("descripcion"));
                         permiso.setFecha_emision(rs.getString("fecha_emision"));
                         permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
                         permiso.setRuta_pdf(rs.getString("ruta_pdf"));
-                        
+
                         Clientes cliente = new Clientes();
                         cliente.setId(rs.getInt("clientes_id"));
                         cliente.setNombre(rs.getString("nombre"));
@@ -1974,24 +2120,24 @@ public class MainPageController implements Initializable {
                         cliente.setCedula(rs.getString("cedula"));
                         cliente.setRazon_social(rs.getString("razon_social"));
                         cliente.setDireccion(rs.getString("direccion"));
-                        
+
                         Tipo_Permiso tp = new Tipo_Permiso();
                         tp.setId(rs.getInt("id_tipo_permiso"));
                         tp.setIs_active(rs.getBoolean("is_active"));
                         tp.setPrecio(rs.getDouble("precio"));
                         tp.setTipo_permiso(rs.getString("tipo_permiso"));
-                        
+
                         permiso.setCliente(cliente);
                         permiso.setPermiso(tp);
-                        
+
                         permisos.add(permiso);
                         _count_permiso_++;
                     }
                 }
                 rs.close();
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 e.printStackTrace();
-            }finally{
+            } finally {
                 mysqlConnect.disconnect();
             }
             detalle_tv.refresh();
@@ -1999,26 +2145,26 @@ public class MainPageController implements Initializable {
             detalle_tv.getItems().addAll(permisos);
             detalle_total_permiso.setText(String.format("%d", _count_permiso_));
             // detalle_total_precio.setText(String.format("$%1$,.2f", _precio_permiso_));
-            if(_count_permiso_ == 0){
+            if (_count_permiso_ == 0) {
                 showDialog("Error", "No se a encontrado resultados para la búsqueda solicitada", AlertType.CONFIRMATION);
             }
         }
     }
-    
+
     // ARQUEO PERMISOS
     @FXML
     private void arqueoMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, false, true, false, false, false, true, false);
+        setVisiblePane(false, false, false, false, true, false, false, false, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         ObservableList cursors = FXCollections.observableArrayList();
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT * FROM tipo_permiso";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id"));
                     tp.setTipo_permiso(rs.getString("tipo_permiso"));
@@ -2029,9 +2175,9 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         arqueo_tipo_permiso.getStylesheets().add(
@@ -2040,23 +2186,23 @@ public class MainPageController implements Initializable {
                 ).toExternalForm()
         );
         arqueo_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if(!newValue.equals("")){
+            if (!newValue.equals("")) {
                 List<String> _tps_ = arqueo_tipo_permiso.getItems();
                 int _count_ = 0;
-                for(String tp:_tps_){
-                    if(tp.toLowerCase().contains(newValue.toLowerCase())){
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
                         arqueo_tipo_permiso.getSelectionModel().select(_count_);
-                        
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)arqueo_tipo_permiso.getSkin();
-                        ((ListView<?>)skin.getPopupContent()).scrollTo(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) arqueo_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
                         break;
                     }
                     _count_++;
                 }
-            }else{
+            } else {
                 arqueo_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>)arqueo_tipo_permiso.getSkin();
-                ((ListView<?>)skin.getPopupContent()).scrollTo(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) arqueo_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
             }
         });
         arqueo_tipo_permiso.setItems(cursors);
@@ -2078,15 +2224,15 @@ public class MainPageController implements Initializable {
         arqueo_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if(arqueo_tv.getSelectionModel().getSelectedItem() != null){    
-                   TableViewSelectionModel selectionModel = arqueo_tv.getSelectionModel();
-                   ObservableList selectedCells = selectionModel.getSelectedCells();
-                   TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                   Object val = tablePosition.getTableColumn().getCellData(newValue);
-                   if(val.equals("Ver")){
-                       Permiso permiso = arqueo_tv.getSelectionModel().getSelectedItem();
+                if (arqueo_tv.getSelectionModel().getSelectedItem() != null) {
+                    TableViewSelectionModel selectionModel = arqueo_tv.getSelectionModel();
+                    ObservableList selectedCells = selectionModel.getSelectedCells();
+                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                    Object val = tablePosition.getTableColumn().getCellData(newValue);
+                    if (val.equals("Ver")) {
+                        Permiso permiso = arqueo_tv.getSelectionModel().getSelectedItem();
                         goToPrintDialog(permiso.getRuta_pdf());
-                   }
+                    }
                 }
             }
         });
@@ -2094,232 +2240,233 @@ public class MainPageController implements Initializable {
         arqueo_date_picker_desde.setValue(null);
         arqueo_date_picker_hasta.setDisable(true);
         arqueo_date_picker_hasta.setEditable(false);
-        
+
         // detalle_date_picker_desde.setValue(LocalDate.now());
-        final Callback<DatePicker, DateCell> dayCellFactory = 
-            new Callback<DatePicker, DateCell>() {
-                @Override
-                public DateCell call(final DatePicker datePicker) {
-                    return new DateCell() {
-                        @Override
-                        public void updateItem(LocalDate item, boolean empty) {
-                            super.updateItem(item, empty);
-                            try{
-                                if (item.isBefore(arqueo_date_picker_desde.getValue())){
-                                    setDisable(true);
-                                    setStyle("-fx-background-color: #ffc0cb;");
-                                }   
-                            }catch(NullPointerException e){}
+        final Callback<DatePicker, DateCell> dayCellFactory
+                = new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        try {
+                            if (item.isBefore(arqueo_date_picker_desde.getValue())) {
+                                setDisable(true);
+                                setStyle("-fx-background-color: #ffc0cb;");
+                            }
+                        } catch (NullPointerException e) {
+                        }
                     }
                 };
             }
         };
         arqueo_date_picker_hasta.setDayCellFactory(dayCellFactory);
-        
-        final Callback<DatePicker, DateCell> desdeCellFactory = 
-            new Callback<DatePicker, DateCell>() {
-                @Override
-                public DateCell call(final DatePicker datePicker) {
-                    return new DateCell() {
-                        @Override
-                        public void updateItem(LocalDate item, boolean empty) {
-                            super.updateItem(item, empty);
-                            arqueo_date_picker_hasta.setDisable(false);
+
+        final Callback<DatePicker, DateCell> desdeCellFactory
+                = new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        arqueo_date_picker_hasta.setDisable(false);
                     }
                 };
             }
         };
         arqueo_date_picker_desde.setDayCellFactory(desdeCellFactory);
     }
-    
+
     @FXML
-    private void arqueoDescargar(ActionEvent event){   
+    private void arqueoDescargar(ActionEvent event) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
         alert.setContentText("Espere unos momentos....");
         alert.show();
-                
+
         String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
-        String directoryName = String.format("%s/pdfs/", _directory_);            
+        String directoryName = String.format("%s/pdfs/", _directory_);
         File directory = new File(directoryName);
-        if (! directory.exists()){
+        if (!directory.exists()) {
             directory.mkdirs();
-        }   
+        }
         File _file_ = new File(String.format("%sarqueo_caja.pdf", directoryName));
-            try{
-                Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
-                Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, BaseColor.BLACK);
-                Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, BaseColor.BLACK);
-                
-                OutputStream file = new FileOutputStream(_file_);
-                Document document = new Document();
-                PdfWriter writer = PdfWriter.getInstance(document, file);
-                document.open();
-                PdfContentByte canvas = writer.getDirectContentUnder();
-                Image image;
-                document.setPageSize(PageSize.A4);
-                document.setMargins(80, 80, 80, 100);
-                document.open();
-                
-                image = Image.getInstance(getClass().getClassLoader().getResource("img/cbc_logo_small_transparency.png"));
-                image.setAbsolutePosition(250, 770);
-                canvas.addImage(image);
-                
-                Phrase _p1_ = new Phrase();
-                Paragraph p1 = new Paragraph();
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(boldRedFont);
-                p1.setAlignment(Element.ALIGN_CENTER);
-                _p1_.add("INFORME ARQUEO DE CAJA CUERPO BOMBERO DE COLIMES");
-                p1.add(_p1_);
-                document.add(p1);
-                
-                p1.clear();
-                _p1_.clear();
-                SimpleDateFormat sdf = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
-                Calendar c = Calendar.getInstance();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                PdfPTable table = new PdfPTable(6);
-                table.setTotalWidth(450);
-                table.setLockedWidth(true);
-                
-                PdfPCell cell = new PdfPCell(new Phrase("Código"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Nombre"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Cédula"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Fecha Emisión"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Permiso"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Valor"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
-                arqueo_tv.getItems().forEach((permiso) -> {
-                    Phrase p = new Phrase(permiso.getFullCode(), smallFont);
-                    PdfPCell cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getFullName(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getCliente().getCedula(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getFecha_emision(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getPermiso().getTipo_permiso(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(String.format("$%s", permiso.getPermiso().getPrecio()), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                });
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Total Permisos: %s", arqueo_total_permiso.getText()));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Total Precio: %s", arqueo_total_precio.getText()));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                document.add(Chunk.NEWLINE);
-                document.add(table);
-                
-                document.close();
-                
-                goToPrintDialog(_file_.getAbsolutePath());
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+        try {
+            Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
+            Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, BaseColor.BLACK);
+            Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL, BaseColor.BLACK);
+
+            OutputStream file = new FileOutputStream(_file_);
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, file);
+            document.open();
+            PdfContentByte canvas = writer.getDirectContentUnder();
+            Image image;
+            document.setPageSize(PageSize.A4);
+            document.setMargins(80, 80, 80, 100);
+            document.open();
+
+            image = Image.getInstance(getClass().getClassLoader().getResource("img/cbc_logo_small_transparency.png"));
+            image.setAbsolutePosition(250, 770);
+            canvas.addImage(image);
+
+            Phrase _p1_ = new Phrase();
+            Paragraph p1 = new Paragraph();
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(boldRedFont);
+            p1.setAlignment(Element.ALIGN_CENTER);
+            _p1_.add("INFORME ARQUEO DE CAJA CUERPO BOMBERO DE COLIMES");
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            _p1_.clear();
+            SimpleDateFormat sdf = new SimpleDateFormat("d, MMMM yyyy", new Locale("es", "ES"));
+            Calendar c = Calendar.getInstance();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
+            p1.add(_p1_);
+            document.add(p1);
+
+            PdfPTable table = new PdfPTable(6);
+            table.setTotalWidth(450);
+            table.setLockedWidth(true);
+
+            PdfPCell cell = new PdfPCell(new Phrase("Código"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Nombre"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Cédula"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Fecha Emisión"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Permiso"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Valor"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+            Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
+            arqueo_tv.getItems().forEach((permiso) -> {
+                Phrase p = new Phrase(permiso.getFullCode(), smallFont);
+                PdfPCell cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getFullName(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getCliente().getCedula(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getFecha_emision(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getPermiso().getTipo_permiso(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(String.format("$%s", permiso.getPermiso().getPrecio()), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+            });
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Total Permisos: %s", arqueo_total_permiso.getText()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Total Precio: %s", arqueo_total_precio.getText()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            document.add(Chunk.NEWLINE);
+            document.add(table);
+
+            document.close();
+
+            goToPrintDialog(_file_.getAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    
+
     @FXML
-    private void buscarArqueo(ActionEvent event){
+    private void buscarArqueo(ActionEvent event) {
         String _desde_ = "";
-        if(arqueo_date_picker_desde.getValue() != null){
+        if (arqueo_date_picker_desde.getValue() != null) {
             _desde_ = arqueo_date_picker_desde.getValue().toString();
         }
         String _hasta_ = "";
-        if(arqueo_date_picker_hasta.getValue() != null){
+        if (arqueo_date_picker_hasta.getValue() != null) {
             _hasta_ = arqueo_date_picker_hasta.getValue().toString();
         }
-        if(!_desde_.isEmpty() && _hasta_.isEmpty()){
+        if (!_desde_.isEmpty() && _hasta_.isEmpty()) {
             showDialog("Error", "Debe de elegir una fecha de finalización de búsqueda", AlertType.ERROR);
-        }else{
+        } else {
             String _ddl_ = "";
             String sql = "";
             // RANGO TIEMPO
-            if(!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null){
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '"+_desde_+"' AND '"+_hasta_+"' ORDER BY permisos.id;";
-            // TIPO PERMISO
-            }else if(_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null){
+            if (!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
+                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
+                // TIPO PERMISO
+            } else if (_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = arqueo_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%"+_ddl_+"%' ORDER BY permisos.id;";
-            // AMBOS
-            }else if(!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null){
+                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                // AMBOS
+            } else if (!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = arqueo_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '"+_desde_+"' AND '"+_hasta_+"' AND tipo_permiso.tipo_permiso LIKE '%"+_ddl_+"%' ORDER BY permisos.id;";
-            // NINGUNO
-            }else if(_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null){
+                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                // NINGUNO
+            } else if (_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
                 sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
             }
             permisos = new ArrayList<>();
             MysqlConnect mysqlConnect = new MysqlConnect();
             int _count_permiso_ = 0;
             double _precio_permiso_ = 0;
-            try{
+            try {
                 ResultSet rs;
                 try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                     rs = st.executeQuery(sql);
-                    while (rs.next()){
+                    while (rs.next()) {
                         Permiso permiso = new Permiso();
                         permiso.setId(rs.getInt("id"));
                         permiso.setDescripcion(rs.getString("descripcion"));
                         permiso.setFecha_emision(rs.getString("fecha_emision"));
                         permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
                         permiso.setRuta_pdf(rs.getString("ruta_pdf"));
-                        
+
                         Clientes cliente = new Clientes();
                         cliente.setId(rs.getInt("clientes_id"));
                         cliente.setNombre(rs.getString("nombre"));
@@ -2327,25 +2474,25 @@ public class MainPageController implements Initializable {
                         cliente.setCedula(rs.getString("cedula"));
                         cliente.setRazon_social(rs.getString("razon_social"));
                         cliente.setDireccion(rs.getString("direccion"));
-                        
+
                         Tipo_Permiso tp = new Tipo_Permiso();
                         tp.setId(rs.getInt("id_tipo_permiso"));
                         tp.setIs_active(rs.getBoolean("is_active"));
                         tp.setPrecio(rs.getDouble("precio"));
                         tp.setTipo_permiso(rs.getString("tipo_permiso"));
-                           
+
                         permiso.setCliente(cliente);
-                        permiso.setPermiso(tp); 
-                        
+                        permiso.setPermiso(tp);
+
                         permisos.add(permiso);
                         _count_permiso_++;
                         _precio_permiso_ += permiso.getPermiso().getPrecio();
                     }
                 }
                 rs.close();
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 e.printStackTrace();
-            }finally{
+            } finally {
                 mysqlConnect.disconnect();
             }
             arqueo_tv.refresh();
@@ -2353,14 +2500,14 @@ public class MainPageController implements Initializable {
             arqueo_tv.getItems().addAll(permisos);
             arqueo_total_permiso.setText(String.format("%d", _count_permiso_));
             arqueo_total_precio.setText(String.format("$%1$,.2f", _precio_permiso_));
-            if(_count_permiso_ == 0){
+            if (_count_permiso_ == 0) {
                 showDialog("Error", "No se a encontrado resultados para la búsqueda solicitada", AlertType.CONFIRMATION);
             }
         }
     }
-    
+
     @FXML
-    private void generarPDFPermanente(ActionEvent event){
+    private void generarPDFPermanente(ActionEvent event) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
@@ -2369,374 +2516,374 @@ public class MainPageController implements Initializable {
         double precio = 0;
         ArrayList<Permiso> permisosList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = 'Permanente' ORDER BY permisos.ID;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
-                        Permiso permiso = new Permiso();
-                        permiso.setId(rs.getInt("id"));
-                        permiso.setDescripcion(rs.getString("descripcion"));
-                        permiso.setFecha_emision(rs.getString("fecha_emision"));
-                        permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
-                        permiso.setRuta_pdf(rs.getString("ruta_pdf"));
-                        
-                        Clientes cliente = new Clientes();
-                        cliente.setId(rs.getInt("id_clientes"));
-                        cliente.setNombre(rs.getString("nombre"));
-                        cliente.setApellido(rs.getString("apellido"));
-                        cliente.setCedula(rs.getString("cedula"));
-                        cliente.setRazon_social(rs.getString("razon_social"));
-                        cliente.setDireccion(rs.getString("direccion"));
-                        
-                        Tipo_Permiso tp = new Tipo_Permiso();
-                        tp.setId(rs.getInt("id_tipo_permiso"));
-                        tp.setIs_active(rs.getBoolean("permiso_active"));
-                        tp.setPrecio(rs.getDouble("precio"));
-                        tp.setTipo_permiso(rs.getString("tipo_permiso"));
-                           
-                        permiso.setCliente(cliente);
-                        permiso.setPermiso(tp); 
-                    
-                        precio = precio + tp.getPrecio();
-                        permisosList.add(permiso);
-                }
-            }
-            rs.close();
-        }catch(SQLException e){
-            e.printStackTrace();
-        }finally{
-            mysqlConnect.disconnect();
-        }
-        String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
-        String directoryName = String.format("%s/pdfs/", _directory_);            
-        File directory = new File(directoryName);
-        if (! directory.exists()){
-            directory.mkdirs();
-        }   
-        File _file_ = new File(String.format("%sinforme_permisos_permanente.pdf", directoryName));
-        try{
-                Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
-                Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
-                Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
-                Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
-                
-                OutputStream file = new FileOutputStream(_file_);
-                Document document = new Document();
-                PdfWriter writer = PdfWriter.getInstance(document, file);
-                document.open();
-                PdfContentByte canvas = writer.getDirectContentUnder();
-                Image image;
-                document.setPageSize(PageSize.A4);
-                document.setMargins(80, 80, 80, 100);
-                document.open();
-                
-                image = Image.getInstance(getClass().getClassLoader().getResource("img/cbc_logo_small_transparency.png"));
-                image.setAbsolutePosition(250, 770);
-                canvas.addImage(image);
-                
-                Phrase _p1_ = new Phrase();
-                Paragraph p1 = new Paragraph();
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(boldRedFont);
-                p1.setAlignment(Element.ALIGN_CENTER);
-                _p1_.add("INFORME PERMISOS PERMANENTES - CUERPO BOMBERO DE COLIMES");
-                p1.add(_p1_);
-                document.add(p1);
-                
-                p1.clear();
-                _p1_.clear();
-                SimpleDateFormat sdf = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
-                Calendar c = Calendar.getInstance();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                PdfPTable table = new PdfPTable(6);
-                table.setTotalWidth(450);
-                table.setLockedWidth(true);
-                
-                PdfPCell cell = new PdfPCell(new Phrase("Código"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Nombre"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Cédula/RUC"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Razón Social"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Permiso"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Fecha Emisión"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                for(Permiso permiso:permisosList){
-                    Phrase p = new Phrase(permiso.getFullCode(), smallFont);
-                    PdfPCell cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getCliente().getNombre(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getCliente().getCedula(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getCliente().getRazon_social(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getPermiso().toSimple(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getFecha_emision(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                }
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Total: %s", permisosList.size()));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Total USD: %s$",precio));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                document.add(Chunk.NEWLINE);
-                document.add(table);
-                
-                document.close();
-                
-                goToPrintDialog(_file_.getAbsolutePath());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-    
-    @FXML
-    private void generarPDFOcasional(ActionEvent event){
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Cuerpo Bomberos de Balzar");
-        alert.setHeaderText(null);
-        alert.setContentText("Espere unos momentos....");
-        alert.show();
-        double precio = 0;
-        ArrayList<Permiso> permisosList = new ArrayList<>();
-        MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
-            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = 'Ocasional' ORDER BY permisos.ID;";
-            ResultSet rs;
-            try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
-                rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Permiso permiso = new Permiso();
-                        permiso.setId(rs.getInt("id"));
-                        permiso.setDescripcion(rs.getString("descripcion"));
-                        permiso.setFecha_emision(rs.getString("fecha_emision"));
-                        permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
-                        permiso.setRuta_pdf(rs.getString("ruta_pdf"));
-                        
-                        Clientes cliente = new Clientes();
-                        cliente.setId(rs.getInt("id_clientes"));
-                        cliente.setNombre(rs.getString("nombre"));
-                        cliente.setApellido(rs.getString("apellido"));
-                        cliente.setCedula(rs.getString("cedula"));
-                        cliente.setRazon_social(rs.getString("razon_social"));
-                        cliente.setDireccion(rs.getString("direccion"));
-                        
-                        Tipo_Permiso tp = new Tipo_Permiso();
-                        tp.setId(rs.getInt("id_tipo_permiso"));
-                        tp.setIs_active(rs.getBoolean("permiso_active"));
-                        tp.setPrecio(rs.getDouble("precio"));
-                        tp.setTipo_permiso(rs.getString("tipo_permiso"));
-                           
-                        permiso.setCliente(cliente);
-                        permiso.setPermiso(tp); 
+                    permiso.setId(rs.getInt("id"));
+                    permiso.setDescripcion(rs.getString("descripcion"));
+                    permiso.setFecha_emision(rs.getString("fecha_emision"));
+                    permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
+                    permiso.setRuta_pdf(rs.getString("ruta_pdf"));
+
+                    Clientes cliente = new Clientes();
+                    cliente.setId(rs.getInt("id_clientes"));
+                    cliente.setNombre(rs.getString("nombre"));
+                    cliente.setApellido(rs.getString("apellido"));
+                    cliente.setCedula(rs.getString("cedula"));
+                    cliente.setRazon_social(rs.getString("razon_social"));
+                    cliente.setDireccion(rs.getString("direccion"));
+
+                    Tipo_Permiso tp = new Tipo_Permiso();
+                    tp.setId(rs.getInt("id_tipo_permiso"));
+                    tp.setIs_active(rs.getBoolean("permiso_active"));
+                    tp.setPrecio(rs.getDouble("precio"));
+                    tp.setTipo_permiso(rs.getString("tipo_permiso"));
+
+                    permiso.setCliente(cliente);
+                    permiso.setPermiso(tp);
+
                     precio = precio + tp.getPrecio();
                     permisosList.add(permiso);
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
-        String directoryName = String.format("%s/pdfs/", _directory_);            
+        String directoryName = String.format("%s/pdfs/", _directory_);
         File directory = new File(directoryName);
-        if (! directory.exists()){
+        if (!directory.exists()) {
             directory.mkdirs();
-        }   
-        File _file_ = new File(String.format("%sinforme_permisos_ocasional.pdf", directoryName));
-        try{
-                Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
-                Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
-                Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
-                Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
-                
-                OutputStream file = new FileOutputStream(_file_);
-                Document document = new Document();
-                PdfWriter writer = PdfWriter.getInstance(document, file);
-                document.open();
-                PdfContentByte canvas = writer.getDirectContentUnder();
-                Image image;
-                document.setPageSize(PageSize.A4);
-                document.setMargins(80, 80, 80, 100);
-                document.open();
-                
-                image = Image.getInstance(getClass().getClassLoader().getResource("img/cbc_logo_small_transparency.png"));
-                image.setAbsolutePosition(250, 770);
-                canvas.addImage(image);
-                
-                Phrase _p1_ = new Phrase();
-                Paragraph p1 = new Paragraph();
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(boldRedFont);
-                p1.setAlignment(Element.ALIGN_CENTER);
-                _p1_.add("INFORME PERMISOS OCASIONAL - CUERPO BOMBERO DE COLIMES");
-                p1.add(_p1_);
-                document.add(p1);
-                
-                p1.clear();
-                _p1_.clear();
-                SimpleDateFormat sdf = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
-                Calendar c = Calendar.getInstance();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                PdfPTable table = new PdfPTable(7);
-                table.setTotalWidth(450);
-                table.setLockedWidth(true);
-                
-                PdfPCell cell = new PdfPCell(new Phrase("Código"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Nombre"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Cédula/RUC"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Razón Social"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Permiso"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Fecha Emisión"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Fecha Caducidad"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                for(Permiso permiso:permisosList){
-                    Phrase p = new Phrase(permiso.getFullCode(), smallFont);
-                    PdfPCell cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getCliente().getNombre(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getCliente().getCedula(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getCliente().getRazon_social(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getPermiso().toSimple(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getFecha_emision(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(permiso.getFecha_expiracion(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                }
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Total: %s", permisosList.size()));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Total USD: %s$",precio));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                document.add(Chunk.NEWLINE);
-                document.add(table);
-                
-                document.close();
-                
-                goToPrintDialog(_file_.getAbsolutePath());
-        }catch (Exception e){
+        }
+        File _file_ = new File(String.format("%sinforme_permisos_permanente.pdf", directoryName));
+        try {
+            Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
+            Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
+
+            OutputStream file = new FileOutputStream(_file_);
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, file);
+            document.open();
+            PdfContentByte canvas = writer.getDirectContentUnder();
+            Image image;
+            document.setPageSize(PageSize.A4);
+            document.setMargins(80, 80, 80, 100);
+            document.open();
+
+            image = Image.getInstance(getClass().getClassLoader().getResource("img/cbc_logo_small_transparency.png"));
+            image.setAbsolutePosition(250, 770);
+            canvas.addImage(image);
+
+            Phrase _p1_ = new Phrase();
+            Paragraph p1 = new Paragraph();
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(boldRedFont);
+            p1.setAlignment(Element.ALIGN_CENTER);
+            _p1_.add("INFORME PERMISOS PERMANENTES - CUERPO BOMBERO DE COLIMES");
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            _p1_.clear();
+            SimpleDateFormat sdf = new SimpleDateFormat("d, MMMM yyyy", new Locale("es", "ES"));
+            Calendar c = Calendar.getInstance();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
+            p1.add(_p1_);
+            document.add(p1);
+
+            PdfPTable table = new PdfPTable(6);
+            table.setTotalWidth(450);
+            table.setLockedWidth(true);
+
+            PdfPCell cell = new PdfPCell(new Phrase("Código"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Nombre"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Cédula/RUC"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Razón Social"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Permiso"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Fecha Emisión"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+            for (Permiso permiso : permisosList) {
+                Phrase p = new Phrase(permiso.getFullCode(), smallFont);
+                PdfPCell cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getCliente().getNombre(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getCliente().getCedula(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getCliente().getRazon_social(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getPermiso().toSimple(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getFecha_emision(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+            }
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Total: %s", permisosList.size()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Total USD: %s$", precio));
+            p1.add(_p1_);
+            document.add(p1);
+
+            document.add(Chunk.NEWLINE);
+            document.add(table);
+
+            document.close();
+
+            goToPrintDialog(_file_.getAbsolutePath());
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-   
+
     @FXML
-    private void generarPDFempresa(ActionEvent event){
+    private void generarPDFOcasional(ActionEvent event) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Cuerpo Bomberos de Balzar");
+        alert.setHeaderText(null);
+        alert.setContentText("Espere unos momentos....");
+        alert.show();
+        double precio = 0;
+        ArrayList<Permiso> permisosList = new ArrayList<>();
+        MysqlConnect mysqlConnect = new MysqlConnect();
+        try {
+            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = 'Ocasional' ORDER BY permisos.ID;";
+            ResultSet rs;
+            try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
+                rs = st.executeQuery(sql);
+                while (rs.next()) {
+                    Permiso permiso = new Permiso();
+                    permiso.setId(rs.getInt("id"));
+                    permiso.setDescripcion(rs.getString("descripcion"));
+                    permiso.setFecha_emision(rs.getString("fecha_emision"));
+                    permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
+                    permiso.setRuta_pdf(rs.getString("ruta_pdf"));
+
+                    Clientes cliente = new Clientes();
+                    cliente.setId(rs.getInt("id_clientes"));
+                    cliente.setNombre(rs.getString("nombre"));
+                    cliente.setApellido(rs.getString("apellido"));
+                    cliente.setCedula(rs.getString("cedula"));
+                    cliente.setRazon_social(rs.getString("razon_social"));
+                    cliente.setDireccion(rs.getString("direccion"));
+
+                    Tipo_Permiso tp = new Tipo_Permiso();
+                    tp.setId(rs.getInt("id_tipo_permiso"));
+                    tp.setIs_active(rs.getBoolean("permiso_active"));
+                    tp.setPrecio(rs.getDouble("precio"));
+                    tp.setTipo_permiso(rs.getString("tipo_permiso"));
+
+                    permiso.setCliente(cliente);
+                    permiso.setPermiso(tp);
+                    precio = precio + tp.getPrecio();
+                    permisosList.add(permiso);
+                }
+            }
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            mysqlConnect.disconnect();
+        }
+        String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
+        String directoryName = String.format("%s/pdfs/", _directory_);
+        File directory = new File(directoryName);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        File _file_ = new File(String.format("%sinforme_permisos_ocasional.pdf", directoryName));
+        try {
+            Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
+            Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
+
+            OutputStream file = new FileOutputStream(_file_);
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, file);
+            document.open();
+            PdfContentByte canvas = writer.getDirectContentUnder();
+            Image image;
+            document.setPageSize(PageSize.A4);
+            document.setMargins(80, 80, 80, 100);
+            document.open();
+
+            image = Image.getInstance(getClass().getClassLoader().getResource("img/cbc_logo_small_transparency.png"));
+            image.setAbsolutePosition(250, 770);
+            canvas.addImage(image);
+
+            Phrase _p1_ = new Phrase();
+            Paragraph p1 = new Paragraph();
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(boldRedFont);
+            p1.setAlignment(Element.ALIGN_CENTER);
+            _p1_.add("INFORME PERMISOS OCASIONAL - CUERPO BOMBERO DE COLIMES");
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            _p1_.clear();
+            SimpleDateFormat sdf = new SimpleDateFormat("d, MMMM yyyy", new Locale("es", "ES"));
+            Calendar c = Calendar.getInstance();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
+            p1.add(_p1_);
+            document.add(p1);
+
+            PdfPTable table = new PdfPTable(7);
+            table.setTotalWidth(450);
+            table.setLockedWidth(true);
+
+            PdfPCell cell = new PdfPCell(new Phrase("Código"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Nombre"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Cédula/RUC"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Razón Social"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Permiso"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Fecha Emisión"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Fecha Caducidad"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+            for (Permiso permiso : permisosList) {
+                Phrase p = new Phrase(permiso.getFullCode(), smallFont);
+                PdfPCell cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getCliente().getNombre(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getCliente().getCedula(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getCliente().getRazon_social(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getPermiso().toSimple(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getFecha_emision(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(permiso.getFecha_expiracion(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+            }
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Total: %s", permisosList.size()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Total USD: %s$", precio));
+            p1.add(_p1_);
+            document.add(p1);
+
+            document.add(Chunk.NEWLINE);
+            document.add(table);
+
+            document.close();
+
+            goToPrintDialog(_file_.getAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void generarPDFempresa(ActionEvent event) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
@@ -2745,12 +2892,12 @@ public class MainPageController implements Initializable {
         double precio = 0;
         ArrayList<Cantidad> cantidads = new ArrayList();
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT tipo_permiso.tipo_permiso, tipo_permiso.precio, nombre, apellido, cedula, razon_social, fecha_emision, fecha_expiracion, permisos.id FROM cbb_db.permisos, cbb_db.clientes, cbb_db.tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY cedula, razon_social;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Cantidad tp = new Cantidad();
                     tp.setPrecio(rs.getDouble("precio"));
                     tp.setPermiso(rs.getString("tipo_permiso"));
@@ -2765,116 +2912,116 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
-        String directoryName = String.format("%s/pdfs/", _directory_);            
+        String directoryName = String.format("%s/pdfs/", _directory_);
         File directory = new File(directoryName);
-        if (! directory.exists()){
+        if (!directory.exists()) {
             directory.mkdirs();
-        }   
+        }
         File _file_ = new File(String.format("%sinforme_usuarios.pdf", directoryName));
-            try{
-                Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
-                Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
-                Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
-                Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
-                
-                OutputStream file = new FileOutputStream(_file_);
-                Document document = new Document();
-                PdfWriter writer = PdfWriter.getInstance(document, file);
-                document.open();
-                PdfContentByte canvas = writer.getDirectContentUnder();
-                Image image;
-                document.setPageSize(PageSize.A4);
-                document.setMargins(80, 80, 80, 100);
-                document.open();
-                
-                image = Image.getInstance(getClass().getClassLoader().getResource("img/cbc_logo_small_transparency.png"));
-                image.setAbsolutePosition(250, 770);
-                canvas.addImage(image);
-                
-                Phrase _p1_ = new Phrase();
-                Paragraph p1 = new Paragraph();
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(boldRedFont);
-                p1.setAlignment(Element.ALIGN_CENTER);
-                _p1_.add("INFORME USUARIOS CUERPO BOMBERO DE COLIMES");
-                p1.add(_p1_);
-                document.add(p1);
-                
-                p1.clear();
-                _p1_.clear();
-                SimpleDateFormat sdf = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
-                Calendar c = Calendar.getInstance();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                PdfPTable table = new PdfPTable(6);
-                table.setTotalWidth(450);
-                table.setLockedWidth(true);
-                
-                PdfPCell cell = new PdfPCell(new Phrase("Código"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Nombre"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Cédula/RUC"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Razón Social"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Permiso"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                
-                cell = new PdfPCell(new Phrase("Fecha Emisión"));
-                cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                table.addCell(cell);
-                cantidads.stream().map((cantidad) -> {
-                    Phrase p = new Phrase(cantidad.getFullCode(), smallFont);
-                    PdfPCell cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(cantidad.getNombre(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(cantidad.getCedula(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(cantidad.getRazonsocial(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(cantidad.getPermiso(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    table.addCell(cel);
-                    
-                    p = new Phrase(cantidad.getFechaemision(), smallFont);
-                    cel = new PdfPCell(p);
-                    cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-                    // table.addCell(cel);
+        try {
+            Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
+            Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
+
+            OutputStream file = new FileOutputStream(_file_);
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, file);
+            document.open();
+            PdfContentByte canvas = writer.getDirectContentUnder();
+            Image image;
+            document.setPageSize(PageSize.A4);
+            document.setMargins(80, 80, 80, 100);
+            document.open();
+
+            image = Image.getInstance(getClass().getClassLoader().getResource("img/cbc_logo_small_transparency.png"));
+            image.setAbsolutePosition(250, 770);
+            canvas.addImage(image);
+
+            Phrase _p1_ = new Phrase();
+            Paragraph p1 = new Paragraph();
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(boldRedFont);
+            p1.setAlignment(Element.ALIGN_CENTER);
+            _p1_.add("INFORME USUARIOS CUERPO BOMBERO DE COLIMES");
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            _p1_.clear();
+            SimpleDateFormat sdf = new SimpleDateFormat("d, MMMM yyyy", new Locale("es", "ES"));
+            Calendar c = Calendar.getInstance();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
+            p1.add(_p1_);
+            document.add(p1);
+
+            PdfPTable table = new PdfPTable(6);
+            table.setTotalWidth(450);
+            table.setLockedWidth(true);
+
+            PdfPCell cell = new PdfPCell(new Phrase("Código"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Nombre"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Cédula/RUC"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Razón Social"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Permiso"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Fecha Emisión"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+            cantidads.stream().map((cantidad) -> {
+                Phrase p = new Phrase(cantidad.getFullCode(), smallFont);
+                PdfPCell cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(cantidad.getNombre(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(cantidad.getCedula(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(cantidad.getRazonsocial(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(cantidad.getPermiso(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+
+                p = new Phrase(cantidad.getFechaemision(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                // table.addCell(cel);
                 return cel;
             }).map((cel) -> {
                 cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
@@ -2882,34 +3029,34 @@ public class MainPageController implements Initializable {
             }).forEachOrdered((cel) -> {
                 table.addCell(cel);
             });
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Total: %s", cantidads.size()));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                p1.clear();
-                _p1_.clear();
-                _p1_.setFont(normalFont);
-                p1.setAlignment(Element.ALIGN_LEFT);
-                _p1_.add(String.format("Total USD: %s$",precio));
-                p1.add(_p1_);
-                document.add(p1);
-                
-                document.add(Chunk.NEWLINE);
-                document.add(table);
-                
-                document.close();
-                
-                goToPrintDialog(_file_.getAbsolutePath());
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Total: %s", cantidads.size()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("Total USD: %s$", precio));
+            p1.add(_p1_);
+            document.add(p1);
+
+            document.add(Chunk.NEWLINE);
+            document.add(table);
+
+            document.close();
+
+            goToPrintDialog(_file_.getAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    
+
     // CERRAR SESION
     @FXML
     private void cerrarSesionMenuAction(ActionEvent event) {
@@ -2932,14 +3079,14 @@ public class MainPageController implements Initializable {
             mysqlConnect.disconnect();
         }
     }
-    
+
     private void setVisiblePane(
-            boolean b1, boolean b2, 
-            boolean b3, boolean b4, 
+            boolean b1, boolean b2,
+            boolean b3, boolean b4,
             boolean b5, boolean b6,
             boolean b7, boolean b8,
             boolean b9, boolean b10
-    ){
+    ) {
         pane_emision_permiso.setVisible(b1);
         pane_consultar_permiso.setVisible(b2);
         pane_editar_permiso.setVisible(b3);
@@ -2951,8 +3098,8 @@ public class MainPageController implements Initializable {
         pane_generado_permiso.setVisible(b9);
         pane_generado_editar_permiso.setVisible(b10);
     }
-    
-    private void showDialog(String titulo, String text, AlertType alert_type){
+
+    private void showDialog(String titulo, String text, AlertType alert_type) {
         // Alert alert = new Alert(alert_type);
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
@@ -2961,13 +3108,14 @@ public class MainPageController implements Initializable {
         alert.setContentText(text);
         alert.showAndWait();
     }
-    
-    @FXML 
+
+    @FXML
     private BorderPane ap_main_page;
+
     /**
      * Initializes the controller class.
      */
-    
+
     public MainPageController() {
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
@@ -2977,15 +3125,15 @@ public class MainPageController implements Initializable {
         try {
             Statement st = (Statement) mysqlConnect.connect().createStatement();
             ResultSet rs = st.executeQuery(sql);
-            while (rs.next()){
-                if(rs.getBoolean("is_logged")){
-                    sql = "SELECT * FROM usuarios WHERE id="+rs.getInt("user_id")+";";
+            while (rs.next()) {
+                if (rs.getBoolean("is_logged")) {
+                    sql = "SELECT * FROM usuarios WHERE id=" + rs.getInt("user_id") + ";";
                     try {
                         st = (Statement) mysqlConnect.connect().createStatement();
                         rs = st.executeQuery(sql);
-                        while (rs.next()){
+                        while (rs.next()) {
                             boolean is_active = rs.getBoolean("is_active");
-                            if(is_active){
+                            if (is_active) {
                                 usuario.setId(rs.getInt("id"));
                                 usuario.setFirst_name(rs.getString("nombre"));
                                 usuario.setLast_name(rs.getString("apellido"));
@@ -2994,47 +3142,49 @@ public class MainPageController implements Initializable {
                                 usuario.setIs_superuser(rs.getBoolean("is_superuser"));
                             }
                         }
-                    }catch(Exception e1){
+                    } catch (Exception e1) {
                         e1.printStackTrace();
                     }
                 }
             }
             st.close();
             rs.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        Locale.setDefault(new Locale("es","ES"));
-        if(usuario.getIs_superuser()){
+        Locale.setDefault(new Locale("es", "ES"));
+        if (usuario.getIs_superuser()) {
             usuariosMenu.setDisable(false);
             add_permiso.setDisable(false);
             edit_permiso.setDisable(false);
-        }else{
+            edit_permiso_generado.setDisable(true);
+        } else {
             usuariosMenu.setDisable(true);
             add_permiso.setDisable(true);
             edit_permiso.setDisable(true);
+            edit_permiso_generado.setDisable(true);
         }
-    }  
-    
+    }
+
     // LISTA Y EDITAR USUARIOS
-    @FXML 
+    @FXML
     private void listaMenuUsuarios(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, false, true, false, true, false);
-        
+        setVisiblePane(false, false, false, false, false, false, true, false, false, false);
+
         usuarioList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
-        try{
+        try {
             String sql = "SELECT * FROM usuarios";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
-                while (rs.next()){
+                while (rs.next()) {
                     Usuario usuario = new Usuario();
                     usuario.setId(rs.getInt("id"));
                     usuario.setFirst_name(rs.getString("nombre"));
@@ -3047,9 +3197,9 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             mysqlConnect.disconnect();
         }
         usuario_column_nombre.setCellValueFactory(new PropertyValueFactory<>("first_name"));
@@ -3058,12 +3208,12 @@ public class MainPageController implements Initializable {
         usuario_column_contrasena.setCellValueFactory(new PropertyValueFactory<>("password"));
         usuario_column_activo.setCellValueFactory(new PropertyValueFactory<>("activado"));
         usuario_column_is_superuser.setCellValueFactory(new PropertyValueFactory<>("admin"));
-        
+
         usuario_tv.getItems().setAll(usuarioList);
         usuario_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if(usuario_tv.getSelectionModel().getSelectedItem() != null){    
+                if (usuario_tv.getSelectionModel().getSelectedItem() != null) {
                     TableViewSelectionModel selectionModel = usuario_tv.getSelectionModel();
                     ObservableList selectedCells = selectionModel.getSelectedCells();
                     TablePosition tablePosition = (TablePosition) selectedCells.get(0);
@@ -3073,14 +3223,14 @@ public class MainPageController implements Initializable {
                     usuario_apellido.setText(usuario.getLast_name());
                     usuario_usuario.setText(usuario.getUsuario());
                     usuario_contrasena.setText(usuario.getPassword());
-                    if(usuario.getIs_active()){
+                    if (usuario.getIs_active()) {
                         usuario_active.setSelected(true);
-                    }else{
+                    } else {
                         usuario_active.setSelected(false);
                     }
-                    if(usuario.getIs_superuser()){
+                    if (usuario.getIs_superuser()) {
                         usuario_is_superuser.setSelected(true);
-                    }else{
+                    } else {
                         usuario_is_superuser.setSelected(false);
                     }
                     user_id = usuario.getId();
@@ -3088,19 +3238,19 @@ public class MainPageController implements Initializable {
             }
         });
     }
-    
-    private boolean user_empty(){
-        return usuario_nombre.getText().isEmpty() ||
-                usuario_apellido.getText().isEmpty() ||
-                usuario_usuario.getText().isEmpty() ||
-                usuario_contrasena.getText().isEmpty();
+
+    private boolean user_empty() {
+        return usuario_nombre.getText().isEmpty()
+                || usuario_apellido.getText().isEmpty()
+                || usuario_usuario.getText().isEmpty()
+                || usuario_contrasena.getText().isEmpty();
     }
-    
-    @FXML 
+
+    @FXML
     private void editarUsuarioEvent(ActionEvent event) {
-        if(user_empty()){
+        if (user_empty()) {
             showDialog("Error", "Debe de llenar todos los datos para editar el usuario", AlertType.ERROR);
-        }else{
+        } else {
             Usuario usuario = new Usuario();
             usuario.setFirst_name(usuario_nombre.getText());
             usuario.setLast_name(usuario_apellido.getText());
@@ -3110,79 +3260,79 @@ public class MainPageController implements Initializable {
             usuario.setIs_superuser(usuario_is_superuser.isSelected());
             usuario.setId(user_id);
             MysqlConnect mysqlConnect = new MysqlConnect();
-                try{
-                    String query = "UPDATE usuarios SET nombre = ?, apellido = ?, usuario = ?, contrasena = ?, is_active = ?, is_superuser = ? WHERE id = ?;";
-                    PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                    preparedStmt.setString (1, usuario.getFirst_name());
-                    preparedStmt.setString(2, usuario.getLast_name());
-                    preparedStmt.setString(3, usuario.getUsuario());
-                    preparedStmt.setString(4, usuario.getPassword());
-                    preparedStmt.setBoolean(5, usuario.getIs_active());
-                    preparedStmt.setBoolean(6, usuario.getIs_superuser());
-                    preparedStmt.setInt(7, usuario.getId());
-                    preparedStmt.executeUpdate();
-                    
-                    for(Usuario u:usuarioList){
-                        if(u.getId() == usuario.getId()){
-                            usuarioList.remove(u);
-                            break;
-                        }
+            try {
+                String query = "UPDATE usuarios SET nombre = ?, apellido = ?, usuario = ?, contrasena = ?, is_active = ?, is_superuser = ? WHERE id = ?;";
+                PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
+                preparedStmt.setString(1, usuario.getFirst_name());
+                preparedStmt.setString(2, usuario.getLast_name());
+                preparedStmt.setString(3, usuario.getUsuario());
+                preparedStmt.setString(4, usuario.getPassword());
+                preparedStmt.setBoolean(5, usuario.getIs_active());
+                preparedStmt.setBoolean(6, usuario.getIs_superuser());
+                preparedStmt.setInt(7, usuario.getId());
+                preparedStmt.executeUpdate();
+
+                for (Usuario u : usuarioList) {
+                    if (u.getId() == usuario.getId()) {
+                        usuarioList.remove(u);
+                        break;
                     }
-                    usuarioList.add(usuario);
-
-                    usuario_nombre.setText("");
-                    usuario_apellido.setText("");
-                    usuario_usuario.setText("");
-                    usuario_contrasena.setText("");
-                    usuario_active.setSelected(false);
-                    usuario_is_superuser.setSelected(false);
-
-                    usuario_tv.refresh();
-                    usuario_tv.getItems().clear();
-                    usuario_tv.getItems().addAll(usuarioList);
-                    showDialog("Usuario Editado", "Usuario editado exitosamente", AlertType.INFORMATION);
-                }catch(Exception e){
-                    e.printStackTrace();
-                    showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
-                } finally{
-                    mysqlConnect.disconnect();
                 }
+                usuarioList.add(usuario);
+
+                usuario_nombre.setText("");
+                usuario_apellido.setText("");
+                usuario_usuario.setText("");
+                usuario_contrasena.setText("");
+                usuario_active.setSelected(false);
+                usuario_is_superuser.setSelected(false);
+
+                usuario_tv.refresh();
+                usuario_tv.getItems().clear();
+                usuario_tv.getItems().addAll(usuarioList);
+                showDialog("Usuario Editado", "Usuario editado exitosamente", AlertType.INFORMATION);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
+            } finally {
+                mysqlConnect.disconnect();
+            }
         }
     }
-    
+
     // AGREGAR USUARIOS
-    @FXML 
+    @FXML
     private void agregarMenuUsuarios(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, false, false, true, true, false);
+        setVisiblePane(false, false, false, false, false, false, false, true, false, false);
     }
-    
-    private boolean user_agregar_empty(){
-        return usuario_agregar_nombre.getText().isEmpty() ||
-                usuario_agregar_apellido.getText().isEmpty() ||
-                usuario_agregar_usuario.getText().isEmpty() ||
-                usuario_agregar_contrasena.getText().isEmpty();
+
+    private boolean user_agregar_empty() {
+        return usuario_agregar_nombre.getText().isEmpty()
+                || usuario_agregar_apellido.getText().isEmpty()
+                || usuario_agregar_usuario.getText().isEmpty()
+                || usuario_agregar_contrasena.getText().isEmpty();
     }
-    
-    @FXML 
+
+    @FXML
     private void agregarUsuarioEvent(ActionEvent event) {
-        if(user_agregar_empty()){
+        if (user_agregar_empty()) {
             showDialog("Error", "Debe de llenar todos los datos", AlertType.ERROR);
-        }else{
+        } else {
             MysqlConnect mysqlConnect = new MysqlConnect();
-            try{
+            try {
                 String query = "INSERT INTO usuarios(nombre, apellido, usuario, contrasena,"
                         + "is_active, is_superuser)"
-                + " values (?,?,?,?,?,?)";
+                        + " values (?,?,?,?,?,?)";
                 PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                
-                preparedStmt.setString (1, usuario_agregar_nombre.getText());
-                preparedStmt.setString (2, usuario_agregar_apellido.getText());
-                preparedStmt.setString (3, usuario_agregar_usuario.getText());
-                preparedStmt.setString (4, usuario_agregar_contrasena.getText());
+
+                preparedStmt.setString(1, usuario_agregar_nombre.getText());
+                preparedStmt.setString(2, usuario_agregar_apellido.getText());
+                preparedStmt.setString(3, usuario_agregar_usuario.getText());
+                preparedStmt.setString(4, usuario_agregar_contrasena.getText());
                 preparedStmt.setBoolean(5, usuario_agregar_active.isSelected());
                 preparedStmt.setBoolean(6, usuario_agregar_is_superuser.isSelected());
                 preparedStmt.execute();
-                
+
                 usuario_agregar_nombre.setText("");
                 usuario_agregar_apellido.setText("");
                 usuario_agregar_usuario.setText("");
@@ -3190,23 +3340,23 @@ public class MainPageController implements Initializable {
                 usuario_agregar_active.setSelected(false);
                 usuario_agregar_is_superuser.setSelected(false);
                 showDialog("Exitos", "Nuevo usuario creado", AlertType.INFORMATION);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
-            } finally{
+            } finally {
                 mysqlConnect.disconnect();
             }
         }
     }
-    
-    private void goToPrintDialog(String path){
+
+    private void goToPrintDialog(String path) {
         if (Desktop.isDesktopSupported()) {
             try {
                 File myFile = null;
-                if(path.contains("::")){
+                if (path.contains("::")) {
                     String split[] = path.split("::");
                     myFile = new File(split[1]);
-                }else{
+                } else {
                     myFile = new File(path);
                 }
                 Desktop.getDesktop().open(myFile);
@@ -3215,5 +3365,5 @@ public class MainPageController implements Initializable {
             }
         }
     }
-    
+
 }
