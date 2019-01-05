@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane id="BorderPane" fx:id="ap_main_page" prefHeight="627.0" prefWidth="837.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cbc_reportes.MainPageController">
+   <center>
+       <Pane prefHeight="602.0" style="-fx-background-color: F5F5F5;">
+         <children>
+            <BorderPane fx:id="pane_editar_permiso" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <top>
+                  <TableView id="editar_tv" fx:id="editar_tv" editable="true" BorderPane.alignment="CENTER">
+                    <columns>
+                        <TableColumn id="editar_column_id_permiso" fx:id="editar_column_id_permiso" prefWidth="54.0" text="#" />
+                      <TableColumn id="editar_column_nombre_permiso" fx:id="editar_column_nombre_permiso" prefWidth="531.0" text="Nombre Permiso" />
+                      <TableColumn id="editar_column_precio_permiso" fx:id="editar_column_precio_permiso" minWidth="0.0" prefWidth="113.0" text="Precio" />
+                        <TableColumn id="editar_column_activo_permiso" fx:id="editar_column_activo_permiso" prefWidth="87.0" text="Activo" />
+                    </columns>
+                     <BorderPane.margin>
+                        <Insets left="25.0" right="25.0" top="25.0" />
+                     </BorderPane.margin>
+                  </TableView>
+               </top>
+               <bottom>
+                  <Button id="editar_actualizar" fx:id="editar_actualizar" focusTraversable="false" mnemonicParsing="false" onAction="#saveEditPermisos" prefHeight="52.0" prefWidth="375.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Guardar" textFill="WHITE" BorderPane.alignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <BorderPane.margin>
+                        <Insets bottom="25.0" />
+                     </BorderPane.margin>
+                  </Button>
+               </bottom>
+               <center>
+                  <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <TextField id="editar_nombre" fx:id="editar_nombre" layoutX="84.0" layoutY="13.0" prefHeight="32.0" prefWidth="696.0" />
+                        <TextField id="editar_precio" fx:id="editar_precio" layoutX="84.0" layoutY="57.0" prefHeight="32.0" prefWidth="696.0" />
+                        <CheckBox id="editar_is_active" fx:id="editar_is_active" layoutX="24.0" layoutY="94.0" mnemonicParsing="false" text="Activo" />
+                        <Label layoutX="24.0" layoutY="16.0" text="Nombre">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="24.0" layoutY="64.0" text="Precio">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <BorderPane.margin>
+                        <Insets left="25.0" right="25.0" />
+                     </BorderPane.margin>
+                  </Pane>
+               </center>
+            </BorderPane>
+            <Pane id="pane_consultar_permiso" fx:id="pane_consultar_permiso" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <TableView fx:id="consultar_tv" layoutX="40.0" layoutY="124.0" prefHeight="458.0" prefWidth="764.0">
+                    <columns>
+                        <TableColumn fx:id="consultar_column_id" prefWidth="92.0" text="ID" />
+                        <TableColumn fx:id="consultar_column_nombre" prefWidth="127.0" text="Nombre" />
+                        <TableColumn fx:id="consultar_column_cedula" prefWidth="104.0" text="Cédula" />
+                      <TableColumn fx:id="consultar_column_permiso" prefWidth="140.0" text="Permiso" />
+                        <TableColumn fx:id="consultar_column_fecha_emision" prefWidth="114.0" text="Fecha Emisión" />
+                        <TableColumn fx:id="consultar_column_fecha_caducidad" prefWidth="110.0" text="Valido Hasta" />
+                      <TableColumn fx:id="consultar_column_visualizar" prefWidth="75.0" text="Visualizar" />
+                    </columns>
+                  </TableView>
+                  <Button focusTraversable="false" layoutX="637.0" layoutY="74.0" mnemonicParsing="false" onAction="#buscarConsultar" prefHeight="38.0" prefWidth="167.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Buscar" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <TextField fx:id="consultar_parametro" layoutX="40.0" layoutY="38.0" prefHeight="27.0" prefWidth="409.0" promptText="Nombre o Numero de Cedula" />
+                  <Label layoutX="40.0" layoutY="81.0" text="Total permisos:">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Label id="consulta_total_permiso" fx:id="consultar_total_permiso" layoutX="179.0" layoutY="81.0" prefHeight="23.0" prefWidth="118.0" text="0">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <ComboBox fx:id="consultar_tipo_permiso" layoutX="335.0" layoutY="79.0" prefHeight="27.0" prefWidth="292.0" />
+                  <TextField fx:id="consultar_search_permiso" layoutX="456.0" layoutY="38.0" prefHeight="27.0" prefWidth="348.0" promptText="Ingrese nombre de permiso para búsqueda" />
+               </children>
+            </Pane>
+            <Pane id="pane_detalle_permiso" fx:id="pane_detalle_permiso" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <TableView fx:id="detalle_tv" layoutX="40.0" layoutY="167.0" prefHeight="412.0" prefWidth="764.0">
+                     <columns>
+                        <TableColumn fx:id="detalle_column_id" prefWidth="64.0" text="ID" />
+                        <TableColumn fx:id="detalle_column_nombre" prefWidth="142.0" text="Nombre " />
+                        <TableColumn fx:id="detalle_column_cedula" prefWidth="98.0" text="Cédula" />
+                        <TableColumn fx:id="detalle_column_permiso" prefWidth="154.0" text="Permiso" />
+                        <TableColumn fx:id="detalle_column_fecha_emision" prefWidth="105.0" text="Fecha Emisión" />
+                        <TableColumn fx:id="detalle_column_fecha_caducidad" prefWidth="126.0" text="Fecha caducidad" />
+                        <TableColumn fx:id="detalle_column_visualizar" prefWidth="74.0" text="Visualizar" />
+                     </columns>
+                  </TableView>
+                  <DatePicker fx:id="detalle_date_picker_desde" editable="false" layoutX="148.0" layoutY="31.0" prefHeight="27.0" prefWidth="288.0" />
+                  <Label layoutX="40.0" layoutY="36.0" text="Consulta desde:" />
+                  <Label id="detalle_total_permiso" fx:id="detalle_total_permiso" layoutX="181.0" layoutY="122.0" prefHeight="23.0" prefWidth="118.0" text="0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="40.0" layoutY="122.0" text="Total permisos:">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Button layoutX="600.0" layoutY="108.0" mnemonicParsing="false" onAction="#buscarDetalle" prefHeight="45.0" prefWidth="204.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Buscar" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <DatePicker fx:id="detalle_date_picker_hasta" editable="false" layoutX="525.0" layoutY="31.0" prefHeight="23.0" prefWidth="288.0" />
+                  <Label layoutX="459.0" layoutY="36.0" text="Hasta:" />
+                  <ComboBox fx:id="detalle_tipo_permiso" layoutX="498.0" layoutY="69.0" prefHeight="27.0" prefWidth="315.0" />
+                  <TextField fx:id="detalle_search_permiso" layoutX="40.0" layoutY="69.0" prefHeight="27.0" prefWidth="447.0" promptText="Ingrese nombre de permiso para búsqueda" />
+               </children>
+            </Pane>
+            <Pane id="pane_arqueo_caja" fx:id="pane_arqueo_caja" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" visible="false">
+               <children>
+                  <TableView fx:id="arqueo_tv" layoutX="40.0" layoutY="179.0" prefHeight="412.0" prefWidth="764.0">
+                     <columns>
+                        <TableColumn fx:id="arqueo_column_id" prefWidth="69.0" text="ID" />
+                        <TableColumn fx:id="arqueo_column_nombre" prefWidth="125.0" text="Nombre " />
+                        <TableColumn fx:id="arqueo_column_cedula" prefWidth="108.0" text="Cédula" />
+                        <TableColumn fx:id="arqueo_column_permiso" prefWidth="122.0" text="Permiso" />
+                        <TableColumn fx:id="arqueo_column_fecha_emision" prefWidth="96.0" text="Fecha Emisión" />
+                        <TableColumn fx:id="arqueo_column_fecha_caducidad" prefWidth="113.0" text="Fecha caducidad" />
+                        <TableColumn fx:id="arqueo_column_valor" prefWidth="60.0" text="Valor" />
+                        <TableColumn fx:id="arqueo_column_visualizar" prefWidth="69.0" text="Visualizar" />
+                     </columns>
+                  </TableView>
+                  <Label layoutX="40.0" layoutY="38.0" text="Consultar desde:" />
+                  <DatePicker fx:id="arqueo_date_picker_desde" layoutX="153.0" layoutY="33.0" prefHeight="27.0" prefWidth="280.0" />
+                  <Label layoutX="40.0" layoutY="116.0" text="Total Permisos:">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Label id="arqueo_total_permisos" fx:id="arqueo_total_permiso" layoutX="198.0" layoutY="116.0" prefHeight="23.0" prefWidth="131.0" text="0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label id="arqueo_total_dolares" fx:id="arqueo_total_precio" layoutX="197.0" layoutY="150.0" prefHeight="23.0" prefWidth="132.0" text="\$0">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="40.0" layoutY="150.0" text="Total en Dólares:">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Button layoutX="475.0" layoutY="122.0" mnemonicParsing="false" onAction="#buscarArqueo" prefHeight="45.0" prefWidth="164.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Buscar" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Button>
+                  <Label layoutX="455.0" layoutY="38.0" text="Hasta:" />
+                  <DatePicker fx:id="arqueo_date_picker_hasta" layoutX="528.0" layoutY="33.0" prefHeight="27.0" prefWidth="280.0" />
+                  <ComboBox fx:id="arqueo_tipo_permiso" layoutX="475.0" layoutY="77.0" prefHeight="27.0" prefWidth="329.0" />
+                  <Button layoutX="644.0" layoutY="122.0" mnemonicParsing="false" onAction="#arqueoDescargar" prefHeight="45.0" prefWidth="164.0" style="-fx-background-color: FFF; -fx-background-radius: 15; -fx-border-color: E57373; -fx-border-radius: 15;" text="Descargar" textFill="#e57373">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Button>
+                  <TextField fx:id="arqueo_search_permiso" layoutX="40.0" layoutY="77.0" prefHeight="27.0" prefWidth="429.0" promptText="Ingrese nombre de permiso para búsqueda" />
+               </children>
+            </Pane>
+            <Pane fx:id="pane_agregar_permiso" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <Button layoutX="261.0" layoutY="477.0" mnemonicParsing="false" onAction="#saveAgregarPermiso" prefHeight="52.0" prefWidth="303.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Crear" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Button>
+                  <TextField fx:id="agregar_permiso_nombre" layoutX="38.0" layoutY="187.0" prefHeight="27.0" prefWidth="764.0" promptText="Nombre Tipo Permiso" />
+                  <TextField fx:id="agregar_permiso_precio" layoutX="38.0" layoutY="262.0" prefHeight="27.0" prefWidth="764.0" promptText="Precio" />
+                  <CheckBox fx:id="agregar_permiso_is_active" layoutX="38.0" layoutY="318.0" mnemonicParsing="false" text="Activo" />
+                  <Separator layoutY="121.0" prefHeight="3.0" prefWidth="839.0" />
+                  <Separator layoutX="-2.0" layoutY="409.0" prefHeight="3.0" prefWidth="839.0" />
+                  <Label layoutX="156.0" layoutY="48.0" prefHeight="23.0" prefWidth="479.0" text="Con este formulario se creará un nuevo tipo de permiso.">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="38.0" layoutY="152.0" prefHeight="27.0" prefWidth="87.0" text="Tipo Permiso">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="38.0" layoutY="235.0" prefHeight="27.0" text="Precio:">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children></Pane>
+            <Pane id="pane_emision_permiso" fx:id="pane_emision_permiso" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <Label layoutX="40.0" layoutY="40.0" text="Seleccionar tipo de permiso" />
+                  <Label alignment="CENTER" layoutX="40.0" layoutY="122.0" prefHeight="27.0" prefWidth="764.0" text="Ingrese la siguiente información para poder generar el permiso." />
+                  <TextField id="emision_nombre" fx:id="emision_nombre" layoutX="230.0" layoutY="215.0" prefHeight="27.0" prefWidth="280.0" promptText="Nombres" />
+                  <TextField id="emision_apellido" fx:id="emision_apellido" layoutX="524.0" layoutY="215.0" prefHeight="27.0" prefWidth="280.0" promptText="Apellidos" />
+                  <TextField id="emision_cedula" fx:id="emision_cedula" layoutX="40.0" layoutY="257.0" prefHeight="27.0" prefWidth="764.0" promptText="Cédula" />
+                  <TextField id="emision_razon_social" fx:id="emision_razon_social" layoutX="40.0" layoutY="301.0" prefHeight="27.0" prefWidth="764.0" promptText="Razón Social" />
+                  <TextField id="emision_direccion" fx:id="emision_direccion" layoutX="40.0" layoutY="344.0" prefHeight="27.0" prefWidth="764.0" promptText="Dirección" />
+                  <TextArea id="emision_descripcion" fx:id="emision_descripcion" layoutX="40.0" layoutY="387.0" prefHeight="117.0" prefWidth="764.0" promptText="Descripcion" text="para " />
+                  <Label layoutX="40.0" layoutY="171.0" text="Fecha" />
+                  <DatePicker fx:id="emision_fecha" editable="false" layoutX="91.0" layoutY="166.0" prefHeight="27.0" prefWidth="711.0" />
+                  <Separator layoutY="151.0" prefHeight="4.0" prefWidth="837.0" />
+                  <RadioButton fx:id="emision_rd_1" layoutX="38.0" layoutY="220.0" mnemonicParsing="false" selected="true" text="al señor">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="prefijo" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="emision_rd_2" layoutX="122.0" layoutY="220.0" mnemonicParsing="false" text="a la señora" toggleGroup="$prefijo" />
+                  <JFXButton fx:id="emision_generar" layoutX="221.0" layoutY="522.0" onAction="#emisionGenerarPermiso" prefHeight="64.0" prefWidth="375.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Generar" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </JFXButton>
+                  <ComboBox fx:id="emision_tipo_permiso" layoutX="526.0" layoutY="35.0" prefHeight="27.0" prefWidth="281.0" />
+                  <TextField fx:id="emision_search_permiso" layoutX="231.0" layoutY="35.0" prefHeight="27.0" prefWidth="286.0" promptText="Ingrese nombre de permiso para búsqueda" />
+                  <Separator layoutY="118.0" prefHeight="4.0" prefWidth="837.0" />
+                  <RadioButton fx:id="modo_permanente" layoutX="132.0" layoutY="87.0" mnemonicParsing="false" selected="true" text="Permanente">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="modo" />
+                     </toggleGroup></RadioButton>
+                  <RadioButton fx:id="modo_ocasional" layoutX="260.0" layoutY="87.0" mnemonicParsing="false" text="Ocasional" toggleGroup="$modo" />
+                  <Label layoutX="40.0" layoutY="87.0" text="Permiso es: " />
+                  <DatePicker fx:id="fecha_ocasional" disable="true" editable="false" layoutX="362.0" layoutY="82.0" prefHeight="27.0" prefWidth="445.0" />
+               </children>
+            </Pane>
+            <Pane fx:id="pane_lista_usuarios" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <TableView fx:id="usuario_tv" layoutX="14.0" layoutY="14.0" prefHeight="404.0" prefWidth="809.0">
+                    <columns>
+                      <TableColumn fx:id="usuario_column_nombre" prefWidth="145.0" text="Nombre" />
+                      <TableColumn fx:id="usuario_column_apellido" prefWidth="133.0" text="Apellido" />
+                        <TableColumn fx:id="usuario_column_usuario" minWidth="4.0" prefWidth="167.0" text="Usuario" />
+                        <TableColumn fx:id="usuario_column_contrasena" minWidth="0.0" prefWidth="162.0" text="Contraseña" />
+                        <TableColumn fx:id="usuario_column_activo" minWidth="0.0" prefWidth="104.0" text="Activo" />
+                        <TableColumn fx:id="usuario_column_is_superuser" minWidth="0.0" prefWidth="95.0" text="Es Admin" />
+                    </columns>
+                  </TableView>
+                  <JFXButton layoutX="292.0" layoutY="526.0" onAction="#editarUsuarioEvent" prefHeight="64.0" prefWidth="253.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Guardar" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXPasswordField fx:id="usuario_contrasena" layoutX="430.0" layoutY="476.0" prefHeight="27.0" prefWidth="380.0" promptText="Contraseña" />
+                  <JFXTextField fx:id="usuario_nombre" layoutX="25.0" layoutY="436.0" prefHeight="27.0" prefWidth="380.0" promptText="Nombre" />
+                  <JFXTextField fx:id="usuario_apellido" layoutX="25.0" layoutY="475.0" prefHeight="27.0" prefWidth="380.0" promptText="Apellido" />
+                  <JFXTextField fx:id="usuario_usuario" layoutX="430.0" layoutY="437.0" prefHeight="27.0" prefWidth="380.0" promptText="Usuario" />
+                  <JFXCheckBox fx:id="usuario_active" checkedColor="#e57373" layoutX="26.0" layoutY="528.0" text="Usuario Activo" />
+                  <JFXCheckBox fx:id="usuario_is_superuser" checkedColor="#e57373" layoutX="26.0" layoutY="558.0" text="Es Admin" />
+               </children>
+            </Pane>
+            <Pane fx:id="pane_agregar_usuario" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <JFXCheckBox fx:id="usuario_agregar_active" checkedColor="#e57373" layoutX="94.0" layoutY="376.0" text="Activo" />
+                  <JFXCheckBox fx:id="usuario_agregar_is_superuser" checkedColor="#e57373" layoutX="212.0" layoutY="376.0" text="Es Admin" />
+                  <JFXButton layoutX="267.0" layoutY="489.0" onAction="#agregarUsuarioEvent" prefHeight="64.0" prefWidth="303.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Crear" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </JFXButton>
+                  <JFXPasswordField fx:id="usuario_agregar_contrasena" layoutX="94.0" layoutY="297.0" prefWidth="650.0" promptText="Contraseña" />
+                  <JFXTextField fx:id="usuario_agregar_nombre" layoutX="94.0" layoutY="120.0" prefWidth="650.0" promptText="Nombre" />
+                  <JFXTextField fx:id="usuario_agregar_apellido" layoutX="94.0" layoutY="171.0" prefWidth="650.0" promptText="Apellido" />
+                  <JFXTextField fx:id="usuario_agregar_usuario" layoutX="94.0" layoutY="230.0" prefWidth="650.0" promptText="Usuario" />
+                  <Separator layoutY="73.0" prefHeight="3.0" prefWidth="834.0" />
+                  <Separator layoutY="440.0" prefHeight="3.0" prefWidth="837.0" />
+                  <Label alignment="CENTER" layoutX="53.0" layoutY="33.0" prefHeight="17.0" prefWidth="721.0" text="Formulario para crear un nuevo usuario para el Sistema CBC - Permisos">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+            <Pane id="pane_consultar_permiso" fx:id="pane_generado_permiso" layoutY="-1.0" prefHeight="600.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <TableView fx:id="editar_generados_tv" layoutX="40.0" layoutY="124.0" prefHeight="458.0" prefWidth="764.0">
+                     <columns>
+                        <TableColumn fx:id="generado_column_id" prefWidth="92.0" text="ID" />
+                        <TableColumn fx:id="generado_column_nombre" prefWidth="131.0" text="Nombre" />
+                        <TableColumn fx:id="generado_column_cedula" prefWidth="124.0" text="Cédula" />
+                        <TableColumn fx:id="generado_column_permiso" prefWidth="125.0" text="Permiso" />
+                        <TableColumn fx:id="generado_column_fecha_emision" prefWidth="126.0" text="Fecha Emisión" />
+                        <TableColumn fx:id="generado_column_editar" prefWidth="86.0" text="Editar" />
+                        <TableColumn fx:id="generado_column_eliminar" prefWidth="76.0" text="Eliminar" />
+                     </columns>
+                  </TableView>
+                  <Button focusTraversable="false" layoutX="637.0" layoutY="33.0" mnemonicParsing="false" onAction="#buscarGenerado" prefHeight="38.0" prefWidth="167.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Buscar" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <TextField fx:id="generado_parametro" layoutX="40.0" layoutY="38.0" prefHeight="27.0" prefWidth="587.0" promptText="Nombre o Numero de Cedula" />
+                  <ComboBox fx:id="generado_tipo_permiso" layoutX="543.0" layoutY="79.0" prefHeight="27.0" prefWidth="261.0" />
+                  <TextField fx:id="generado_search_permiso" layoutX="40.0" layoutY="80.0" prefHeight="27.0" prefWidth="487.0" promptText="Ingrese nombre de permiso para búsqueda" />
+               </children>
+            </Pane>
+            <Pane id="pane_emision_permiso" fx:id="pane_generado_editar_permiso" layoutX="-1.0" layoutY="-1.0" prefHeight="601.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <Label layoutX="40.0" layoutY="40.0" text="Seleccionar tipo de permiso" />
+                  <Label alignment="CENTER" layoutX="40.0" layoutY="122.0" prefHeight="27.0" prefWidth="764.0" text="Ingrese la siguiente información para poder generar el permiso." />
+                  <TextField id="emision_nombre" fx:id="generado_editar_nombre" layoutX="230.0" layoutY="215.0" prefHeight="27.0" prefWidth="280.0" promptText="Nombres" />
+                  <TextField id="emision_apellido" fx:id="generado_editar_apellido" layoutX="524.0" layoutY="215.0" prefHeight="27.0" prefWidth="280.0" promptText="Apellidos" />
+                  <TextField id="emision_cedula" fx:id="generado_editar_cedula" layoutX="40.0" layoutY="257.0" prefHeight="27.0" prefWidth="764.0" promptText="Cédula" />
+                  <TextField id="emision_razon_social" fx:id="generado_editar_razon_social" layoutX="40.0" layoutY="301.0" prefHeight="27.0" prefWidth="764.0" promptText="Razón Social" />
+                  <TextField id="emision_direccion" fx:id="generado_editar_direccion" layoutX="40.0" layoutY="344.0" prefHeight="27.0" prefWidth="764.0" promptText="Dirección" />
+                  <TextArea id="emision_descripcion" fx:id="generado_editar_descripcion" layoutX="40.0" layoutY="387.0" prefHeight="117.0" prefWidth="764.0" promptText="Descripcion" text="para " />
+                  <Label layoutX="40.0" layoutY="171.0" text="Fecha" />
+                  <DatePicker fx:id="generado_editar_fecha" editable="false" layoutX="91.0" layoutY="166.0" prefHeight="27.0" prefWidth="711.0" />
+                  <Separator layoutY="151.0" prefHeight="4.0" prefWidth="837.0" />
+                  <RadioButton fx:id="generado_editar_rd_1" layoutX="38.0" layoutY="220.0" mnemonicParsing="false" selected="true" text="al señor">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="prefijo1" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="generado_editar_rd_2" layoutX="122.0" layoutY="220.0" mnemonicParsing="false" text="a la señora" toggleGroup="$prefijo1" />
+                  <JFXButton fx:id="generado_editar_editar" layoutX="221.0" layoutY="522.0" onAction="#generarEditarPermiso" prefHeight="64.0" prefWidth="375.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Editar" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </JFXButton>
+                  <ComboBox fx:id="generado_editar_tipo_permiso" layoutX="526.0" layoutY="35.0" prefHeight="27.0" prefWidth="281.0" />
+                  <TextField fx:id="generado_editar_search_permiso" layoutX="231.0" layoutY="35.0" prefHeight="27.0" prefWidth="286.0" promptText="Ingrese nombre de permiso para búsqueda" />
+                  <Separator layoutY="118.0" prefHeight="4.0" prefWidth="837.0" />
+                  <RadioButton fx:id="generado_editar_modo_permanente" layoutX="132.0" layoutY="87.0" mnemonicParsing="false" selected="true" text="Permanente">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="modo1" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="generado_editar_modo_ocasional" layoutX="260.0" layoutY="87.0" mnemonicParsing="false" text="Ocasional" toggleGroup="$modo1" />
+                  <Label layoutX="40.0" layoutY="87.0" text="Permiso es: " />
+                  <DatePicker fx:id="generado_editar_fecha_ocasional" disable="true" editable="false" layoutX="362.0" layoutY="82.0" prefHeight="27.0" prefWidth="445.0" />
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+   </center>
+   <top>
+      <MenuBar prefHeight="27.0" prefWidth="837.0" BorderPane.alignment="CENTER">
+        <menus>
+            <Menu mnemonicParsing="false" text="Permisos">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#emisionMenuAction" text="Emisión Permiso" />
+                  <MenuItem mnemonicParsing="false" onAction="#editarGeneradosMenuAction" text="Editar Permisos Generados" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="add_permiso" mnemonicParsing="false" onAction="#agregarMenuAction" text="Agregar Tipo de Permiso" />
+                  <MenuItem fx:id="edit_permiso" mnemonicParsing="false" onAction="#editarMenuAction" text="Editar Tipo de Permisos" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Ficha Inspección">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#imprimirFichaInspeccion" text="Imprimir Ficha Inspección" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Consultar Permisos">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#detalleMenuAction" text="Detalles de Permisos" />
+                  <MenuItem mnemonicParsing="false" onAction="#consultarMenuAction" text="Visualizar Permisos" />
+              </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Arqueo de Caja">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#arqueoMenuAction" text="Realizar Arqueo de Caja" />
+               </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Reporteria">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#generarPDFempresa" text="Reporte de Negocios" />
+                  <MenuItem mnemonicParsing="false" onAction="#generarPDFPermanente" text="Reporte de Permisos Permanentes" />
+                  <MenuItem mnemonicParsing="false" onAction="#generarPDFOcasional" text="Reporte de Permisos Ocasionales" />
+              </items>
+            </Menu>
+            <Menu fx:id="usuariosMenu" disable="true" mnemonicParsing="false" text="Usuarios">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#listaMenuUsuarios" text="Lista de Usuarios" />
+                <MenuItem mnemonicParsing="false" onAction="#agregarMenuUsuarios" text="Crear Usuario" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Sesión">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#cerrarSesionMenuAction" text="Cerrar Sesión" />
+               </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+</BorderPane>

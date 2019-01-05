@@ -1,0 +1,15 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 30, 2018, 3:32:54 PM
+    Author     : saulmestanza
+*/
+
+/** file: combo-size.css */
+/** Size the combo-box drop down list. */
+.combo-box-popup > .list-view {
+    -fx-pref-width: 312;
+}
