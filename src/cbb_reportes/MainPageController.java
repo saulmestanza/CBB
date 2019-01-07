@@ -5,8 +5,6 @@
  */
 package cbb_reportes;
 
-import cbb_reportes.CBB_Reportes;
-import cbb_reportes.Settings;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.mysql.jdbc.Statement;
@@ -130,14 +128,10 @@ public class MainPageController implements Initializable {
     private TextField emision_cedula;
     @FXML
     private TextField emision_razon_social;
-    @FXML 
-    private RadioButton emision_rd_1;
-    @FXML 
-    private RadioButton emision_rd_2;
     @FXML
     private TextField emision_direccion;
     @FXML
-    private TextArea emision_descripcion;
+    private TextField emision_descripcion;
     @FXML
     private ChoiceBox modo_permiso;
     @FXML
@@ -148,6 +142,14 @@ public class MainPageController implements Initializable {
     private TextField numero_deposito;
     @FXML
     private JFXButton emision_generar;
+    @FXML
+    private TextField emision_vehiculo;
+    @FXML
+    private TextField emision_capacidad;
+    @FXML
+    private TextField emision_placa;
+    @FXML
+    private CheckBox emision_extintor;
     private String _path_list_;
 
     @FXML
@@ -377,6 +379,7 @@ public class MainPageController implements Initializable {
 
     private Usuario usuario;
 
+    // FICHA INSPECCION
     @FXML
     private void imprimirFichaInspeccion(ActionEvent event) {
         String directory = generateFichaPdf();
@@ -557,28 +560,74 @@ public class MainPageController implements Initializable {
         emision_tipo_permiso.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-                /*if(emision_tipo_permiso.getItems().get((Integer) number2).equals("De Construcción")){
-                  emision_razon_social.setDisable(true);
-              }else{
-                  emision_razon_social.setDisable(false);
-              }*/
+
             }
         });
         emision_fecha.setValue(LocalDate.now());
-        
-        ObservableList permisos = FXCollections.observableArrayList();
-        permisos.add("Transporte");
-        permisos.add("Ocasional");
-        permisos.add("Construcción");
-        permisos.add("Funcionamiento");
-        modo_permiso.setItems(permisos);
+
+        ObservableList _permisos_ = FXCollections.observableArrayList();
+        _permisos_.add("Transporte");
+        _permisos_.add("Ocasional");
+        _permisos_.add("Construcción");
+        _permisos_.add("Funcionamiento");
+        modo_permiso.setItems(_permisos_);
+        fecha_ocasional.setDisable(true);
+        fecha_ocasional.setValue(null);
+        emision_descripcion.setVisible(false);
+        emision_vehiculo.setVisible(false);
+        emision_placa.setVisible(false);
+        emision_capacidad.setVisible(false);
+        emision_extintor.setVisible(false);
         modo_permiso.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-            if (newValue.equals("Ocasional")) {
-                fecha_ocasional.setDisable(false);
-                fecha_ocasional.setValue(LocalDate.now());
-            } else {
-                fecha_ocasional.setDisable(true);
-                fecha_ocasional.setValue(null);
+            if (newValue != null) {
+                switch (newValue.toString()) {
+                    case "Transporte":
+                        fecha_ocasional.setDisable(false);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Para que transporte");
+                        emision_vehiculo.setVisible(true);
+                        emision_placa.setVisible(true);
+                        emision_capacidad.setVisible(true);
+                        emision_extintor.setVisible(true);
+                        break;
+                    case "Ocasional":
+                        fecha_ocasional.setDisable(false);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(false);
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        break;
+                    case "Construcción":
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Construcción de");
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        break;
+                    case "Funcionamiento":
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(false);
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        break;
+                    default:
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(false);
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                }
             }
         });
     }
@@ -586,124 +635,147 @@ public class MainPageController implements Initializable {
     @FXML
     private void emisionGenerarPermiso(ActionEvent event) {
         _path_list_ = "";
-        if (emisionIsEmpty()) {
-            showDialog("Error", "Debe de llenar todos los datos para poder generar un permiso", AlertType.ERROR);
-        } else if (emision_cedula.getText().length() != 10) {
-            showDialog("Error", "Ingrese un número de cédula válido", AlertType.ERROR);
-        } else {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-            Calendar c = Calendar.getInstance();
-            String expiration_date = "";
-            if (modo_permiso.getSelectionModel().getSelectedIndex() == 1) {
-                try {
-                    sdf = new SimpleDateFormat("yyyy-mm-dd");
-                    c.setTime(sdf.parse(fecha_ocasional.getValue().toString()));
-                    expiration_date = sdf.format(c.getTime());
-                } catch (ParseException ex) {
-                    Logger.getLogger(MainPageController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            } else if (modo_permiso.getSelectionModel().getSelectedIndex() == 0) {
-                try {
-                    c.setTime(sdf.parse(emision_fecha.getValue().toString()));
-                    expiration_date = sdf.format(c.getTime()) + "-12-31";
-                } catch (ParseException ex) {
-                    Logger.getLogger(MainPageController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            MysqlConnect mysqlConnect = new MysqlConnect();
-            Clientes cliente = new Clientes();
-            String sql = "SELECT * FROM clientes WHERE cedula = '" + emision_cedula.getText() + "';";
-            ResultSet rs;
-            try {
-                Statement st = (Statement) mysqlConnect.connect().createStatement();
-                rs = st.executeQuery(sql);
-                if (rs.next()) {
-                    cliente.setId(rs.getInt("id"));
-                    cliente.setNombre(rs.getString("nombre"));
-                    cliente.setApellido(rs.getString("apellido"));
-                    cliente.setCedula(rs.getString("cedula"));
-                    cliente.setRazon_social(rs.getString("razon_social"));
-                    cliente.setDireccion(rs.getString("direccion"));
-                    cliente.setIs_active(rs.getBoolean("is_active"));
-                    cliente.setIs_closed(rs.getBoolean("is_closed"));
-                } else {
-                    String query = "INSERT INTO clientes(nombre, apellido, cedula, razon_social, direccion)"
-                            + " values (?,?,?,?,?)";
-                    PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                    preparedStmt.setString(1, emision_nombre.getText());
-                    preparedStmt.setString(2, emision_apellido.getText());
-                    preparedStmt.setString(3, emision_cedula.getText());
-                    preparedStmt.setString(4, emision_razon_social.getText());
-                    preparedStmt.setString(5, emision_direccion.getText());
-                    preparedStmt.execute();
-                    sql = "SELECT * FROM clientes WHERE cedula = '" + emision_cedula.getText() + "';";
+        if (modo_permiso.getSelectionModel().getSelectedItem() != null) {
+            if (emisionIsEmpty()) {
+                showDialog("Error", "Debe de llenar todos los datos para poder generar un permiso", AlertType.ERROR);
+            } else if (emision_cedula.getText().length() != 10) {
+                showDialog("Error", "Ingrese un número de cédula válido", AlertType.ERROR);
+            } else {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+                Calendar c = Calendar.getInstance();
+                String expiration_date = "";
+                if (fecha_ocasional.getValue() == null) {
                     try {
-                        st = (Statement) mysqlConnect.connect().createStatement();
-                        rs = st.executeQuery(sql);
-                        while (rs.next()) {
-                            cliente.setId(rs.getInt("id"));
-                            cliente.setNombre(rs.getString("nombre"));
-                            cliente.setApellido(rs.getString("apellido"));
-                            cliente.setCedula(rs.getString("cedula"));
-                            cliente.setRazon_social(rs.getString("razon_social"));
-                            cliente.setDireccion(rs.getString("direccion"));
-                            cliente.setIs_active(rs.getBoolean("is_active"));
-                            cliente.setIs_closed(rs.getBoolean("is_closed"));
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        c.setTime(sdf.parse(emision_fecha.getValue().toString()));
+                        expiration_date = sdf.format(c.getTime()) + "-12-31";
+                    } catch (ParseException ex) {
+                        Logger.getLogger(MainPageController.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                } else {
+                    try {
+                        sdf = new SimpleDateFormat("yyyy-mm-dd");
+                        c.setTime(sdf.parse(fecha_ocasional.getValue().toString()));
+                        expiration_date = sdf.format(c.getTime());
+                    } catch (ParseException ex) {
+                        Logger.getLogger(MainPageController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+                MysqlConnect mysqlConnect = new MysqlConnect();
+                Clientes cliente = new Clientes();
+                String sql = "SELECT * FROM clientes WHERE cedula = '" + emision_cedula.getText() + "';";
+                ResultSet rs;
+                try {
+                    Statement st = (Statement) mysqlConnect.connect().createStatement();
+                    rs = st.executeQuery(sql);
+                    if (rs.next()) {
+                        cliente.setId(rs.getInt("id"));
+                        cliente.setNombre(rs.getString("nombre"));
+                        cliente.setApellido(rs.getString("apellido"));
+                        cliente.setCedula(rs.getString("cedula"));
+                        cliente.setRazon_social(rs.getString("razon_social"));
+                        cliente.setDireccion(rs.getString("direccion"));
+                        cliente.setIs_active(rs.getBoolean("is_active"));
+                        cliente.setIs_closed(rs.getBoolean("is_closed"));
+                    } else {
+                        String query = "INSERT INTO clientes(nombre, apellido, cedula, razon_social, direccion)"
+                                + " values (?,?,?,?,?)";
+                        PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
+                        preparedStmt.setString(1, emision_nombre.getText());
+                        preparedStmt.setString(2, emision_apellido.getText());
+                        preparedStmt.setString(3, emision_cedula.getText());
+                        preparedStmt.setString(4, emision_razon_social.getText());
+                        preparedStmt.setString(5, emision_direccion.getText());
+                        preparedStmt.execute();
+                        sql = "SELECT * FROM clientes WHERE cedula = '" + emision_cedula.getText() + "';";
+                        try {
+                            st = (Statement) mysqlConnect.connect().createStatement();
+                            rs = st.executeQuery(sql);
+                            while (rs.next()) {
+                                cliente.setId(rs.getInt("id"));
+                                cliente.setNombre(rs.getString("nombre"));
+                                cliente.setApellido(rs.getString("apellido"));
+                                cliente.setCedula(rs.getString("cedula"));
+                                cliente.setRazon_social(rs.getString("razon_social"));
+                                cliente.setDireccion(rs.getString("direccion"));
+                                cliente.setIs_active(rs.getBoolean("is_active"));
+                                cliente.setIs_closed(rs.getBoolean("is_closed"));
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                try {
+                    String query = "INSERT INTO permisos("
+                            + "descripcion, fecha_emision, fecha_expiracion, "
+                            + "modo_permiso, id_usuario, id_tipo_permiso, "
+                            + "id_clientes, numero_deposito, fecha_documento,"
+                            + "vehiculo_marca, extintor, capacidad, placa"
+                            + ")"
+                            + " values ("
+                            + "?,?,?,"
+                            + "?,?,?,"
+                            + "?,?,?,"
+                            + "?,?,?,?"
+                            + ")";
+                    PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
+                    preparedStmt.setString(1, emision_descripcion.getText());
+                    preparedStmt.setString(2, emision_fecha.getValue().toString());
+                    preparedStmt.setString(3, expiration_date);
+                    preparedStmt.setString(4, modo_permiso.getSelectionModel().getSelectedItem().toString());
+                    preparedStmt.setInt(5, usuario.getId());
+                    int position = emision_tipo_permiso.getSelectionModel().getSelectedIndex();
+                    preparedStmt.setInt(6, tps.get(position).getId());
+                    preparedStmt.setInt(7, cliente.getId());
+                    preparedStmt.setString(8, numero_deposito.getText());
+                    preparedStmt.setString(9, fecha_documento.getValue().toString());
+                    preparedStmt.setString(10, emision_vehiculo.getText());
+                    preparedStmt.setBoolean(11, emision_extintor.isSelected());
+                    preparedStmt.setString(12, emision_capacidad.getText());
+                    preparedStmt.setString(13, emision_placa.getText());
+                    preparedStmt.execute();
+                    emision_nombre.setText("");
+                    emision_apellido.setText("");
+                    emision_cedula.setText("");
+                    emision_razon_social.setText("");
+                    emision_direccion.setText("");
+                    emision_descripcion.setText("");
+                    fecha_documento.getEditor().setText("");
+                    numero_deposito.setText("");
+                    emision_vehiculo.setText("");
+                    emision_capacidad.setText("");
+                    emision_placa.setText("");
+                    emision_extintor.setSelected(false);
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Cuerpo Bomberos de Balzar");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Espere unos momentos....");
+                    alert.show();
+                    CompletableFuture.supplyAsync(() -> {
+                        getPermiso();
+                        return null;
+                    }).thenRun(() -> {
+                        goToPrintDialog(_path_list_);
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
+                } finally {
+                    mysqlConnect.disconnect();
+                }
             }
-            try {
-                String query = "INSERT INTO permisos(descripcion, fecha_emision, fecha_expiracion, modo_permiso, id_usuario, id_tipo_permiso, id_clientes, numero_deposito, fecha_documento)"
-                        + " values (?,?,?,?,?,?,?,?,?)";
-                PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                preparedStmt.setString(1, emision_descripcion.getText());
-                preparedStmt.setString(2, emision_fecha.getValue().toString());
-                preparedStmt.setString(3, expiration_date);
-                preparedStmt.setString(4, modo_permiso.getSelectionModel().getSelectedItem().toString());
-                preparedStmt.setInt(5, usuario.getId());
-                int position = emision_tipo_permiso.getSelectionModel().getSelectedIndex();
-                preparedStmt.setInt(6, tps.get(position).getId());
-                preparedStmt.setInt(7, cliente.getId());
-                preparedStmt.setString(8, numero_deposito.getText());
-                preparedStmt.setString(9, fecha_documento.getValue().toString());
-                preparedStmt.execute();
-                emision_nombre.setText("");
-                emision_apellido.setText("");
-                emision_cedula.setText("");
-                emision_razon_social.setText("");
-                emision_direccion.setText("");
-                emision_descripcion.setText("para ");
-                fecha_documento.getEditor().setText("");
-                numero_deposito.setText("");
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("Cuerpo Bomberos de Balzar");
-                alert.setHeaderText(null);
-                alert.setContentText("Espere unos momentos....");
-                alert.show();
-                CompletableFuture.supplyAsync(() -> {
-                    getPermiso();
-                    return null;
-                }).thenRun(() -> {
-                    goToPrintDialog(_path_list_);
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
-            } finally {
-                mysqlConnect.disconnect();
-            }
+        } else {
+            showDialog("Error", "Debe de elegir un tipo de permiso.", AlertType.ERROR);
         }
     }
 
     private boolean emisionIsEmpty() {
         return emision_nombre.getText().isEmpty() || emision_apellido.getText().isEmpty()
                 || emision_cedula.getText().isEmpty()
-                || emision_direccion.getText().isEmpty() || emision_descripcion.getText().isEmpty()
+                || emision_direccion.getText().isEmpty()
                 || emision_fecha.getEditor().getText().isEmpty() || fecha_documento.getEditor().getText().isEmpty()
                 || numero_deposito.getText().isEmpty();
     }
@@ -753,67 +825,25 @@ public class MainPageController implements Initializable {
     }
 
     private void generatePDF(Permiso permiso) {
-        String prefijo = "";
-        if (emision_rd_1.isSelected()) {
-            prefijo = emision_rd_1.getText();
-        } else {
-            prefijo = emision_rd_2.getText();
-        }
         File _file_ = null;
         try {
-            Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD);
-            Font normalboldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);
-            Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL);
-            Font normalredFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.RED);
-
             String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
-            String directoryName = String.format("%s/pdfs/", _directory_);
+            String directoryName = String.format("%s/pdfs/%s/", _directory_, permiso.getCliente().getApellido());
             File directory = new File(directoryName);
             if (!directory.exists()) {
                 directory.mkdirs();
             }
             /**
              * ************* PERMISO **************
-             */
+            **/
+
             _file_ = new File(String.format("%spermiso_%s.pdf", directoryName, permiso.getFullCode()));
             OutputStream file = new FileOutputStream(_file_);
             Document document = new Document();
             PdfWriter writer = PdfWriter.getInstance(document, file);
             document.open();
             PdfContentByte canvas = writer.getDirectContentUnder();
-            Image image;
-            document.setPageSize(PageSize.A4);
-            document.setMargins(80, 80, 150, 100);
-            document.open();
-            generatePermisoPDF(document, permiso, boldFont, normalFont, normalboldFont, prefijo);
-
-            /**
-             * ************* PERMISO COPIA **************
-             */
-            document.setPageSize(PageSize.A4);
-            document.setMargins(80, 80, 150, 100);
-            document.newPage();
-            canvas = writer.getDirectContentUnder();
-            image = Image.getInstance(getClass().getClassLoader().getResource("img/copia.png"));
-            image.scaleAbsolute(PageSize.A4);
-            image.setAbsolutePosition(0, 0);
-            canvas.addImage(image);
-            generatePermisoPDF(document, permiso, boldFont, normalFont, normalboldFont, prefijo);
-
-            document.close();
-            _path_list_ = _file_.getAbsolutePath();
-            file.close();
-            /**
-             * ************* FUNCIONAMIENTO **************
-             */
-
-            _file_ = new File(String.format("%sfuncionamiento_%s.pdf", directoryName, permiso.getFullCode()));
-            file = new FileOutputStream(_file_);
-            document = new Document();
-            writer = PdfWriter.getInstance(document, file);
-            document.open();
-            canvas = writer.getDirectContentUnder();
-            image = null;
+            Image image = null;
 
             document.setPageSize(PageSize.A4);
             document.setMargins(40, 40, 66, 10);
@@ -826,12 +856,23 @@ public class MainPageController implements Initializable {
             image.setAbsolutePosition(0, 0);
             canvas.addImage(image);
 
+            /**
+             * ************* PERMISO COPIA **************
+            **/
+            
             generateFuncionamientoPDFCOPIA(document, writer, permiso);
+            
             /**
              * ************* CIERRE **************
-             */
+            **/
+            
             document.close();
-            _path_list_ = _path_list_ + "::" + _file_.getAbsolutePath();
+            
+            /**
+             * ************* GUARDAR EN BD **************
+            **/
+            
+            _path_list_ = _file_.getAbsolutePath();
             file.close();
             System.out.println(_path_list_);
             MysqlConnect mysqlConnect = new MysqlConnect();
@@ -852,98 +893,7 @@ public class MainPageController implements Initializable {
 
         }
     }
-
-    private void generatePermisoPDF(Document document, Permiso permiso, Font boldFont, Font normalFont, Font normalboldFont, String prefijo) {
-        try {
-            Phrase _p1_ = new Phrase();
-            Paragraph p = new Paragraph("", boldFont);
-            p.setAlignment(Element.ALIGN_CENTER);
-            p.add(String.format("PERMISO DE FUNCIONAMIENTO %s", permiso.getFullCode()));
-            document.add(p);
-            p = new Paragraph("", normalFont);
-            document.add(Chunk.NEWLINE);
-            p.clear();
-            p.setAlignment(Element.ALIGN_JUSTIFIED);
-            _p1_.setFont(normalFont);
-            _p1_.add("La Ley de Defensa contra incendios en su articulo 35 dentro de las Facultades especiales autoriza a los primeros jefes de los cuerpos de bomberos del país");
-            _p1_.setFont(normalboldFont);
-            _p1_.add(" conceder permisos y cobrar tasas de servicios,");
-            _p1_.setFont(normalFont);
-            _p1_.add(" así como ordenar con los debidos fundamentos clausura de edificios y locales comerciales en general que no adopten las medidas necesarias de prevención de incendios.");
-            p.add(_p1_);
-            document.add(p);
-            p.clear();
-            document.add(Chunk.NEWLINE);
-            if (!permiso.getPermiso().getTipo_permiso().equals("De Construcción")) {
-                p.add(String.format(
-                        "Esta jefatura extiende el permiso %s %s %s con CI %s %s denominado %s Ubicado en %s del Cantón Balzar.",
-                        permiso.getPermiso().getTipo_permiso().toUpperCase(new Locale("es", "ES")),
-                        prefijo,
-                        permiso.getFullName().toUpperCase(new Locale("es", "ES")),
-                        permiso.getCliente().getCedula(),
-                        permiso.getDescripcion(),
-                        permiso.getCliente().getRazon_social(),
-                        permiso.getCliente().getDireccion()
-                ));
-            } else {
-                p.add(String.format(
-                        "Esta jefatura extiende el permiso %s %s %s con CI %s %s Ubicado en %s del Cantón Balzar.",
-                        permiso.getPermiso().getTipo_permiso().toUpperCase(new Locale("es", "ES")),
-                        prefijo,
-                        permiso.getFullName().toUpperCase(new Locale("es", "ES")),
-                        permiso.getCliente().getCedula(),
-                        permiso.getDescripcion(),
-                        permiso.getCliente().getDireccion()
-                ));
-            }
-            document.add(p);
-            p.clear();
-            document.add(Chunk.NEWLINE);
-            _p1_.clear();
-            _p1_.setFont(normalboldFont);
-            _p1_.add("Articulo. 349");
-            _p1_.setFont(normalFont);
-            _p1_.add(" del reglamento de prevención mitigación y protección contra incendios.");
-            p.add(_p1_);
-            document.add(p);
-            p.clear();
-            p.add(String.format("Valido hasta el %s", permiso.getFullFechaExpiracion()));
-            document.add(p);
-            p.clear();
-            document.add(Chunk.NEWLINE);
-            _p1_.clear();
-            _p1_.setFont(normalboldFont);
-            _p1_.add("Observación.");
-            _p1_.setFont(normalFont);
-            _p1_.add(" La concesión de este certificado no asegura que otra institución pública otorgue los permisos necesarios para desarrollar dicha actividad.");
-            p.add(_p1_);
-            document.add(p);
-            p.clear();
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
-            p = new Paragraph("", normalboldFont);
-            p.setAlignment(Element.ALIGN_CENTER);
-            p.add("Atentamente,");
-            document.add(p);
-            p = new Paragraph("", normalFont);
-            p.setAlignment(Element.ALIGN_CENTER);
-            p.clear();
-            p.add("ABNEGACION Y DISCIPLINA");
-            document.add(p);
-            p.clear();
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
-            p.add("Sra. Maria Arriaga Arriaga");
-            document.add(p);
-            p.clear();
-            p.add("Tesorera del Cuerpo de Bomberos");
-            document.add(p);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
+    
     private void generateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font smallFont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
@@ -3115,7 +3065,6 @@ public class MainPageController implements Initializable {
     /**
      * Initializes the controller class.
      */
-
     public MainPageController() {
         tps = new ArrayList<>();
         permisos = new ArrayList<>();

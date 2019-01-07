@@ -146,14 +146,6 @@ public class Permiso {
     public void setFecha_documento(String fecha_documento) {
         this.fecha_documento = fecha_documento;
     }
-
-    public Clientes getClientes() {
-        return clientes;
-    }
-
-    public void setClientes(Clientes clientes) {
-        this.clientes = clientes;
-    }
     
     public String getFullName(){
         return clientes.getFullName();

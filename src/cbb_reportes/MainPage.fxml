@@ -214,21 +214,13 @@
                <children>
                   <Label layoutX="40.0" layoutY="40.0" text="Seleccionar tipo de permiso" />
                   <Label alignment="CENTER" layoutX="40.0" layoutY="122.0" prefHeight="27.0" prefWidth="764.0" text="Ingrese la siguiente información para poder generar el permiso." />
-                  <TextField id="emision_nombre" fx:id="emision_nombre" layoutX="230.0" layoutY="215.0" prefHeight="27.0" prefWidth="280.0" promptText="Nombres" />
-                  <TextField id="emision_apellido" fx:id="emision_apellido" layoutX="524.0" layoutY="215.0" prefHeight="27.0" prefWidth="280.0" promptText="Apellidos" />
-                  <TextField id="emision_cedula" fx:id="emision_cedula" layoutX="40.0" layoutY="257.0" prefHeight="27.0" prefWidth="249.0" promptText="Cédula" />
-                  <TextField id="emision_razon_social" fx:id="emision_razon_social" layoutX="40.0" layoutY="301.0" prefHeight="27.0" prefWidth="764.0" promptText="Razón Social" />
-                  <TextField id="emision_direccion" fx:id="emision_direccion" layoutX="40.0" layoutY="344.0" prefHeight="27.0" prefWidth="764.0" promptText="Dirección" />
-                  <TextArea id="emision_descripcion" fx:id="emision_descripcion" layoutX="40.0" layoutY="387.0" prefHeight="117.0" prefWidth="764.0" promptText="Descripcion" text="para " />
-                  <Label layoutX="40.0" layoutY="171.0" text="Fecha" />
-                  <DatePicker fx:id="emision_fecha" editable="false" layoutX="91.0" layoutY="166.0" prefHeight="27.0" prefWidth="711.0" />
+                  <TextField id="emision_nombre" fx:id="emision_nombre" layoutX="40.0" layoutY="215.0" prefHeight="27.0" prefWidth="336.0" promptText="Nombres" />
+                  <TextField id="emision_apellido" fx:id="emision_apellido" layoutX="383.0" layoutY="215.0" prefHeight="27.0" prefWidth="421.0" promptText="Apellidos" />
+                  <TextField id="emision_cedula" fx:id="emision_cedula" layoutX="40.0" layoutY="304.0" prefHeight="27.0" prefWidth="764.0" promptText="Cédula/RUC" />
+                  <TextField id="emision_razon_social" fx:id="emision_razon_social" layoutX="40.0" layoutY="351.0" prefHeight="27.0" prefWidth="764.0" promptText="Razón Social" />
+                  <TextField id="emision_direccion" fx:id="emision_direccion" layoutX="40.0" layoutY="398.0" prefHeight="27.0" prefWidth="764.0" promptText="Dirección" />
+                  <DatePicker fx:id="emision_fecha" editable="false" layoutX="40.0" layoutY="257.0" prefHeight="27.0" prefWidth="764.0" promptText="Fecha Emisión" />
                   <Separator layoutY="151.0" prefHeight="4.0" prefWidth="837.0" />
-                  <RadioButton fx:id="emision_rd_1" layoutX="38.0" layoutY="220.0" mnemonicParsing="false" selected="true" text="al señor">
-                     <toggleGroup>
-                        <ToggleGroup fx:id="prefijo" />
-                     </toggleGroup>
-                  </RadioButton>
-                  <RadioButton fx:id="emision_rd_2" layoutX="122.0" layoutY="220.0" mnemonicParsing="false" text="a la señora" toggleGroup="$prefijo" />
                   <JFXButton fx:id="emision_generar" layoutX="221.0" layoutY="522.0" onAction="#emisionGenerarPermiso" prefHeight="64.0" prefWidth="375.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Generar" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="16.0" />
@@ -238,10 +230,15 @@
                   <TextField fx:id="emision_search_permiso" layoutX="231.0" layoutY="35.0" prefHeight="27.0" prefWidth="286.0" promptText="Ingrese nombre de permiso para búsqueda" />
                   <Separator layoutY="118.0" prefHeight="4.0" prefWidth="837.0" />
                   <Label layoutX="40.0" layoutY="87.0" text="Permiso es: " />
-                  <DatePicker fx:id="fecha_ocasional" disable="true" editable="false" layoutX="362.0" layoutY="82.0" prefHeight="27.0" prefWidth="445.0" />
-                  <TextField id="emision_cedula" fx:id="numero_deposito" layoutX="298.0" layoutY="257.0" prefHeight="27.0" prefWidth="254.0" promptText="Número Depósito" />
-                  <DatePicker fx:id="fecha_documento" editable="false" layoutX="560.0" layoutY="257.0" prefHeight="27.0" prefWidth="243.0" promptText="Fecha del documento de pago" showWeekNumbers="true" />
+                  <DatePicker fx:id="fecha_ocasional" disable="true" editable="false" layoutX="362.0" layoutY="82.0" prefHeight="27.0" prefWidth="445.0" promptText="Válido Hasta" />
+                  <TextField id="emision_cedula" fx:id="numero_deposito" layoutX="40.0" layoutY="166.0" prefHeight="27.0" prefWidth="407.0" promptText="Número Depósito" />
+                  <DatePicker fx:id="fecha_documento" editable="false" layoutX="456.0" layoutY="166.0" prefHeight="27.0" prefWidth="347.0" promptText="Fecha del documento de pago" showWeekNumbers="true" />
                   <ChoiceBox fx:id="modo_permiso" layoutX="125.0" layoutY="82.0" prefHeight="27.0" prefWidth="227.0" />
+                  <TextField fx:id="emision_vehiculo" layoutX="40.0" layoutY="483.0" prefWidth="200.0" promptText="Vehículo Marca" />
+                  <TextField fx:id="emision_capacidad" layoutX="258.0" layoutY="483.0" prefWidth="200.0" promptText="Capacidad" />
+                  <TextField fx:id="emision_placa" layoutX="473.0" layoutY="483.0" prefWidth="200.0" promptText="Placa" />
+                  <CheckBox fx:id="emision_extintor" layoutX="699.0" layoutY="483.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="104.0" text="Extintor" />
+                  <TextField fx:id="emision_descripcion" layoutX="40.0" layoutY="443.0" prefHeight="27.0" prefWidth="764.0" promptText="Descripción" />
                </children>
             </Pane>
             <Pane fx:id="pane_lista_usuarios" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
@@ -372,7 +369,7 @@
                   <MenuItem fx:id="edit_permiso" mnemonicParsing="false" onAction="#editarMenuAction" text="Editar Tipo de Permisos" />
               </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Ficha Inspección">
+            <Menu mnemonicParsing="false" text="Ficha Inspección" visible="false">
               <items>
                   <MenuItem mnemonicParsing="false" onAction="#imprimirFichaInspeccion" text="Imprimir Ficha Inspección" />
               </items>
