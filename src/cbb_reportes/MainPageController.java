@@ -78,6 +78,8 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -379,6 +381,392 @@ public class MainPageController implements Initializable {
 
     private Usuario usuario;
 
+    @FXML
+    private Pane pane_liquidacion;
+    @FXML
+    private TableView<Clientes> liquidar_tv;
+    @FXML
+    private TableColumn<Clientes, String> liquidar_nombre;
+    @FXML
+    private TableColumn<Clientes, String> liquidar_razon_social;
+    @FXML
+    private TableColumn<Clientes, String> liquidar_ruc;
+    @FXML
+    private TableColumn<Clientes, String> liquidar_liquidar;
+    @FXML
+    private TextField liquidar_cedula;
+
+    // LIQUIDAR
+    @FXML
+    private void liquidarMenuAction(ActionEvent event) {
+        setVisiblePane(false, false, false, false, false, false, false, false, false, false, true);
+        ArrayList<Clientes> clientesList = new ArrayList<>();
+        MysqlConnect mysqlConnect = new MysqlConnect();
+        try {
+            String sql = "SELECT * FROM clientes WHERE is_active = true;";
+            ResultSet rs;
+            try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
+                rs = st.executeQuery(sql);
+                while (rs.next()) {
+                    Clientes clientes = new Clientes();
+                    clientes.setId(rs.getInt("id"));
+                    clientes.setNombre(rs.getString("nombre"));
+                    clientes.setApellido(rs.getString("apellido"));
+                    clientes.setCedula(rs.getString("cedula"));
+                    clientes.setDireccion(rs.getString("direccion"));
+                    clientes.setRazon_social(rs.getString("razon_social"));
+                    clientesList.add(clientes);
+                }
+            }
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            mysqlConnect.disconnect();
+        }
+        liquidar_nombre.setCellValueFactory(new PropertyValueFactory<>("FullName"));
+        liquidar_razon_social.setCellValueFactory(new PropertyValueFactory<>("razon_social"));
+        liquidar_ruc.setCellValueFactory(new PropertyValueFactory<>("cedula"));
+        liquidar_liquidar.setCellValueFactory(new PropertyValueFactory<>("liquidar"));
+
+        liquidar_tv.getItems().setAll(clientesList);
+        liquidar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                try {
+                    if (liquidar_tv.getSelectionModel().getSelectedItem() != null) {
+                        TableViewSelectionModel selectionModel = liquidar_tv.getSelectionModel();
+                        ObservableList selectedCells = selectionModel.getSelectedCells();
+                        TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                        Object val = tablePosition.getTableColumn().getCellData(newValue);
+                        if (val.equals("Liquidar")) {
+                            Clientes cliente = liquidar_tv.getSelectionModel().getSelectedItem();
+                            Alert alert = new Alert(AlertType.CONFIRMATION);
+                            alert.setTitle("Cuerpo Bomberos de Balzar");
+                            alert.setHeaderText(null);
+                            alert.setContentText(String.format("Está seguro que desea liquidar el usuario %s?", cliente.getFullName()));
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.get() == ButtonType.OK) {
+                                getLiquidacion(cliente, clientesList);
+                            } else {
+                                alert.close();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void getLiquidacion(Clientes cliente, ArrayList<Clientes> clientesList) {
+        MysqlConnect mysqlConnect = new MysqlConnect();
+        try {
+            String sql = "SELECT * FROM permisos WHERE permisos.id_clientes = " + cliente.getId() + " ORDER BY id DESC LIMIT 1;";
+            ResultSet rs;
+            try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
+                rs = st.executeQuery(sql);
+                if (!rs.isBeforeFirst()) {
+                    liquidarPersona(cliente, clientesList);
+                }
+                while (rs.next()) {
+                    String split[] = rs.getString("fecha_expiracion").split("-");
+                    int fecha_expiracion = Integer.parseInt(split[0]);
+                    int year = Calendar.getInstance().get(Calendar.YEAR);
+                    if (fecha_expiracion < year) {
+                        Alert alert = new Alert(AlertType.CONFIRMATION);
+                        alert.setTitle("Cuerpo Bomberos de Balzar");
+                        alert.setHeaderText(null);
+                        alert.setContentText(String.format("El cliente %s tiene pendiente de pagos", cliente.getFullName()));
+                    } else {
+                        liquidarPersona(cliente, clientesList);
+                    }
+                }
+            }
+            rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            mysqlConnect.disconnect();
+        }
+    }
+
+    private void liquidarPersona(Clientes cliente, ArrayList<Clientes> clientesList) {
+        MysqlConnect mysqlConnect = new MysqlConnect();
+        try {
+            String query = "UPDATE clientes SET is_active = false WHERE id = ?";
+            PreparedStatement pstmt = null;
+            pstmt = mysqlConnect.connect().prepareStatement(query);
+            pstmt.setString(1, String.valueOf(cliente.getId()));
+            pstmt.executeUpdate();
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Cuerpo Bomberos de Balzar");
+            alert.setHeaderText(null);
+            alert.setContentText(String.format("El cliente %s ha sido liquidado.", cliente.getFullName()));
+            clientesList = new ArrayList();
+            String sql = "SELECT * FROM clientes WHERE is_active = true;";
+            ResultSet rs;
+            try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
+                rs = st.executeQuery(sql);
+                while (rs.next()) {
+                    Clientes clientes = new Clientes();
+                    clientes.setId(rs.getInt("id"));
+                    clientes.setNombre(rs.getString("nombre"));
+                    clientes.setApellido(rs.getString("apellido"));
+                    clientes.setCedula(rs.getString("cedula"));
+                    clientes.setDireccion(rs.getString("direccion"));
+                    clientes.setRazon_social(rs.getString("razon_social"));
+                    clientesList.add(clientes);
+                }
+            }
+            rs.close();
+            liquidar_tv.refresh();
+            liquidar_tv.getItems().clear();
+            liquidar_tv.getItems().addAll(clientesList);
+            empezarLiquidarPDF(cliente);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            mysqlConnect.disconnect();
+        }
+    }
+
+    @FXML
+    private void buscarUsuarioEvent(ActionEvent event) {
+        String _parametro_ = liquidar_cedula.getText();
+        ArrayList<Clientes> clientesList = new ArrayList<>();
+        MysqlConnect mysqlConnect = new MysqlConnect();
+        try {
+            String sql = "SELECT * FROM clientes WHERE is_active = true AND cedula LIKE '%" + _parametro_ + "%';";
+            ResultSet rs;
+            try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
+                rs = st.executeQuery(sql);
+                while (rs.next()) {
+                    Clientes clientes = new Clientes();
+                    clientes.setId(rs.getInt("id"));
+                    clientes.setNombre(rs.getString("nombre"));
+                    clientes.setApellido(rs.getString("apellido"));
+                    clientes.setCedula(rs.getString("cedula"));
+                    clientes.setDireccion(rs.getString("direccion"));
+                    clientes.setRazon_social(rs.getString("razon_social"));
+                    clientesList.add(clientes);
+                }
+            }
+            rs.close();
+            liquidar_tv.refresh();
+            liquidar_tv.getItems().clear();
+            liquidar_tv.getItems().addAll(clientesList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            mysqlConnect.disconnect();
+        }
+    }
+
+    private void empezarLiquidarPDF(Clientes cliente) {
+        File _file_ = null;
+        try {
+            String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
+            String directoryName = String.format("%s/pdfs/%s/", _directory_, cliente.getApellido());
+            File directory = new File(directoryName);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            /**
+             * ************* PERMISO **************
+             *
+             */
+
+            _file_ = new File(String.format("%sliquidacion_%s.pdf", directoryName, cliente.getApellido()));
+            OutputStream file = new FileOutputStream(_file_);
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.getInstance(document, file);
+            document.open();
+            PdfContentByte canvas = writer.getDirectContentUnder();
+            Image image = null;
+
+            document.setPageSize(PageSize.A4);
+            document.setMargins(40, 40, 73, 10);
+            document.newPage();
+            generateLiquidarPDF(document, writer, cliente);
+            canvas = writer.getDirectContentUnder();
+            image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_liquidacion.png"));
+            image.scaleAbsolute(PageSize.A4);
+            image.setAbsolutePosition(0, 0);
+            canvas.addImage(image);
+            /**
+             * ************* CIERRE **************
+             *
+             */
+            document.close();
+            file.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
+
+    private void generateLiquidarPDF(Document document, PdfWriter writer, Clientes cliente) {
+        try {
+            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+
+            Phrase _p1_ = new Phrase();
+            Paragraph p1 = new Paragraph();
+
+            _p1_.setFont(boldFont);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            p1.add(_p1_);
+            document.add(p1);
+
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            DateFormat dateFormat = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
+            Date date = new Date();
+            _p1_.add(String.format("%s", dateFormat.format(date)));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("    %s", cliente.getFullName()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", cliente.getDireccion()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            // COPIA
+            
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            
+            p1.clear();
+            p1.setSpacingBefore(14f);
+            _p1_.clear();
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            p1.add(_p1_);
+            document.add(p1);
+
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", dateFormat.format(date)));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("    %s", cliente.getFullName()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", cliente.getDireccion()));
+            p1.add(_p1_);
+            document.add(p1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // FICHA INSPECCION
     @FXML
     private void imprimirFichaInspeccion(ActionEvent event) {
@@ -451,7 +839,7 @@ public class MainPageController implements Initializable {
     //EMISION PERMISOS
     @FXML
     private void emisionMenuAction(ActionEvent event) {
-        setVisiblePane(true, false, false, false, false, false, false, false, false, false);
+        setVisiblePane(true, false, false, false, false, false, false, false, false, false, false);
         emision_cedula.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             if (!newValue.matches("\\d*")) {
                 emision_cedula.setText(newValue.replaceAll("[^\\d]", ""));
@@ -1099,7 +1487,6 @@ public class MainPageController implements Initializable {
         }
     }
 
-    
     private void copiagenerateTransportePDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
@@ -1251,7 +1638,6 @@ public class MainPageController implements Initializable {
         }
     }
 
-    
     private void generateOcasionalPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
@@ -1296,13 +1682,13 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format(" %s", permiso.getFullFechaEmision()));
-            
+
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add("00:00");
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(18f);
             _p1_.clear();
@@ -1322,7 +1708,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("$ %s", permiso.getPermiso().getPrecio()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1335,7 +1721,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getFullName()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -1348,7 +1734,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getPrecioEnLetras()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1361,7 +1747,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getPermiso().getTipo_permiso()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -1374,7 +1760,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1391,8 +1777,7 @@ public class MainPageController implements Initializable {
             e.printStackTrace();
         }
     }
-    
-    
+
     private void copiagenerateOcasionalPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
@@ -1400,7 +1785,7 @@ public class MainPageController implements Initializable {
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
-            
+
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
@@ -1448,13 +1833,13 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format(" %s", permiso.getFullFechaEmision()));
-            
+
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add("00:00");
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(18f);
             _p1_.clear();
@@ -1474,7 +1859,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("$ %s", permiso.getPermiso().getPrecio()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1487,7 +1872,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getFullName()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -1500,7 +1885,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getPrecioEnLetras()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1513,7 +1898,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getPermiso().getTipo_permiso()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -1526,7 +1911,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1544,7 +1929,6 @@ public class MainPageController implements Initializable {
         }
     }
 
-    
     private void generateConstruccionPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
@@ -1589,13 +1973,13 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format(" %s", permiso.getFullFechaEmision()));
-            
+
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add("00:00");
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(18f);
             _p1_.clear();
@@ -1615,7 +1999,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("$ %s", permiso.getPermiso().getPrecio()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1628,7 +2012,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getFullName()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -1641,7 +2025,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getPrecioEnLetras()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1654,7 +2038,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getDescripcion()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -1667,7 +2051,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1684,8 +2068,7 @@ public class MainPageController implements Initializable {
             e.printStackTrace();
         }
     }
-    
-    
+
     private void copiagenerateConstruccionPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
@@ -1693,7 +2076,7 @@ public class MainPageController implements Initializable {
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
-            
+
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
@@ -1741,13 +2124,13 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format(" %s", permiso.getFullFechaEmision()));
-            
+
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add("00:00");
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(18f);
             _p1_.clear();
@@ -1767,7 +2150,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("$ %s", permiso.getPermiso().getPrecio()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1780,7 +2163,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getFullName()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -1793,7 +2176,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getPrecioEnLetras()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1806,7 +2189,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getDescripcion()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -1819,7 +2202,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1837,7 +2220,6 @@ public class MainPageController implements Initializable {
         }
     }
 
-    
     private void generateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
@@ -1882,13 +2264,13 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format(" %s", permiso.getFullFechaEmision()));
-            
+
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add("00:00");
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(18f);
             _p1_.clear();
@@ -1900,7 +2282,7 @@ public class MainPageController implements Initializable {
             _p1_.add(permiso.getCliente().getCedula());
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1912,7 +2294,7 @@ public class MainPageController implements Initializable {
             _p1_.add(permiso.getCliente().getFullName());
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -1924,7 +2306,7 @@ public class MainPageController implements Initializable {
             _p1_.add(permiso.getCliente().getRazon_social());
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1936,7 +2318,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getPermiso().getTipo_permiso()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(10f);
             _p1_.clear();
@@ -1948,7 +2330,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -1962,7 +2344,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add("$0.00");
-            
+
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -1975,8 +2357,7 @@ public class MainPageController implements Initializable {
             e.printStackTrace();
         }
     }
-    
-    
+
     private void copiagenerateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
@@ -1984,7 +2365,7 @@ public class MainPageController implements Initializable {
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
-            
+
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
@@ -2032,13 +2413,13 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format(" %s", permiso.getFullFechaEmision()));
-            
+
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add("00:00");
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(18f);
             _p1_.clear();
@@ -2050,7 +2431,7 @@ public class MainPageController implements Initializable {
             _p1_.add(permiso.getCliente().getCedula());
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -2062,7 +2443,7 @@ public class MainPageController implements Initializable {
             _p1_.add(permiso.getCliente().getFullName());
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -2074,7 +2455,7 @@ public class MainPageController implements Initializable {
             _p1_.add(permiso.getCliente().getRazon_social());
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -2086,7 +2467,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getPermiso().getTipo_permiso()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(10f);
             _p1_.clear();
@@ -2098,7 +2479,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -2112,7 +2493,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add("$0.00");
-            
+
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -2126,11 +2507,10 @@ public class MainPageController implements Initializable {
         }
     }
 
-    
     // EDITAR PERMISOS GENERADOS
     @FXML
     private void editarGeneradosMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, false, false, false, true, false);
+        setVisiblePane(false, false, false, false, false, false, false, false, true, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         generado_parametro.setText("");
@@ -2203,8 +2583,8 @@ public class MainPageController implements Initializable {
                     Object val = tablePosition.getTableColumn().getCellData(newValue);
                     Permiso _permiso_ = editar_generados_tv.getSelectionModel().getSelectedItem();
                     if (val.equals("Editar")) {
-                        setVisiblePane(false, false, false, false, false, false, false, false, false, true);
-                        setGeneradoEditarPane(_permiso_);
+                        // setVisiblePane(false, false, false, false, false, false, false, false, false, true, false);
+                        // setGeneradoEditarPane(_permiso_);
                     }
 
                     if (val.equals("Eliminar")) {
@@ -2477,7 +2857,7 @@ public class MainPageController implements Initializable {
     // VISUALIZAR PERMISOS
     @FXML
     private void consultarMenuAction(ActionEvent event) {
-        setVisiblePane(false, true, false, false, false, false, false, false, false, false);
+        setVisiblePane(false, true, false, false, false, false, false, false, false, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         consultar_parametro.setText("");
@@ -2635,7 +3015,7 @@ public class MainPageController implements Initializable {
     @FXML
     private void editarMenuAction(ActionEvent event) {
         tps = new ArrayList<>();
-        setVisiblePane(false, false, true, false, false, false, false, false, false, false);
+        setVisiblePane(false, false, true, false, false, false, false, false, false, false, false);
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
             String sql = "SELECT * FROM tipo_permiso;";
@@ -2728,7 +3108,7 @@ public class MainPageController implements Initializable {
     // AGREGAR TIPO PERMISO
     @FXML
     private void agregarMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, true, false, false, false, false);
+        setVisiblePane(false, false, false, false, false, true, false, false, false, false, false);
         agregar_permiso_nombre.setText("");
         agregar_permiso_precio.setText("");
         agregar_permiso_is_active.setSelected(false);
@@ -2769,7 +3149,7 @@ public class MainPageController implements Initializable {
     // DETALLE PERMISOS
     @FXML
     private void detalleMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, true, false, false, false, false, false, false);
+        setVisiblePane(false, false, false, true, false, false, false, false, false, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         ObservableList cursors = FXCollections.observableArrayList();
@@ -2979,7 +3359,7 @@ public class MainPageController implements Initializable {
     // ARQUEO PERMISOS
     @FXML
     private void arqueoMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, false, true, false, false, false, false, false);
+        setVisiblePane(false, false, false, false, true, false, false, false, false, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         ObservableList cursors = FXCollections.observableArrayList();
@@ -3910,7 +4290,8 @@ public class MainPageController implements Initializable {
             boolean b3, boolean b4,
             boolean b5, boolean b6,
             boolean b7, boolean b8,
-            boolean b9, boolean b10
+            boolean b9, boolean b10,
+            boolean b11
     ) {
         pane_emision_permiso.setVisible(b1);
         pane_consultar_permiso.setVisible(b2);
@@ -3922,6 +4303,7 @@ public class MainPageController implements Initializable {
         pane_agregar_usuario.setVisible(b8);
         pane_generado_permiso.setVisible(b9);
         pane_generado_editar_permiso.setVisible(b10);
+        pane_liquidacion.setVisible(b11);
     }
 
     private void showDialog(String titulo, String text, AlertType alert_type) {
@@ -3941,7 +4323,6 @@ public class MainPageController implements Initializable {
      * Initializes the controller class.
      */
     public MainPageController() {
-        getPermiso();
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         usuario = new Usuario();
@@ -4000,7 +4381,7 @@ public class MainPageController implements Initializable {
     // LISTA Y EDITAR USUARIOS
     @FXML
     private void listaMenuUsuarios(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, false, true, false, false, false);
+        setVisiblePane(false, false, false, false, false, false, true, false, false, false, false);
 
         usuarioList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
@@ -4128,7 +4509,7 @@ public class MainPageController implements Initializable {
     // AGREGAR USUARIOS
     @FXML
     private void agregarMenuUsuarios(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, false, false, true, false, false);
+        setVisiblePane(false, false, false, false, false, false, false, true, false, false, false);
     }
 
     private boolean user_agregar_empty() {

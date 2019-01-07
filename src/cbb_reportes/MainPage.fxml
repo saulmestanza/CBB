@@ -348,6 +348,24 @@
                   <DatePicker fx:id="generado_editar_fecha_ocasional" disable="true" editable="false" layoutX="362.0" layoutY="82.0" prefHeight="27.0" prefWidth="445.0" />
                </children>
             </Pane>
+            <Pane fx:id="pane_liquidacion" layoutX="-2.0" layoutY="1.0" prefHeight="609.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <TableView fx:id="liquidar_tv" layoutX="14.0" layoutY="52.0" prefHeight="540.0" prefWidth="809.0">
+                     <columns>
+                        <TableColumn fx:id="liquidar_nombre" prefWidth="231.0" text="Nombre Completo" />
+                        <TableColumn fx:id="liquidar_razon_social" prefWidth="275.0" text="Razón Social" />
+                        <TableColumn fx:id="liquidar_ruc" prefWidth="202.0" text="Cédula/RUC" />
+                        <TableColumn fx:id="liquidar_liquidar" prefWidth="98.0" text="Liquidar" />
+                     </columns>
+                  </TableView>
+                  <TextField fx:id="liquidar_cedula" layoutX="14.0" layoutY="14.0" prefHeight="27.0" prefWidth="654.0" promptText="Ingrese número de Cédula o RUC" />
+                  <JFXButton layoutX="682.0" layoutY="10.0" onAction="#buscarUsuarioEvent" prefHeight="15.0" prefWidth="141.0" style="-fx-background-color: #3498db; -fx-background-radius: 15;" text="Buscar" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </JFXButton>
+               </children>
+            </Pane>
          </children>
       </Pane>
    </center>
@@ -356,7 +374,7 @@
         <menus>
             <Menu mnemonicParsing="false" text="Administrador">
               <items>
-                <MenuItem fx:id="menu_liquidar_persona" mnemonicParsing="false" text="Liquidar Persona" />
+                <MenuItem fx:id="menu_liquidar_persona" mnemonicParsing="false" onAction="#liquidarMenuAction" text="Liquidar Persona" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="edit_permiso_generado" mnemonicParsing="false" onAction="#editarGeneradosMenuAction" text="Editar Permisos Generados" />
               </items>

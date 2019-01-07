@@ -89,4 +89,8 @@ public class Clientes {
     public String getFullName(){
         return String.format("%s %s", this.getNombre(), this.getApellido());
     }
+    
+    public String getLiquidar(){
+        return "Liquidar";
+    }
 }
