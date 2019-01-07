@@ -5,6 +5,7 @@
  */
 package modelo;
 
+import cbb_reportes.PrecioToLetras;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -212,8 +213,12 @@ public class Permiso {
         }
     }
     
-    public String getFechaEnLetras(){
-        
+    public String getPrecioEnLetras(){
+        double precio = 34.671;
+        String entero = PrecioToLetras.cantidadConLetra(String.valueOf(precio));
+        double x = precio - (long) precio;
+        String decimal = String.format("%.0f/100", x*100);
+        return String.format("%s %s", entero, decimal);
     }
     
     public String getAnoEmision(){
