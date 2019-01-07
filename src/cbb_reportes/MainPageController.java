@@ -180,6 +180,8 @@ public class MainPageController implements Initializable {
     private TableColumn<Permiso, String> consultar_column_fecha_caducidad;
     @FXML
     private TableColumn<Permiso, String> consultar_column_visualizar;
+    @FXML
+    private ComboBox consultar_modo_permiso;
 
     @FXML
     private Pane pane_generado_editar_permiso;
@@ -296,6 +298,8 @@ public class MainPageController implements Initializable {
     private TableColumn<Permiso, String> detalle_column_fecha_caducidad;
     @FXML
     private TableColumn<Permiso, String> detalle_column_visualizar;
+    @FXML
+    private ComboBox detalle_modo_permiso;
 
     @FXML
     private Pane pane_arqueo_caja;
@@ -329,6 +333,8 @@ public class MainPageController implements Initializable {
     private TableColumn<Permiso, String> arqueo_column_fecha_caducidad;
     @FXML
     private TableColumn<Permiso, String> arqueo_column_visualizar;
+    @FXML
+    private ComboBox arqueo_modo_permiso;
 
     @FXML
     private Menu usuariosMenu;
@@ -396,6 +402,16 @@ public class MainPageController implements Initializable {
     @FXML
     private TextField liquidar_cedula;
 
+    // VERSION
+    @FXML
+    private void versionMenuEvent(ActionEvent event) {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Cuerpo Bomberos de Balzar");
+        alert.setHeaderText(null);
+        alert.setContentText("Versión 1.0.0");
+        alert.showAndWait();
+    }
+    
     // LIQUIDAR
     @FXML
     private void liquidarMenuAction(ActionEvent event) {
@@ -479,6 +495,7 @@ public class MainPageController implements Initializable {
                         alert.setTitle("Cuerpo Bomberos de Balzar");
                         alert.setHeaderText(null);
                         alert.setContentText(String.format("El cliente %s tiene pendiente de pagos", cliente.getFullName()));
+                        alert.showAndWait();
                     } else {
                         liquidarPersona(cliente, clientesList);
                     }
@@ -504,6 +521,7 @@ public class MainPageController implements Initializable {
             alert.setTitle("Cuerpo Bomberos de Balzar");
             alert.setHeaderText(null);
             alert.setContentText(String.format("El cliente %s ha sido liquidado.", cliente.getFullName()));
+            alert.showAndWait();
             clientesList = new ArrayList();
             String sql = "SELECT * FROM clientes WHERE is_active = true;";
             ResultSet rs;
@@ -601,6 +619,7 @@ public class MainPageController implements Initializable {
              */
             document.close();
             file.close();
+            goToPrintDialog(_file_.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -641,12 +660,12 @@ public class MainPageController implements Initializable {
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            DateFormat dateFormat = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
+            DateFormat dateFormat = new SimpleDateFormat("d, MMMM yyyy", new Locale("es", "ES"));
             Date date = new Date();
             _p1_.add(String.format("%s", dateFormat.format(date)));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -656,7 +675,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("    %s", cliente.getFullName()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -665,7 +684,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -679,9 +698,8 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", cliente.getDireccion()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             // COPIA
-            
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
@@ -696,7 +714,7 @@ public class MainPageController implements Initializable {
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
-            
+
             p1.clear();
             p1.setSpacingBefore(14f);
             _p1_.clear();
@@ -728,7 +746,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", dateFormat.format(date)));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -738,7 +756,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("    %s", cliente.getFullName()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -747,7 +765,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             p1.add(_p1_);
             document.add(p1);
-            
+
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
@@ -2939,6 +2957,12 @@ public class MainPageController implements Initializable {
                 }
             }
         });
+        ObservableList _permisos_ = FXCollections.observableArrayList();
+        _permisos_.add("Transporte");
+        _permisos_.add("Ocasional");
+        _permisos_.add("Construcción");
+        _permisos_.add("Funcionamiento");
+        consultar_modo_permiso.setItems(_permisos_);
     }
 
     @FXML
@@ -3005,7 +3029,6 @@ public class MainPageController implements Initializable {
         consultar_tv.getItems().clear();
         consultar_tv.getItems().addAll(permisos);
         consultar_total_permiso.setText(String.format("%d", _count_permiso_));
-        // consultar_total_precio.setText(String.format("$%1$,.2f", _precio_permiso_));
         if (_count_permiso_ == 0) {
             showDialog("Error", "No se a encontrado resultados para la búsqueda solicitada", AlertType.CONFIRMATION);
         }
@@ -3271,6 +3294,12 @@ public class MainPageController implements Initializable {
             }
         };
         detalle_date_picker_desde.setDayCellFactory(desdeCellFactory);
+        ObservableList _permisos_ = FXCollections.observableArrayList();
+        _permisos_.add("Transporte");
+        _permisos_.add("Ocasional");
+        _permisos_.add("Construcción");
+        _permisos_.add("Funcionamiento");
+        detalle_modo_permiso.setItems(_permisos_);
     }
 
     @FXML
@@ -3482,6 +3511,12 @@ public class MainPageController implements Initializable {
             }
         };
         arqueo_date_picker_desde.setDayCellFactory(desdeCellFactory);
+        ObservableList _permisos_ = FXCollections.observableArrayList();
+        _permisos_.add("Transporte");
+        _permisos_.add("Ocasional");
+        _permisos_.add("Construcción");
+        _permisos_.add("Funcionamiento");
+        arqueo_modo_permiso.setItems(_permisos_);
     }
 
     @FXML
@@ -3525,7 +3560,7 @@ public class MainPageController implements Initializable {
             _p1_.clear();
             _p1_.setFont(boldRedFont);
             p1.setAlignment(Element.ALIGN_CENTER);
-            _p1_.add("INFORME ARQUEO DE CAJA CUERPO BOMBERO DE COLIMES");
+            _p1_.add("INFORME ARQUEO DE CAJA CUERPO BOMBERO DE BALZAR");
             p1.add(_p1_);
             document.add(p1);
 
@@ -3711,6 +3746,8 @@ public class MainPageController implements Initializable {
         }
     }
 
+    // REPORTES
+    
     @FXML
     private void generarPDFPermanente(ActionEvent event) {
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -3795,7 +3832,7 @@ public class MainPageController implements Initializable {
             _p1_.clear();
             _p1_.setFont(boldRedFont);
             p1.setAlignment(Element.ALIGN_CENTER);
-            _p1_.add("INFORME PERMISOS PERMANENTES - CUERPO BOMBERO DE COLIMES");
+            _p1_.add("INFORME PERMISOS PERMANENTES - CUERPO BOMBERO DE BALZAR");
             p1.add(_p1_);
             document.add(p1);
 
@@ -3978,7 +4015,7 @@ public class MainPageController implements Initializable {
             _p1_.clear();
             _p1_.setFont(boldRedFont);
             p1.setAlignment(Element.ALIGN_CENTER);
-            _p1_.add("INFORME PERMISOS OCASIONAL - CUERPO BOMBERO DE COLIMES");
+            _p1_.add("INFORME PERMISOS OCASIONAL - CUERPO BOMBERO DE BALZAR");
             p1.add(_p1_);
             document.add(p1);
 
@@ -4156,7 +4193,7 @@ public class MainPageController implements Initializable {
             _p1_.clear();
             _p1_.setFont(boldRedFont);
             p1.setAlignment(Element.ALIGN_CENTER);
-            _p1_.add("INFORME USUARIOS CUERPO BOMBERO DE COLIMES");
+            _p1_.add("INFORME USUARIOS CUERPO BOMBERO DE BALZAR");
             p1.add(_p1_);
             document.add(p1);
 
