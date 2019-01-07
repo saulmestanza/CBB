@@ -3749,7 +3749,26 @@ public class MainPageController implements Initializable {
     // REPORTES
     
     @FXML
-    private void generarPDFPermanente(ActionEvent event) {
+    private void generarPDFConstruccion(ActionEvent event) {
+        generate_Construccion_Funcionamiento("Construcción");
+    }
+    
+    @FXML
+    private void generarPDFFuncionamiento(ActionEvent event) {
+        generate_Construccion_Funcionamiento("Funcionamiento");
+    }
+    
+    @FXML
+    private void generarPDFOcasional(ActionEvent event) {
+        generate_Ocasional_Transporte("Ocasional");
+    }
+    
+    @FXML
+    private void generarPDFTransporte(ActionEvent event) {
+        generate_Ocasional_Transporte("Transporte");
+    }
+    
+    private void generate_Construccion_Funcionamiento(String titulo) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
@@ -3759,7 +3778,7 @@ public class MainPageController implements Initializable {
         ArrayList<Permiso> permisosList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
-            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = 'Permanente' ORDER BY permisos.ID;";
+            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = '"+titulo+"' ORDER BY permisos.ID;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
@@ -3804,7 +3823,7 @@ public class MainPageController implements Initializable {
         if (!directory.exists()) {
             directory.mkdirs();
         }
-        File _file_ = new File(String.format("%sinforme_permisos_permanente.pdf", directoryName));
+        File _file_ = new File(String.format("%sinforme_permisos_%s.pdf", directoryName, titulo.toLowerCase()));
         try {
             Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
             Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
@@ -3832,7 +3851,7 @@ public class MainPageController implements Initializable {
             _p1_.clear();
             _p1_.setFont(boldRedFont);
             p1.setAlignment(Element.ALIGN_CENTER);
-            _p1_.add("INFORME PERMISOS PERMANENTES - CUERPO BOMBERO DE BALZAR");
+            _p1_.add(String.format("INFORME PERMISOS %s - CUERPO BOMBERO DE BALZAR", titulo.toUpperCase(Locale.US)));
             p1.add(_p1_);
             document.add(p1);
 
@@ -3932,8 +3951,7 @@ public class MainPageController implements Initializable {
         }
     }
 
-    @FXML
-    private void generarPDFOcasional(ActionEvent event) {
+    private void generate_Ocasional_Transporte(String titulo) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
@@ -3943,7 +3961,7 @@ public class MainPageController implements Initializable {
         ArrayList<Permiso> permisosList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
-            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = 'Ocasional' ORDER BY permisos.ID;";
+            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = '"+titulo+"' ORDER BY permisos.ID;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
@@ -3987,7 +4005,7 @@ public class MainPageController implements Initializable {
         if (!directory.exists()) {
             directory.mkdirs();
         }
-        File _file_ = new File(String.format("%sinforme_permisos_ocasional.pdf", directoryName));
+        File _file_ = new File(String.format("%sinforme_permisos_%s.pdf", directoryName, titulo.toLowerCase()));
         try {
             Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
             Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
@@ -4015,7 +4033,7 @@ public class MainPageController implements Initializable {
             _p1_.clear();
             _p1_.setFont(boldRedFont);
             p1.setAlignment(Element.ALIGN_CENTER);
-            _p1_.add("INFORME PERMISOS OCASIONAL - CUERPO BOMBERO DE BALZAR");
+            _p1_.add(String.format("INFORME PERMISOS %s - CUERPO BOMBERO DE BALZAR", titulo.toUpperCase()));
             p1.add(_p1_);
             document.add(p1);
 

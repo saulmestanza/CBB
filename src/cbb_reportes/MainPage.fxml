@@ -414,8 +414,10 @@
             <Menu mnemonicParsing="false" text="Reporteria">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#generarPDFempresa" text="Reporte General" />
-                  <MenuItem mnemonicParsing="false" onAction="#generarPDFPermanente" text="Reporte de Permisos Permanentes" />
-                  <MenuItem mnemonicParsing="false" onAction="#generarPDFOcasional" text="Reporte de Permisos Ocasionales" />
+                  <MenuItem mnemonicParsing="false" onAction="#generarPDFConstruccion" text="Reporte de Permisos Construcción" />
+                  <MenuItem mnemonicParsing="false" onAction="#generarPDFFuncionamiento" text="Reporte de Permisos Funcionamiento" />
+                  <MenuItem mnemonicParsing="false" onAction="#generarPDFOcasional" text="Reporte de Permisos Ocasional" />
+                  <MenuItem mnemonicParsing="false" onAction="#generarPDFTransporte" text="Reporte de Permisos Transporte" />
               </items>
             </Menu>
             <Menu fx:id="usuariosMenu" disable="true" mnemonicParsing="false" text="Usuarios">
