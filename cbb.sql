@@ -1,35 +1,5 @@
 
-
--- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
---
--- Host: 127.0.0.1    Database: cbc_db
--- ------------------------------------------------------
--- Server version 5.7.24
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
-CREATE DATABASE `cbb_db` /*!40100 DEFAULT CHARACTER SET utf8 */;
-CREATE USER 'cbb_user'@'localhost' IDENTIFIED BY 'cbb_password';
-GRANT ALL PRIVILEGES ON * . * TO 'cbb_user'@'localhost';
-FLUSH PRIVILEGES;
-
-
---
--- Table structure for table `clientes`
---
-
 DROP TABLE IF EXISTS `clientes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `clientes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(500) NOT NULL,
@@ -40,26 +10,26 @@ CREATE TABLE `clientes` (
   `is_active` tinyint(4) NOT NULL DEFAULT '1',
   `is_closed` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `clientes`
---
 
-LOCK TABLES `clientes` WRITE;
-/*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
-INSERT INTO `clientes` VALUES (1,'Saul','Mestanza','0927699074','Cdla Bellavista Mz 9 Villa 24','DogeSolutions',1,0),(2,'d','d','9393939392','d','ed',1,0);
-/*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
+DROP TABLE IF EXISTS `usuarios`;
+CREATE TABLE `usuarios` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(100) NOT NULL,
+  `apellido` varchar(100) NOT NULL,
+  `usuario` varchar(100) NOT NULL,
+  `contrasena` varchar(45) NOT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_active` tinyint(4) NOT NULL DEFAULT '1',
+  `is_superuser` tinyint(4) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+LOCK TABLES `usuarios` WRITE;
+INSERT INTO `usuarios` VALUES (1,'admin','admin','cbb_admin','cbb_password','2018-12-09 14:29:42',1,1),(2,'secretaria','cbb','cbb_permisos','cbb_permisos','2018-12-09 14:29:42',1,0),(3,'admin','cbb','cbb_root','cbb_root','2018-12-09 14:29:42',1,1);
 UNLOCK TABLES;
 
---
--- Table structure for table `config`
---
-
 DROP TABLE IF EXISTS `config`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `config` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `is_logged` tinyint(4) NOT NULL,
@@ -67,32 +37,543 @@ CREATE TABLE `config` (
   PRIMARY KEY (`id`),
   KEY `user_id_idx` (`user_id`),
   CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Dumping data for table `config`
---
+DROP TABLE IF EXISTS `tipo_permiso`;
+CREATE TABLE `tipo_permiso` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tipo_permiso` varchar(250) NOT NULL,
+  `precio` double NOT NULL,
+  `is_active` tinyint(4) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=511 DEFAULT CHARSET=utf8;
 
-LOCK TABLES `config` WRITE;
-/*!40000 ALTER TABLE `config` DISABLE KEYS */;
-INSERT INTO `config` VALUES (1,1,1);
-/*!40000 ALTER TABLE `config` ENABLE KEYS */;
+LOCK TABLES `tipo_permiso` WRITE;
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ABACERIA, TIENDAS DE ABARROTES O FRUTERIAS", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ABACERIA, TIENDAS DE ABARROTES O FRUTERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ABACERIA, TIENDAS DE ABARROTES O FRUTERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ALQUILER DE VEHICULOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ALQUILER DE VEHICULOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ALQUILER DE VEHICULOS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ANTENAS DE MEDIOS DE COMUNICACIÓN", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ANTENAS DE MEDIOS DE COMUNICACIÓN", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ANTENAS DE MEDIOS DE COMUNICACIÓN", 300);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ASADEROS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ASADEROS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ASADEROS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ASERRADEROS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ASERRADEROS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ASERRADEROS", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ASOCIACIONES, TRANSPORTE Y TRICICLOS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ASOCIACIONES, TRANSPORTE Y TRICICLOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ASOCIACIONES, TRANSPORTE Y TRICICLOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("AVICOLAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("AVICOLAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("AVICOLAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("AVICOLAS INDUSTRIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("AVICOLAS INDUSTRIA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("AVICOLAS INDUSTRIA", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAHIA", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAHIA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAHIA", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAILE PUBLICOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAILE PUBLICOS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAILE PUBLICOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BALANCEADOS, ABONOS Y/O FERETILIZANTES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BALANCEADOS, ABONOS Y/O FERETILIZANTES", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BALANCEADOS, ABONOS Y/O FERETILIZANTES", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BALANCEADOS, ABONOS Y/O FERETILIZANTES INDUSTRIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BALANCEADOS, ABONOS Y/O FERETILIZANTES INDUSTRIA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BALANCEADOS, ABONOS Y/O FERETILIZANTES INDUSTRIA", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BANCOS", 65);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BANCOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BANCOS", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAR ESCOLAR", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAR ESCOLAR", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAR ESCOLAR", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BARES Y/O CANTINAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BARES Y/O CANTINAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BARES Y/O CANTINAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAZAR Y ARTICULOS DE REGALO", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAZAR Y ARTICULOS DE REGALO", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BAZAR Y ARTICULOS DE REGALO", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BLOQUES  ", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BLOQUES  ", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BLOQUES  ", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BLOQUES INDUSTRIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BLOQUES INDUSTRIA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BLOQUES INDUSTRIA", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BODEGAS EN GENERAL", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BODEGAS EN GENERAL", 70);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BODEGAS EN GENERAL", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BOTICAS, FARMACIAS Y/ PRODUCTOS NATURALES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BOTICAS, FARMACIAS Y/ PRODUCTOS NATURALES", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BOTICAS, FARMACIAS Y/ PRODUCTOS NATURALES", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BOUTIQUE Y/ O PRENDAS DE VESTIR", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BOUTIQUE Y/ O PRENDAS DE VESTIR", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("BOUTIQUE Y/ O PRENDAS DE VESTIR", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CABINAS TELEFONICAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CABINAS TELEFONICAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CABINAS TELEFONICAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CAFETERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CAFETERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CAFETERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CALZADO", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CALZADO", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CALZADO", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CANCHAS DEPORTIVAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CANCHAS DEPORTIVAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CANCHAS DEPORTIVAS", 45);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CANTERAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CANTERAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CANTERAS", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARBONERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARBONERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARBONERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARPINTERIA", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARPINTERIA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARPINTERIA", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARROCERIAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARROCERIAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARROCERIAS", 70);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARROCERIAS INDUATRIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARROCERIAS INDUATRIA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARROCERIAS INDUATRIA", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARROS DE DIVERSION GUSANITOS", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARROS DE DIVERSION GUSANITOS", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CARROS DE DIVERSION GUSANITOS", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTRO DE ACOPIO DE LECHE", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTRO DE ACOPIO DE LECHE", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTRO DE ACOPIO DE LECHE", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTRO DE ACOPIOS ( ARROZ, MAIZ, Y OTROS)", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTRO DE ACOPIOS ( ARROZ, MAIZ, Y OTROS)", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTRO DE ACOPIOS ( ARROZ, MAIZ, Y OTROS)", 200);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTROS DE CAPACITACION", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTROS DE CAPACITACION", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTROS DE CAPACITACION", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTROS EDUCATIVOS O SIMILARES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTROS EDUCATIVOS O SIMILARES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CENTROS EDUCATIVOS O SIMILARES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CERRAJERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CERRAJERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CERRAJERIAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CINES Y TEATRO", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CINES Y TEATRO", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CINES Y TEATRO", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COLCHONES", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COLCHONES", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COLCHONES", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COLEGIOS", 32);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COLEGIOS", 32);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COLEGIOS", 32);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMEDORES, PICANTERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMEDORES, PICANTERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMEDORES, PICANTERIAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMISARIATOS Y SUPERMERCADOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMISARIATOS Y SUPERMERCADOS", 70);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMISARIATOS Y SUPERMERCADOS", 320);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPAÑIA AGRICOLA", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPAÑIA AGRICOLA", 1);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPAÑIA AGRICOLA", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPAÑIAS DE SEGUROS EN GENERAL", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPAÑIAS DE SEGUROS EN GENERAL", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPAÑIAS DE SEGUROS EN GENERAL", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPETENCIAS DEPORTIVAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPETENCIAS DEPORTIVAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPETENCIAS DEPORTIVAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPLEJOS TURISTICOS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPLEJOS TURISTICOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPLEJOS TURISTICOS", 200);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPRA Y VENTA DE GRANOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPRA Y VENTA DE GRANOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPRA Y VENTA DE GRANOS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPRA Y VENTA DE VALORES", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPRA Y VENTA DE VALORES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COMPRA Y VENTA DE VALORES", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONFECCION DE PRENDAS DE VESTIR INDUSTRIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONFECCION DE PRENDAS DE VESTIR INDUSTRIA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONFECCION DE PRENDAS DE VESTIR INDUSTRIA", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSTRUCCION (REMODELACION)", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSTRUCCION (REMODELACION)", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSTRUCCION (REMODELACION)", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSTRUCCION MAYOR", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSTRUCCION MAYOR", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSTRUCCION MAYOR", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSTRUCCION MENOR", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSTRUCCION MENOR", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSTRUCCION MENOR", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSULTORIOS MEDICOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSULTORIOS MEDICOS", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSULTORIOS MEDICOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSULTORIOS ODONTOLOGICOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSULTORIOS ODONTOLOGICOS", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CONSULTORIOS ODONTOLOGICOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COOPERATIVA DE AHORRO Y CREDITO", 65);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COOPERATIVA DE AHORRO Y CREDITO", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COOPERATIVA DE AHORRO Y CREDITO", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COPIADORAS Y/O CENTRO DE COMPUTO", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COPIADORAS Y/O CENTRO DE COMPUTO", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COPIADORAS Y/O CENTRO DE COMPUTO", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COSTURA Y CONFECCIÓN", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COSTURA Y CONFECCIÓN", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("COSTURA Y CONFECCIÓN", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CYBER", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CYBER", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("CYBER", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("DE PINTURAS, DILUYENTES", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("DE PINTURAS, DILUYENTES", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("DE PINTURAS, DILUYENTES", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("DEPOSITO DE COLAS Y CERVEZAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("DEPOSITO DE COLAS Y CERVEZAS", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("DEPOSITO DE COLAS Y CERVEZAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("DISCOTECAS Y PEÑAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("DISCOTECAS Y PEÑAS", 70);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("DISCOTECAS Y PEÑAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ELECTRICO, ELECTRONICO Y/O REPARACIÓN", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ELECTRICO, ELECTRONICO Y/O REPARACIÓN", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ELECTRICO, ELECTRONICO Y/O REPARACIÓN", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ELECTRODOMESTICOS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ELECTRODOMESTICOS", 70);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ELECTRODOMESTICOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("EMPRESAS DE GUARDIANIA DE SEGURIDAD", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("EMPRESAS DE GUARDIANIA DE SEGURIDAD", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("EMPRESAS DE GUARDIANIA DE SEGURIDAD", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("EQUIPOS DE SEGURIDAD", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("EQUIPOS DE SEGURIDAD", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("EQUIPOS DE SEGURIDAD", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ESPECTACULOS PUBLICOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ESPECTACULOS PUBLICOS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ESPECTACULOS PUBLICOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FERIAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FERIAS", 200);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FERRETERIAS", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FERRETERIAS", 70);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FERRETERIAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FLORICOLAS INDUSTRIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FLORICOLAS INDUSTRIA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FLORICOLAS INDUSTRIA", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FLORISTERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FLORISTERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FLORISTERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FOTOGRAFICO", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FOTOGRAFICO", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FOTOGRAFICO", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FUENTE DE SODA, HELADERIAS, Y YOGURT", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FUENTE DE SODA, HELADERIAS, Y YOGURT", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FUENTE DE SODA, HELADERIAS, Y YOGURT", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FUNCIONES DE SERVICIOS COMUNITARIOS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FUNCIONES DE SERVICIOS COMUNITARIOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FUNCIONES DE SERVICIOS COMUNITARIOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FUNERARIAS Y CREMATORIOS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FUNERARIAS Y CREMATORIOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("FUNERARIAS Y CREMATORIOS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GALERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GALERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GALERIAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GALLERAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GALLERAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GALLERAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GARAJES Y/O PARQUEADEROS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GARAJES Y/O PARQUEADEROS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GARAJES Y/O PARQUEADEROS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GASOLINERAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GASOLINERAS", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GASOLINERAS", 200);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GIMNASIOS, CENTROS DE MASAJES, SAUNA - VAPOR", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GIMNASIOS, CENTROS DE MASAJES, SAUNA - VAPOR", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("GIMNASIOS, CENTROS DE MASAJES, SAUNA - VAPOR", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HACIENDAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HACIENDAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HACIENDAS", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HOSPITALES Y CLINICAS", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HOSPITALES Y CLINICAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HOSPITALES Y CLINICAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HOSTERIAS", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HOSTERIAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HOSTERIAS", 60);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HOTELES", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HOTELES", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("HOTELES", 70);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("IGLESIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("IGLESIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("IGLESIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("IMPORTACION, FABRICACION Y/O VENTA DE JUEGOS PIROTECNICOS", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("IMPORTACION, FABRICACION Y/O VENTA DE JUEGOS PIROTECNICOS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("IMPORTACION, FABRICACION Y/O VENTA DE JUEGOS PIROTECNICOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("IMPRENTAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("IMPRENTAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("IMPRENTAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("INCUBADORAS DE HUEVOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("INCUBADORAS DE HUEVOS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("INCUBADORAS DE HUEVOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("INSUMOS AGROPECUARIOS Y/O AGROQUIMICOS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("INSUMOS AGROPECUARIOS Y/O AGROQUIMICOS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("INSUMOS AGROPECUARIOS Y/O AGROQUIMICOS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("JOYERIA Y RELOJERIA", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("JOYERIA Y RELOJERIA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("JOYERIA Y RELOJERIA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("JUEGOS ELECTRONICOS Y MANUALES", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("JUEGOS ELECTRONICOS Y MANUALES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("JUEGOS ELECTRONICOS Y MANUALES", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("JUEGOS MECANICOS", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("JUEGOS MECANICOS", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("JUEGOS MECANICOS", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("KIOSKO CARRETILLAS Y OCASIONALES", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("KIOSKO CARRETILLAS Y OCASIONALES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("KIOSKO CARRETILLAS Y OCASIONALES", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LABORATORIOS CLINICOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LABORATORIOS CLINICOS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LABORATORIOS CLINICOS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LADRILLEAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LADRILLEAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LADRILLEAS", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LATONERIA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LATONERIA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LATONERIA", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LAVADORA Y LUBRICADORA DE VEHICULOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LAVADORA Y LUBRICADORA DE VEHICULOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LAVADORA Y LUBRICADORA DE VEHICULOS", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LAVANDERIAS Y TINTORERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LAVANDERIAS Y TINTORERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LAVANDERIAS Y TINTORERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LIBRERIAS, PAPELERIAS Y/O REVISTAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LIBRERIAS, PAPELERIAS Y/O REVISTAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LIBRERIAS, PAPELERIAS Y/O REVISTAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LICORERAS INDUSTRIAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LICORERAS INDUSTRIAS", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LICORERAS INDUSTRIAS", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LICORERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LICORERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LICORERIAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LINEAS AEREAS", 500);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LINEAS AEREAS", 1000);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LINEAS AEREAS", 2000);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LLANTAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LLANTAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LLANTAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LUBRICANTES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LUBRICANTES", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("LUBRICANTES", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MADERA INDUSTRIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MADERA INDUSTRIA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MADERA INDUSTRIA", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MAQUINARIA AGRICOLA", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MAQUINARIA AGRICOLA", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MAQUINARIA AGRICOLA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MARISQUERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MARISQUERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MARISQUERIAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MATERIALES DE CONSTRUCCION", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MATERIALES DE CONSTRUCCION", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MATERIALES DE CONSTRUCCION", 70);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MECANICA AUTOMOTRIZ Y/O ELECTROMECANICA", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MECANICA AUTOMOTRIZ Y/O ELECTROMECANICA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MECANICA AUTOMOTRIZ Y/O ELECTROMECANICA", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MEDIOS DE COMUNCIACIÓN (TELEFONICA, INTERNET)", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MEDIOS DE COMUNCIACIÓN (TELEFONICA, INTERNET)", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MEDIOS DE COMUNCIACIÓN (TELEFONICA, INTERNET)", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MEDIOS DE COMUNICACIÓN (RADIO)", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MEDIOS DE COMUNICACIÓN (RADIO)", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MEDIOS DE COMUNICACIÓN (RADIO)", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MEDIOS DE COMUNICACIÓN(IMPRESOS)", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MEDIOS DE COMUNICACIÓN(IMPRESOS)", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MEDIOS DE COMUNICACIÓN(IMPRESOS)", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MERCADO CENTRAL", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MERCADO CENTRAL", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MERCADO CENTRAL", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("METAMECANICA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("METAMECANICA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("METAMECANICA", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MINI MARKET", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MINI MARKET", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MINI MARKET", 60);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MOLINOS", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MOLINOS", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MOLINOS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MOTELES", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MOTELES", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MOTELES", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MUEBLES DE OFICINA Y AFINES FABRICA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MUEBLES DE OFICINA Y AFINES FABRICA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MUEBLES DE OFICINA Y AFINES FABRICA", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MUEBLES Y/O EQUIPOS DE OFICINA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MUEBLES Y/O EQUIPOS DE OFICINA", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MUEBLES Y/O EQUIPOS DE OFICINA", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MUSICALES Y DISCOS, VIDEOS", 10);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MUSICALES Y DISCOS, VIDEOS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("MUSICALES Y DISCOS, VIDEOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("NIGHT CLUB Y/O CASAS DE CITA", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("NIGHT CLUB Y/O CASAS DE CITA", 60);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("NIGHT CLUB Y/O CASAS DE CITA", 70);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OFICINAS DE TRANSPORTE TERRESTRE", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OFICINAS DE TRANSPORTE TERRESTRE", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OFICINAS DE TRANSPORTE TERRESTRE", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OFICINAS EN GENERAL", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OFICINAS EN GENERAL", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OFICINAS EN GENERAL", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OPTICAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OPTICAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OPTICAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OTRAS INDUSTRIAS Y/O FABRICAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OTRAS INDUSTRIAS Y/O FABRICAS", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OTRAS INDUSTRIAS Y/O FABRICAS", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OTROS ALMACENES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OTROS ALMACENES", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OTROS ALMACENES", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OTROS TALLERES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OTROS TALLERES", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("OTROS TALLERES", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PANADERIA Y PASTELERIA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PANADERIA Y PASTELERIA", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PANADERIA Y PASTELERIA", 60);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PAÑALERAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PAÑALERAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PAÑALERAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PILADORAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PILADORAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PILADORAS", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PIZZERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PIZZERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PIZZERIAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PLANTA PURIFICADORA Y EMBASADORA DE AGUA INDUSTRIA", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PLANTA PURIFICADORA Y EMBASADORA DE AGUA INDUSTRIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PLANTA PURIFICADORA Y EMBASADORA DE AGUA INDUSTRIA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PLASTICOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PLASTICOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PLASTICOS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PROCESADORA DE ALIMENTOS, BEBIDAS Y REFRESCOS O SIMILARES", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PROCESADORA DE ALIMENTOS, BEBIDAS Y REFRESCOS O SIMILARES", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PROCESADORA DE ALIMENTOS, BEBIDAS Y REFRESCOS O SIMILARES", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PRODUCCION DE PLANTAS PARA LA AGRICULTURA (PILON-SEMILLERO)", 140);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PRODUCCION DE PLANTAS PARA LA AGRICULTURA (PILON-SEMILLERO)", 180);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PRODUCCION DE PLANTAS PARA LA AGRICULTURA (PILON-SEMILLERO)", 242);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PRODUCTOS PARA MASCOTAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PRODUCTOS PARA MASCOTAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PRODUCTOS PARA MASCOTAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PRODUCTOS QUIMICOS INDUSTRIA", 140);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PRODUCTOS QUIMICOS INDUSTRIA", 180);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PRODUCTOS QUIMICOS INDUSTRIA", 242);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PUBLICIDAD Y ROTULOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PUBLICIDAD Y ROTULOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PUBLICIDAD Y ROTULOS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PUESTOS INFORMALES", 5);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PUESTOS INFORMALES", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("PUESTOS INFORMALES", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("QUEMA DE PIROTECNIA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("QUEMA DE PIROTECNIA", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("QUEMA DE PIROTECNIA", 0);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("QUEMAS CONTROLADAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("QUEMAS CONTROLADAS", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("QUEMAS CONTROLADAS", 60);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RECARGA Y MANTENIMIENTO DE EXTINTORES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RECARGA Y MANTENIMIENTO DE EXTINTORES", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RECARGA Y MANTENIMIENTO DE EXTINTORES", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RECICLADORAS", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RECICLADORAS", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RECICLADORAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("REENCAUCHADORA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("REENCAUCHADORA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("REENCAUCHADORA", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("REPUESTOS AUTOMOTRICES Y /O ACCESORIOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("REPUESTOS AUTOMOTRICES Y /O ACCESORIOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("REPUESTOS AUTOMOTRICES Y /O ACCESORIOS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RESIDENCIALES Y PENSIONES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RESIDENCIALES Y PENSIONES", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RESIDENCIALES Y PENSIONES", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RESTAURANTES Y/O CHIFAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RESTAURANTES Y/O CHIFAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("RESTAURANTES Y/O CHIFAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SALAS DE BILLAS Y BILLARES", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SALAS DE BILLAS Y BILLARES", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SALAS DE BILLAS Y BILLARES", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SALON DE EVENTOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SALON DE EVENTOS", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SALON DE EVENTOS", 60);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SALONES DE BELLEZA Y PELUQUERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SALONES DE BELLEZA Y PELUQUERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SALONES DE BELLEZA Y PELUQUERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SECADORAS DE ARROZ, MAIZ Y/O OTROS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SECADORAS DE ARROZ, MAIZ Y/O OTROS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SECADORAS DE ARROZ, MAIZ Y/O OTROS", 200);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SERVICIOS TURISTICOS Y DE DIVERSIÓN", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SERVICIOS TURISTICOS Y DE DIVERSIÓN", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SERVICIOS TURISTICOS Y DE DIVERSIÓN", 40);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SORTEO, RIFAS, JUEGOS DE AZAR Y DEMAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SORTEO, RIFAS, JUEGOS DE AZAR Y DEMAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("SORTEO, RIFAS, JUEGOS DE AZAR Y DEMAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TALLER DE EBANISTERIA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TALLER DE EBANISTERIA", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TALLER DE EBANISTERIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TANQUES DE GLP", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TANQUES DE GLP", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TANQUES DE GLP", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TAPICERIA", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TAPICERIA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TAPICERIA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TERCENAS Y/O FRIGORIFICOS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TERCENAS Y/O FRIGORIFICOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TERCENAS Y/O FRIGORIFICOS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TEXTIL INDUSTRIA", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TEXTIL INDUSTRIA", 150);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TEXTIL INDUSTRIA", 250);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TORNO Y PRECISION", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TORNO Y PRECISION", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TORNO Y PRECISION", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE CARBON", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE CARBON", 32);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE CARBON", 60);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE COMBUSTIBLE TANQUES O BIDONES", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE COMBUSTIBLE TANQUES O BIDONES", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE COMBUSTIBLE TANQUES O BIDONES", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE GAS CILINDROS", 32);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE GAS CILINDROS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE GAS CILINDROS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE MADERA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE MADERA", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("TRANSPORTE DE MADERA", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VEHICULOS Y /O MOTOCICLETAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VEHICULOS Y /O MOTOCICLETAS", 35);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VEHICULOS Y /O MOTOCICLETAS", 50);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA DE ARROZ PILADO", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA DE ARROZ PILADO", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA DE ARROZ PILADO", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA DE GAS", 32);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA DE GAS", 60);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA DE GAS", 100);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA DE LACTEOS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA DE LACTEOS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA DE LACTEOS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA Y REPARACION DE CELULARES", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA Y REPARACION DE CELULARES", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VENTA Y REPARACION DE CELULARES", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VETERINARIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VETERINARIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VETERINARIAS", 30);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VIDRERIAS", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VIDRERIAS", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VIDRERIAS", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VULCANIZADORA", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VULCANIZADORA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("VULCANIZADORA", 25);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ZAPATERIA", 15);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ZAPATERIA", 20);
+INSERT INTO cbb_db.tipo_permiso (`tipo_permiso`, `precio`) VALUES("ZAPATERIA", 25);
 UNLOCK TABLES;
 
---
--- Table structure for table `permisos`
---
-
 DROP TABLE IF EXISTS `permisos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `permisos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `descripcion` varchar(250) NOT NULL,
+  `descripcion` varchar(250) DEFAULT NULL,
   `fecha_emision` date NOT NULL,
   `fecha_expiracion` date NOT NULL,
   `modo_permiso` varchar(45) NOT NULL,
+  `numero_deposito` varchar(100) NOT NULL,
+  `fecha_documento` date NOT NULL,
+  `vehiculo_marca` varchar(100) DEFAULT NULL,
+  `extintor` tinyint(4) DEFAULT NULL,
+  `capacidad` varchar(100) DEFAULT NULL,
+  `placa` varchar(100) DEFAULT NULL,
   `ruta_pdf` varchar(250) DEFAULT NULL,
   `id_usuario` int(11) NOT NULL,
   `id_tipo_permiso` int(11) NOT NULL,
@@ -105,84 +586,3 @@ CREATE TABLE `permisos` (
   CONSTRAINT `id_tipo_permiso` FOREIGN KEY (`id_tipo_permiso`) REFERENCES `tipo_permiso` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `id_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `permisos`
---
-
-LOCK TABLES `permisos` WRITE;
-/*!40000 ALTER TABLE `permisos` DISABLE KEYS */;
-/*!40000 ALTER TABLE `permisos` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `tipo_permiso`
---
-
-DROP TABLE IF EXISTS `tipo_permiso`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tipo_permiso` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tipo_permiso` varchar(250) NOT NULL,
-  `precio` double NOT NULL,
-  `is_active` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=268 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `tipo_permiso`
---
-
-LOCK TABLES `tipo_permiso` WRITE;
-/*!40000 ALTER TABLE `tipo_permiso` DISABLE KEYS */;
-INSERT INTO `tipo_permiso` VALUES (6,'INDUSTRIAS EN GENERAL - Grande',200,1),(7,'FABRICA DE PRODUCTOS QUIMICOS - BIOLÓGICOS - Grande',200,1),(8,'CORROSIVOS INFLAMABLES  - INSECTICIDA - Grande',200,1),(9,'PINTURAS ELIMINAN DESECHOS  - INDUSTRIAS - Grande',200,1),(10,'PROCESADORAS DE ALIMENTOS BEBIDAS - Grande',200,1),(11,'EMPACADORA DE CAMARÓN - BANANO Y DERIVADOS - Grande',200,1),(12,'LABOTORIOS DEDICADOS A LA PRODUCIÓN Y DISTRIBUCIÓN DE PRODUCTOS QUIMICOS FARMACÉUTICOS - Grande',200,1),(13,'COSMÉTICOS LABORATORIOS VETERINARIOS - Grande',200,1),(14,'INDUSTRIAS EN GENERAL - Mediana',140,1),(15,'FABRICA DE PRODUCTOS QUIMICOS - BIOLÓGICOS - Mediana',140,1),(16,'CORROSIVOS INFLAMABLES  - INSECTICIDA - Mediana',140,1),(17,'PINTURAS ELIMINAN DESECHOS  - INDUSTRIAS - Mediana',140,1),(18,'PROCESADORAS DE ALIMENTOS BEBIDAS - Mediana',140,1),(19,'EMPACADORA DE CAMARÓN - BANANO Y DERIVADOS - Mediana',140,1),(20,'LABOTORIOS DEDICADOS A LA PRODUCIÓN Y DISTRIBUCIÓN DE PRODUCTOS QUIMICOS FARMACÉUTICOS - Mediana',140,1),(21,'COSMÉTICOS LABORATORIOS VETERINARIOS - Mediana',140,1),(22,'INDUSTRIAS EN GENERAL - Pequeña',90,1),(23,'FABRICA DE PRODUCTOS QUIMICOS - BIOLÓGICOS - Pequeña',90,1),(24,'CORROSIVOS INFLAMABLES  - INSECTICIDA - Pequeña',90,1),(25,'PINTURAS ELIMINAN DESECHOS  - INDUSTRIAS - Pequeña',90,1),(26,'PROCESADORAS DE ALIMENTOS BEBIDAS - Pequeña',90,1),(27,'EMPACADORA DE CAMARÓN - BANANO Y DERIVADOS - Pequeña',90,1),(28,'LABOTORIOS DEDICADOS A LA PRODUCIÓN Y DISTRIBUCIÓN DE PRODUCTOS QUIMICOS FARMACÉUTICOS - Pequeña',90,1),(29,'COSMÉTICOS LABORATORIOS VETERINARIOS - Pequeña',90,1),(30,'MEDIOS DE COMUNICACIÓN ',80,1),(31,'MEDIOS DE COMUNICACIÓN ',50,1),(32,'MEDIOS DE COMUNICACIÓN ',25,1),(33,'ANTENAS DE SERVICIOS CELULARES',400,1),(34,'TALLER DE EVANISTERIA',20,1),(35,'TALLER DE MECANICA, RETIFICADORA',30,1),(36,'TALLER DE ZAPATERIA',10,1),(37,'TALLER DE TALABATERIA',10,1),(38,'TALLER DE RADIO Y TV',20,1),(39,'TALLER DE ELECTROMECÁNICA',20,1),(40,'TALLER DE CERRAGERIA Y SOLDADURA',30,1),(41,'TALLER DE BICICLETA',10,1),(42,'TALLER DE TORNO',40,1),(43,'TALLER DE REBESTIDORA ',25,1),(44,'TALLER DE MOTO',20,1),(45,'TALLER DE REFRIGERACIÓN',20,1),(46,'LUBRICADORAS - Grande',30,1),(47,'VULCANIZADORAS - Grande',30,1),(48,'LAVADORAS - Grande',30,1),(49,'LUBRICADORAS - Mediana',20,1),(50,'VULCANIZADORAS - Mediana',20,1),(51,'LAVADORAS - Mediana',20,1),(52,'IMPRENTA  - Grande',30,1),(53,'IMPRENTA  - Mediana',20,1),(54,'IMPRENTA  - Artesanal',10,1),(55,'COPIADORAS',10,1),(56,'LIBRERIAS',60,1),(57,'SALONES DE BELLEZA Y PELUQUERIAS - Grande',25,1),(58,'SALONES DE BELLEZA Y PELUQUERIAS - Pequeño',10,1),(59,'LAVANDERIAS - Grande',15,1),(60,'LAVANDERIAS - Pequeña',10,1),(61,'TINTORERIAS - Grande',15,1),(62,'TINTORERIAS - Pequeña',10,1),(63,'HOSPITALES - Grande',50,1),(64,'HOSPITALES - Pequeña',40,1),(65,'CLINICAS - Grande',50,1),(66,'CLINICAS - Pequeña',40,1),(67,'POLICLINICOS PARTICULARES - Grande',50,1),(68,'POLICLINICOS PARTICULARES - Pequeña',40,1),(69,'DISPENSARIOS MÉDICOS',40,1),(70,'LABORATORIOS CLINICOS',40,1),(71,'ÓPTICAS',40,1),(72,'CONSULTORIO',40,1),(73,'BOTICAS',40,1),(74,'PRODUCTOS NATURALES',40,1),(75,'DISPENSARIOS MÉDICOS - Pequeño',20,1),(76,'LABORATORIOS CLINICOS - Pequeño',20,1),(77,'ÓPTICAS - Pequeño',20,1),(78,'CONSULTORIO - Pequeño',20,1),(79,'BOTICAS - Pequeño',20,1),(80,'PRODUCTOS NATURALES - Pequeño',20,1),(81,'PROSTIBULOS CASAS DE CITA',30,1),(82,'CASA DE TOLERANCIA',30,1),(83,'CABARETES',30,1),(84,'CLUB NOCTURNOS',30,1),(85,'PROSTIBULOS CASAS DE CITA - Segunda',25,1),(86,'CASA DE TOLERANCIA - Segunda',25,1),(87,'CABARETES - Segunda',25,1),(88,'CLUB NOCTURNOS - Segunda',25,1),(89,'GIMNASIOS - Primera',15,1),(90,'CENTRO DE MASAJES - Primera',15,1),(91,'SAUNAS - VAPOR - Primera',15,1),(92,'GIMNASIOS - Segunda',10,1),(93,'CENTRO DE MASAJES - Segunda',10,1),(94,'SAUNAS - VAPOR - Segunda',10,1),(95,'FUNERARIAS',15,1),(96,'CENTROS COMERICALES - Primera',150,1),(97,'COMISARIATOS Y SUPERMERCADOS - Primera',150,1),(98,'CENTROS COMERICALES - Segunda',100,1),(99,'COMISARIATOS Y SUPERMERCADOS - Segunda',100,1),(100,'CENTROS COMERICALES - Tercera',80,1),(101,'COMISARIATOS Y SUPERMERCADOS - Tercera',80,1),(102,'MINI MARKET',20,1),(103,'FRIGORIFICOS',15,1),(104,'TIENDAS - Mayorista',35,1),(105,'DESPENSAS - Mayorista',35,1),(106,'TIENDAS - Grandes',25,1),(107,'DESPENSAS - Grandes',25,1),(108,'TIENDAS - Pequeñas',15,1),(109,'DESPENSAS - Pequeñas',15,1),(110,'TIENDAS - Mini tienda',8,1),(111,'DESPENSAS - Mini tienda',8,1),(112,'TERCENAS',15,1),(113,'PESCADERIAS',15,1),(114,'SALCHICHERIAS',15,1),(115,'PANADERIAS - Primera',15,1),(116,'PANADERIAS - Segunda',10,1),(117,'LICORERAS',15,1),(118,'LEGUMBRES',10,1),(119,'FARMACIAS',20,1),(120,'CARBONERIAS',7,1),(121,'TRASLADO DE CARBÓN',12,1),(122,'CYBER O CABINA',15,1),(123,'DEPÓSITOS DE COLAS Y CERVEZAS - Primera',35,1),(124,'DEPÓSITOS DE COLAS Y CERVEZAS - Segunda',25,1),(125,'PRODUCTOS LÁCTEOS',15,1),(126,'VENTA DE POLLOS PELADOS',10,1),(127,'KIOSCO',6,1),(128,'CARRETILLA',6,1),(129,'DISCOTECAS - Primera',30,1),(130,'PEÑAS - Primera',30,1),(131,'BARES - Primera',30,1),(132,'RESTAURANT - Primera',30,1),(133,'DISCOTECAS - Segunda',20,1),(134,'PEÑAS - Segunda',20,1),(135,'BARES - Segunda',20,1),(136,'RESTAURANT - Segunda',20,1),(137,'CAFETERIAS',13,1),(138,'HELADERIAS - Grande',15,1),(139,'FUENTES DE SODA - Grande',15,1),(140,'YOGURT - Grande',15,1),(141,'HELADERIAS - Mediana',10,1),(142,'FUENTES DE SODA - Mediana',10,1),(143,'YOGURT - Mediana',10,1),(144,'PICANTERIAS',15,1),(145,'PUESTO EN LA VIA PUBLICA',5,1),(146,'ALMACENES DE ELECTRODOMESTICOS - Primera',50,1),(147,'ALMACENES DE ROPA - Primera',50,1),(148,'ALMACENES DE ELECTRODOMESTICOS - Segunda',30,1),(149,'ALMACENES DE ROPA - Segunda',30,1),(150,'OFICINAS - Primera',50,1),(151,'OFICINAS - Segunda',30,1),(152,'COMPRA DE CARTONES',10,1),(153,'COMPRA DE HIERRO USADO',10,1),(154,'COMPRA DE PAPEL',10,1),(155,'COMPRA DE PERIÓDICO',10,1),(156,'COMPRA DE BOTELLAS VIDRIO',10,1),(157,'COMPRA DE BOTELLAS PLÁSTICO',10,1),(158,'BAZARES - Grande',20,1),(159,'FLORERIA - Grande',20,1),(160,'BOUTIQUE - Grande',20,1),(161,'BAZARES - Pequeña',15,1),(162,'FLORERIA - Pequeña',15,1),(163,'BOUTIQUE - Pequeña',15,1),(164,'HOTELES - Primera',50,1),(165,'HOSTALES - Primera',50,1),(166,'SUITES - Primera',50,1),(167,'MOTELES - Primera',50,1),(168,'RESIDENCIALES - Primera',50,1),(169,'HOTELES - Segunda',35,1),(170,'HOSTALES - Segunda',35,1),(171,'SUITES - Segunda',35,1),(172,'MOTELES - Segunda',35,1),(173,'RESIDENCIALES - Segunda',35,1),(174,'MATERIALES DE CONTRUCCIÓN',30,1),(175,'DEPOSITO DE MADERA Y ASERRIOS',30,1),(176,'TASAS POR CONSTRUCCIÓN',30,1),(177,'GARAJES PÚBLICOS',20,1),(178,'GASOLINERAS - Surtidor 1 pistola',30,1),(179,'GASOLINERAS - Surtidor 2 pistola',40,1),(180,'GASOLINERAS - Surtidor 4 pistola',50,1),(181,'GASOLINERAS - Surtidor 6 pistola',60,1),(182,'DEPÓSITOS DE COMBUSTIBLES DIESEL',28,1),(183,'ENVASADORA DE GAS',60,1),(184,'VEHÍCULOS O NAVES DE  TRANSPORTE DE GAS O COMBUSTIBLE - Mas de 10000 Glns',100,1),(185,'VEHÍCULOS O NAVES DE  TRANSPORTE DE GAS O COMBUSTIBLE - 5 a 10 mil Glns',70,1),(186,'VEHÍCULOS O NAVES DE  TRANSPORTE DE GAS O COMBUSTIBLE - Menos de 5 mil Glns',50,1),(187,'VEHÍCULOS O NAVES DE  TRANSPORTE DE GAS O COMBUSTIBLE - Plataforma Reparto',80,1),(188,'AGROQUIMICOS - Primera',80,1),(189,'AGROQUIMICOS - Segunda',40,1),(190,'AGROQUIMICOS - Tercera',25,1),(191,'DISTRIBUIDORA DE GAS',30,1),(192,'VENTA O DEPOSITO DE GAS',25,1),(193,'TRANSPORTE DE GAS (CILINDROS)',50,1),(194,'TRANSPORTE DE COMB.(TANQUE O BIDONES)',25,1),(195,'FERRETERÍA - Grande',30,1),(196,'ALMACEN DE PINTURA DILUYENTES, ETC - Grande',30,1),(197,'FERRETERÍA - Pequeña',20,1),(198,'ALMACEN DE PINTURA DILUYENTES, ETC - Pequeña',20,1),(199,'RECARGA O MANTENIMIENTO DE EXTINTORES',44,1),(200,'ESCENARIOS PERMANENTES O TEMPORALES Y DEMÁS LUGARES DE REUNIONES - Primera',40,1),(201,'ESCENARIOS PLAZA DE TOROS, TEATROS, CIRCOS, CINES, ETC. - Primera',40,1),(202,'ESCENARIOS PERMANENTES O TEMPORALES Y DEMÁS LUGARES DE REUNIONES - Segunda',30,1),(203,'ESCENARIOS PLAZA DE TOROS, TEATROS, CIRCOS, CINES, ETC. - Segunda',30,1),(204,'ESCENARIOS PERMANENTES O TEMPORALES Y DEMÁS LUGARES DE REUNIONES - Tercera',20,1),(205,'ESCENARIOS PLAZA DE TOROS, TEATROS, CIRCOS, CINES, ETC. - Tercera',20,1),(206,'ESPECTACULOS - Primera',35,1),(207,'ENTRETENIMIENTO - Primera',35,1),(208,'ARTISTAS - Primera',35,1),(209,'JUEGOS MECANICOS - Primera',35,1),(210,'FIESTAS INFANTILES - Primera',35,1),(211,'ESPECTACULOS - Segunda',25,1),(212,'ENTRETENIMIENTO - Segunda',25,1),(213,'ARTISTAS - Segunda',25,1),(214,'JUEGOS MECANICOS - Segunda',25,1),(215,'FIESTAS INFANTILES - Segunda',25,1),(216,'SALA DE VILLAR',15,1),(217,'ALQUILER DE VIDEOS',15,1),(218,'PLAY STACION',10,1),(219,'CASINOS',40,1),(220,'JUEGOS ELECTRÓNICOS',15,1),(221,'FUTBOLINES',10,1),(222,'BANCOS MUTUALISTAS - Matriz',120,1),(223,'BANCOS FINANCIERAS - Matriz',120,1),(224,'CIA DE SEGUROS COOPERATIVAS - Matriz',120,1),(225,'CASA DE CAMBIO - Matriz',120,1),(226,'ENTIDADES SUJETAS A LAS SEPERINTENDENCIA DE BANCOS - Matriz',120,1),(227,'BANCOS MUTUALISTAS - Sucursal Mayor',80,1),(228,'BANCOS FINANCIERAS - Sucursal Mayor',80,1),(229,'CIA DE SEGUROS COOPERATIVAS - Sucursal Mayor',80,1),(230,'CASA DE CAMBIO - Sucursal Mayor',80,1),(231,'ENTIDADES SUJETAS A LAS SEPERINTENDENCIA DE BANCOS - Sucursal Mayor',80,1),(232,'BANCOS MUTUALISTAS - Agencias',60,1),(233,'BANCOS FINANCIERAS - Agencias',60,1),(234,'CIA DE SEGUROS COOPERATIVAS - Agencias',60,1),(235,'CASA DE CAMBIO - Agencias',60,1),(236,'ENTIDADES SUJETAS A LAS SEPERINTENDENCIA DE BANCOS - Agencias',60,1),(237,'AGENCIA DE VIAJES Y CORREOS - Principal',80,1),(238,'COOPERATIVAS DE TRANSPORTES - Principal',80,1),(239,'AGENCIA DE VIAJES Y CORREOS - Agencias',60,1),(240,'COOPERATIVAS DE TRANSPORTES - Agencias',60,1),(241,'PILADORAS MOLINOS ETC. - Grandes',80,1),(242,'PILADORAS MOLINOS ETC. - Pequeñas',45,1),(243,'SECADORAS DE ARROZ, MAIZ ETC.',50,1),(244,'BODEGAS DE PRODUCTOS AGRICOLAS  - Grandes',35,1),(245,'BODEGAS DE PRODUCTOS AGRICOLAS  - Pequeñas',20,1),(246,'COLEGIOS, INSTITUTOS , ESCUELAS , PARTICULARES - Primera',60,1),(247,'COLEGIOS, INSTITUTOS , ESCUELAS , PARTICULARES - Segunda',40,1),(248,'COLEGIOS, INSTITUTOS , ESCUELAS , PARTICULARES - Tercera',30,1),(249,'COMPLEJOS TURISTICOS',50,1),(250,'IMPORTACIÓN Y FABRICACIÓN DE JUEGOS PIROTÉCNICOS',30,1),(251,'INFRACCIONES - Multa Movilización',27,1),(252,'GASOLINERAS - Primera citación',87,1),(253,'CLAUSURA TEMPORAL O DEFINITIVA - Primera citación',87,1),(254,'GASOLINERAS - Segunda citación',264,1),(255,'CLAUSURA TEMPORAL O DEFINITIVA - Segunda citación',264,1),(256,'GASOLINERAS - Tercera citación',425,1),(257,'LAUSURA TEMPORAL O DEFINITIVA - Tercera citación',425,1),(258,'TASA ÚNICA DE COPIAS DE PERITAJES',11,1),(259,'TIPOS DE CONSTRUCCIONES - Hormigon',1.5,1),(260,'TIPOS DE CONSTRUCCIONES - Mixta',1,1),(261,'TIPOS DE CONSTRUCCIONES - Caña',0.5,1),(262,'DEMOLICION DE VIVIENDAS - Hormigon',35,1),(263,'DEMOLICION DE VIVIENDAS - Mixta',25,1),(264,'DEMOLICION DE VIVIENDAS - Caña',15,1),(265,'FABRICA O ELABORACION DE BLOQUES O  LADRILLOS - Grande',20,1),(266,'FABRICA O ELABORACION DE BLOQUES O  LADRILLOS - Mediana',15,1),(267,'FABRICA O ELABORACION DE BLOQUES O  LADRILLOS - Pequeña',10,1);
-/*!40000 ALTER TABLE `tipo_permiso` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `usuarios`
---
-
-DROP TABLE IF EXISTS `usuarios`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `usuarios` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(100) NOT NULL,
-  `apellido` varchar(100) NOT NULL,
-  `usuario` varchar(100) NOT NULL,
-  `contrasena` varchar(45) NOT NULL,
-  `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `is_active` tinyint(4) NOT NULL DEFAULT '1',
-  `is_superuser` tinyint(4) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `usuarios`
---
-
-LOCK TABLES `usuarios` WRITE;
-/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'admin','admin','cbb_admin','cbb_password','2018-12-09 14:29:42',1,1),(2,'secretaria','cbb','cbb_permisos','cbb_permisos','2018-12-09 14:29:42',1,0),(3,'admin','cbb','cbb_root','cbb_root','2018-12-09 14:29:42',1,1);
-/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Dumping routines for database 'cbb_db'
---
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2019-01-05 13:26:53
