@@ -784,7 +784,21 @@ public class MainPageController implements Initializable {
         MysqlConnect mysqlConnect = new MysqlConnect();
         Permiso permiso = new Permiso();
         try {
-            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.modo_permiso, tipo_permiso.id as id_tipo_permiso, tipo_permiso.precio, tipo_permiso.is_active as tipo_permiso_is_active, tipo_permiso.tipo_permiso, clientes.id as id_clientes, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active as cliente_is_active, clientes.cedula FROM permisos , tipo_permiso, clientes  WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id  ORDER BY permisos.ID DESC LIMIT 1;";
+            String sql = "SELECT permisos.numero_deposito, permisos.fecha_documento, "
+                    + "permisos.vehiculo_marca, permisos.extintor, permisos.placa, "
+                    + "permisos.capacidad, permisos.id, permisos.descripcion, "
+                    + "permisos.fecha_emision, permisos.fecha_expiracion, "
+                    + "permisos.ruta_pdf, permisos.modo_permiso, "
+                    + "tipo_permiso.id as id_tipo_permiso, tipo_permiso.precio, "
+                    + "tipo_permiso.is_active as tipo_permiso_is_active, "
+                    + "tipo_permiso.tipo_permiso, clientes.id as id_clientes, "
+                    + "clientes.nombre, clientes.apellido, clientes.direccion, "
+                    + "clientes.razon_social, "
+                    + "clientes.is_active as cliente_is_active, clientes.cedula "
+                    + "FROM permisos , tipo_permiso, clientes "
+                    + "WHERE permisos.id_tipo_permiso = tipo_permiso.id AND "
+                    + "permisos.id_clientes = clientes.id  "
+                    + "ORDER BY permisos.ID DESC LIMIT 1;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
@@ -795,6 +809,12 @@ public class MainPageController implements Initializable {
                     permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
                     permiso.setRuta_pdf(rs.getString("ruta_pdf"));
                     permiso.setModo_permiso(rs.getString("modo_permiso"));
+                    permiso.setNumero_deposito(rs.getString("numero_deposito"));
+                    permiso.setFecha_documento(rs.getString("fecha_documento"));
+                    permiso.setVehiculo_marca(rs.getString("vehiculo_marca"));
+                    permiso.setExtintor(rs.getBoolean("extintor"));
+                    permiso.setPlaca(rs.getString("placa"));
+                    permiso.setCapacidad(rs.getString("capacidad"));
 
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
@@ -835,7 +855,8 @@ public class MainPageController implements Initializable {
             }
             /**
              * ************* PERMISO **************
-            **/
+             *
+             */
 
             _file_ = new File(String.format("%spermiso_%s.pdf", directoryName, permiso.getFullCode()));
             OutputStream file = new FileOutputStream(_file_);
@@ -846,32 +867,76 @@ public class MainPageController implements Initializable {
             Image image = null;
 
             document.setPageSize(PageSize.A4);
-            document.setMargins(40, 40, 66, 10);
+            document.setMargins(40, 40, 73, 10);
             document.newPage();
-            generateFuncionamientoPDF(document, writer, permiso);
+            switch (permiso.getModo_permiso()) {
+                case "Transporte":
+                    generateTransportePDF(document, writer, permiso);
+                    break;
+                case "Ocasional":
+                    generateOcasionalPDF(document, writer, permiso);
+                    break;
+                case "Construcción":
+                    generateConstruccionPDF(document, writer, permiso);
+                    break;
+                case "Funcionamiento":
+                    generateFuncionamientoPDF(document, writer, permiso);
+                    break;
+                default:
+                    generateTransportePDF(document, writer, permiso);
+            }
 
             canvas = writer.getDirectContentUnder();
-            image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_funcionamiento_copia.png"));
+            switch (permiso.getModo_permiso()) {
+                case "Transporte":
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_transporte.png"));
+                    break;
+                case "Ocasional":
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_ocasional.png"));
+                    break;
+                case "Construcción":
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_construccion.png"));
+                    break;
+                case "Funcionamiento":
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_funcionamiento.png"));
+                    break;
+                default:
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_transporte.png"));
+            }
             image.scaleAbsolute(PageSize.A4);
             image.setAbsolutePosition(0, 0);
             canvas.addImage(image);
 
             /**
              * ************* PERMISO COPIA **************
-            **/
-            
-            generateFuncionamientoPDFCOPIA(document, writer, permiso);
-            
+             *
+             */
+            switch (permiso.getModo_permiso()) {
+                case "Transporte":
+                    copiagenerateTransportePDF(document, writer, permiso);
+                    break;
+                case "Ocasional":
+                    copiagenerateOcasionalPDF(document, writer, permiso);
+                    break;
+                case "Construcción":
+                    // generateConstruccionPDF(document, writer, permiso);
+                    break;
+                case "Funcionamiento":
+                    // generateFuncionamientoPDF(document, writer, permiso);
+                    break;
+                default:
+                    copiagenerateTransportePDF(document, writer, permiso);
+            }
             /**
              * ************* CIERRE **************
-            **/
-            
+             *
+             */
             document.close();
-            
+
             /**
              * ************* GUARDAR EN BD **************
-            **/
-            
+             *
+             */
             _path_list_ = _file_.getAbsolutePath();
             file.close();
             System.out.println(_path_list_);
@@ -893,18 +958,16 @@ public class MainPageController implements Initializable {
 
         }
     }
-    
-    private void generateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso) {
+
+    private void generateTransportePDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font smallFont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
-            Font smallWhiteFont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL, BaseColor.WHITE);
-            Font smallBoldWhiteFont = new Font(Font.FontFamily.COURIER, 9, Font.BOLD, BaseColor.WHITE);
-            Font bigBoldFont = new Font(Font.FontFamily.COURIER, 12, Font.BOLD);
+            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
 
-            _p1_.setFont(bigBoldFont);
+            _p1_.setFont(boldFont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -920,173 +983,143 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
 
-            p1.clear();
-            _p1_.clear();
-
-            _p1_.setFont(smallFont);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            p1.setSpacingBefore(1f);
-            _p1_.add(String.format("  %s", permiso.getFullFechaEmision()));
-            p1.add(_p1_);
-            document.add(p1);
-
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
 
             p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(5f);
-            _p1_.setFont(smallFont);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format(" %s", permiso.getCliente().getCedula()));
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("     $%1$,.2f USD", permiso.getPermiso().getPrecio()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(6f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("  %s", permiso.getFullName()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(4f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("     %s", permiso.getCliente().getRazon_social()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            p1.clear();
-            _p1_.clear();
             p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("     %s", permiso.getCliente().getDireccion()));
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("$ %s", permiso.getPermiso().getPrecio()));
+
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFullFechaEmision()));
             p1.add(_p1_);
             document.add(p1);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-            Calendar c = Calendar.getInstance();
             p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(4f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("    %s", sdf.format(c.getTime())));
-            p1.add(_p1_);
-            document.add(p1);
-
-            p1.clear();
-            _p1_.clear();
             p1.setSpacingBefore(8f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("  A %s", permiso.getPermiso().toSimple()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
-            p1.clear();
             _p1_.clear();
+            _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("       %s", permiso.getModo_permiso()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-            c = Calendar.getInstance();
-            p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(4f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("   %s", sdf.format(c.getTime())));
-            p1.add(_p1_);
-            document.add(p1);
-
-            document.add(Chunk.NEWLINE);
-
-            p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(3f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(" ");
+            _p1_.add(String.format("%s", permiso.getCliente().getCedula()));
             p1.add(_p1_);
             document.add(p1);
 
             p1.clear();
+            p1.setSpacingBefore(8f);
             _p1_.clear();
-            p1.setSpacingBefore(21f);
-            _p1_.setFont(smallBoldWhiteFont);
-            _p1_.add(String.format("CADUCA %s. ", permiso.getFullFechaExpiracion()));
-            _p1_.setFont(smallWhiteFont);
-            // if(permiso.getModo_permiso().equalsIgnoreCase("Permanente")){
-            _p1_.add("Renovable cada año");
-            // }
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getCliente().getFullName()));
             p1.add(_p1_);
             document.add(p1);
 
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getDescripcion()));
+
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getCapacidad()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            p1.setSpacingBefore(13f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getVehiculo_marca()));
+
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getPlaca()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getExtintor() ? "Si" : "No"));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFullFechaExpiracion()));
+            p1.add(_p1_);
+            document.add(p1);
         } catch (Exception e) {
-
             e.printStackTrace();
         }
     }
 
-    private void generateFuncionamientoPDFCOPIA(Document document, PdfWriter writer, Permiso permiso) {
+    
+    private void copiagenerateTransportePDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font smallFont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
-            Font smallWhiteFont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL, BaseColor.WHITE);
-            Font smallBoldWhiteFont = new Font(Font.FontFamily.COURIER, 9, Font.BOLD, BaseColor.WHITE);
-            Font bigBoldFont = new Font(Font.FontFamily.COURIER, 12, Font.BOLD);
-
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
+            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
 
-            _p1_.setFont(bigBoldFont);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+
+            _p1_.setFont(boldFont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -1098,158 +1131,426 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            p1.setSpacingBefore(2f);
             _p1_.add(permiso.getFullCode());
             p1.add(_p1_);
             document.add(p1);
 
-            p1.clear();
-            _p1_.clear();
-
-            _p1_.setFont(smallFont);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            p1.setSpacingBefore(1f);
-            _p1_.add(String.format("  %s", permiso.getFullFechaEmision()));
-            p1.add(_p1_);
-            document.add(p1);
-
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
 
             p1.clear();
+            p1.setSpacingBefore(10f);
             _p1_.clear();
-            p1.setSpacingBefore(5f);
-            _p1_.setFont(smallFont);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format(" %s", permiso.getCliente().getCedula()));
+            _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("$ %s", permiso.getPermiso().getPrecio()));
+
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("     $%1$,.2f USD", permiso.getPermiso().getPrecio()));
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFullFechaEmision()));
             p1.add(_p1_);
             document.add(p1);
 
             p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(6f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("  %s", permiso.getFullName()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(4f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("     %s", permiso.getCliente().getRazon_social()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(6f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("     %s", permiso.getCliente().getDireccion()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-            Calendar c = Calendar.getInstance();
-            p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(4f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("    %s", sdf.format(c.getTime())));
-            p1.add(_p1_);
-            document.add(p1);
-
-            p1.clear();
-            _p1_.clear();
             p1.setSpacingBefore(8f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("  A %s", permiso.getPermiso().toSimple()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            document.add(Chunk.NEWLINE);
-            document.add(Chunk.NEWLINE);
-            p1.clear();
             _p1_.clear();
+            _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("       %s", permiso.getModo_permiso()));
-            p1.add(_p1_);
-            document.add(p1);
-
-            sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-            c = Calendar.getInstance();
-            p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(4f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("   %s", sdf.format(c.getTime())));
-            p1.add(_p1_);
-            document.add(p1);
-
-            document.add(Chunk.NEWLINE);
-
-            p1.clear();
-            _p1_.clear();
-            p1.setSpacingBefore(4f);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(" ");
+            _p1_.add(String.format("%s", permiso.getCliente().getCedula()));
             p1.add(_p1_);
             document.add(p1);
 
             p1.clear();
+            p1.setSpacingBefore(8f);
             _p1_.clear();
-            p1.setSpacingBefore(18f);
-            _p1_.setFont(smallBoldWhiteFont);
-            _p1_.add(String.format("CADUCA %s. ", permiso.getFullFechaExpiracion()));
-            _p1_.setFont(smallWhiteFont);
-            // if(permiso.getModo_permiso().equalsIgnoreCase("Permanente")){
-            _p1_.add("Renovable cada año");
-            // }
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getCliente().getFullName()));
             p1.add(_p1_);
             document.add(p1);
 
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getDescripcion()));
+
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getCapacidad()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            p1.setSpacingBefore(13f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getVehiculo_marca()));
+
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getPlaca()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getExtintor() ? "Si" : "No"));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFullFechaExpiracion()));
+            p1.add(_p1_);
+            document.add(p1);
         } catch (Exception e) {
-
             e.printStackTrace();
         }
+    }
+
+    
+    private void generateOcasionalPDF(Document document, PdfWriter writer, Permiso permiso) {
+        try {
+            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+
+            Phrase _p1_ = new Phrase();
+            Paragraph p1 = new Paragraph();
+
+            _p1_.setFont(boldFont);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(permiso.getFullCode());
+            p1.add(_p1_);
+            document.add(p1);
+
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getAnoEmision()));
+
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format(" %s", permiso.getFullFechaEmision()));
+            
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add("00:00");
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(18f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("$ %s", permiso.getPermiso().getPrecio()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFullName()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFechaEnLetras()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getPermiso().getTipo_permiso()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
+            p1.add(_p1_);
+            document.add(p1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    
+    private void copiagenerateOcasionalPDF(Document document, PdfWriter writer, Permiso permiso) {
+        try {
+            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+
+            Phrase _p1_ = new Phrase();
+            Paragraph p1 = new Paragraph();
+            
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+
+            _p1_.setFont(boldFont);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(permiso.getFullCode());
+            p1.add(_p1_);
+            document.add(p1);
+
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+            document.add(Chunk.NEWLINE);
+
+            p1.clear();
+            p1.setSpacingBefore(6f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getAnoEmision()));
+
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format(" %s", permiso.getFullFechaEmision()));
+            
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add("00:00");
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(18f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("$ %s", permiso.getPermiso().getPrecio()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFullName()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFechaEnLetras()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getPermiso().getTipo_permiso()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(12f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            p1.setSpacingBefore(8f);
+            _p1_.clear();
+            _p1_.setFont(font);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
+            p1.add(_p1_);
+            document.add(p1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    
+    private void generateConstruccionPDF(Document document, PdfWriter writer, Permiso permiso) {
+
+    }
+
+    private void generateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso) {
+
     }
 
     // EDITAR PERMISOS GENERADOS
@@ -3066,6 +3367,7 @@ public class MainPageController implements Initializable {
      * Initializes the controller class.
      */
     public MainPageController() {
+        getPermiso();
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         usuario = new Usuario();

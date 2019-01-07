@@ -23,10 +23,46 @@ public class Permiso {
     private String modo_permiso;
     private String numero_deposito;
     private String fecha_documento;
+    private String vehiculo_marca;
+    private String placa;
+    private Boolean extintor;
+    private String capacidad;
     private Tipo_Permiso permiso;
     private Clientes clientes;
 
     public Permiso() {
+    }
+
+    public String getVehiculo_marca() {
+        return vehiculo_marca;
+    }
+
+    public void setVehiculo_marca(String vehiculo_marca) {
+        this.vehiculo_marca = vehiculo_marca;
+    }
+
+    public String getPlaca() {
+        return placa;
+    }
+
+    public void setPlaca(String placa) {
+        this.placa = placa;
+    }
+
+    public Boolean getExtintor() {
+        return extintor;
+    }
+
+    public void setExtintor(Boolean extintor) {
+        this.extintor = extintor;
+    }
+
+    public String getCapacidad() {
+        return capacidad;
+    }
+
+    public void setCapacidad(String capacidad) {
+        this.capacidad = capacidad;
     }
 
     public String getModo_permiso() {
@@ -173,6 +209,21 @@ public class Permiso {
             return dt1.format(date);
         } catch (ParseException ex) {
             return this.getFecha_expiracion();
+        }
+    }
+    
+    public String getFechaEnLetras(){
+        
+    }
+    
+    public String getAnoEmision(){
+        try {
+            SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = dt.parse(fecha_emision);
+            SimpleDateFormat dt1 = new SimpleDateFormat("yyyy", new Locale("es","ES"));
+            return dt1.format(date);
+        } catch (ParseException ex) {
+            return fecha_emision;
         }
     }
     
