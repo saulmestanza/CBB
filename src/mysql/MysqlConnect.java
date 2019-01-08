@@ -16,7 +16,7 @@ import java.util.Properties;
 public class MysqlConnect {
     // init database constants
     private static final String DATABASE_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/cbb_db";
+    private static final String DATABASE_URL = "jdbc:mysql://167.99.11.161:3306/cbb_db";
     private static final String USERNAME = "cbb_user";
     private static final String PASSWORD = "cbb_password";
     private static final String MAX_POOL = "250";

@@ -11,7 +11,7 @@ package cbb_reportes;
  */
 public class Settings {
     
-    public static int LENGTH_NATIONAL_ID = 10;
-    public static int LENGTH_NAMES = 150;
+    public static int LENGTH_NATIONAL_ID = 15;
+    public static int LENGTH_NAMES = 250;
     public static int LENGTH_DESCRIPTION = 250;
 }

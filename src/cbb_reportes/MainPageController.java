@@ -84,6 +84,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import javafx.event.EventHandler;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
@@ -91,6 +92,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableRow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import modelo.Cantidad;
 import modelo.Clientes;
@@ -408,10 +411,10 @@ public class MainPageController implements Initializable {
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
-        alert.setContentText("Versión 1.0.0");
+        alert.setContentText("Versión 1.0.1");
         alert.showAndWait();
     }
-    
+
     // LIQUIDAR
     @FXML
     private void liquidarMenuAction(ActionEvent event) {
@@ -446,6 +449,20 @@ public class MainPageController implements Initializable {
         liquidar_liquidar.setCellValueFactory(new PropertyValueFactory<>("liquidar"));
 
         liquidar_tv.getItems().setAll(clientesList);
+        liquidar_tv.setRowFactory(new Callback<TableView<Clientes>, TableRow<Clientes>>() {
+            @Override
+            public TableRow<Clientes> call(TableView<Clientes> tableView2) {
+                final TableRow<Clientes> row = new TableRow<>();
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        liquidar_tv.getSelectionModel().clearSelection();
+                        event.consume();
+                    }
+                });
+                return row;
+            }
+        });
         liquidar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
@@ -1044,7 +1061,7 @@ public class MainPageController implements Initializable {
         if (modo_permiso.getSelectionModel().getSelectedItem() != null) {
             if (emisionIsEmpty()) {
                 showDialog("Error", "Debe de llenar todos los datos para poder generar un permiso", AlertType.ERROR);
-            } else if (emision_cedula.getText().length() != 10) {
+            } else if (emision_cedula.getText().length() < 10) {
                 showDialog("Error", "Ingrese un número de cédula válido", AlertType.ERROR);
             } else {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
@@ -1367,8 +1384,8 @@ public class MainPageController implements Initializable {
 
     private void generateTransportePDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
-            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+            Font font = new Font(Font.FontFamily.COURIER, 10, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 10, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
@@ -1507,8 +1524,8 @@ public class MainPageController implements Initializable {
 
     private void copiagenerateTransportePDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
-            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+            Font font = new Font(Font.FontFamily.COURIER, 10, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 10, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
@@ -1658,8 +1675,9 @@ public class MainPageController implements Initializable {
 
     private void generateOcasionalPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
-            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+            Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
+            Font font = new Font(Font.FontFamily.COURIER, 10, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 10, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
@@ -1769,7 +1787,7 @@ public class MainPageController implements Initializable {
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
-            _p1_.setFont(font);
+            _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -1798,8 +1816,9 @@ public class MainPageController implements Initializable {
 
     private void copiagenerateOcasionalPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
-            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+            Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
+            Font font = new Font(Font.FontFamily.COURIER, 10, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 10, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
@@ -1920,7 +1939,7 @@ public class MainPageController implements Initializable {
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
-            _p1_.setFont(font);
+            _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -1949,8 +1968,9 @@ public class MainPageController implements Initializable {
 
     private void generateConstruccionPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
-            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+            Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
+            Font font = new Font(Font.FontFamily.COURIER, 10, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 10, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
@@ -2060,7 +2080,7 @@ public class MainPageController implements Initializable {
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
-            _p1_.setFont(font);
+            _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -2089,8 +2109,9 @@ public class MainPageController implements Initializable {
 
     private void copiagenerateConstruccionPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
-            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+            Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
+            Font font = new Font(Font.FontFamily.COURIER, 10, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 10, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
@@ -2211,7 +2232,7 @@ public class MainPageController implements Initializable {
             p1.clear();
             p1.setSpacingBefore(12f);
             _p1_.clear();
-            _p1_.setFont(font);
+            _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -2240,8 +2261,9 @@ public class MainPageController implements Initializable {
 
     private void generateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
-            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+            Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
+            Font font = new Font(Font.FontFamily.COURIER, 10, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 10, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
@@ -2340,7 +2362,7 @@ public class MainPageController implements Initializable {
             p1.clear();
             p1.setSpacingBefore(10f);
             _p1_.clear();
-            _p1_.setFont(font);
+            _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -2378,8 +2400,9 @@ public class MainPageController implements Initializable {
 
     private void copiagenerateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
-            Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
-            Font boldFont = new Font(Font.FontFamily.COURIER, 11, Font.BOLD);
+            Font font = new Font(Font.FontFamily.COURIER, 10, Font.NORMAL);
+            Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
+            Font boldFont = new Font(Font.FontFamily.COURIER, 10, Font.BOLD);
 
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
@@ -2489,7 +2512,7 @@ public class MainPageController implements Initializable {
             p1.clear();
             p1.setSpacingBefore(10f);
             _p1_.clear();
-            _p1_.setFont(font);
+            _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -2591,6 +2614,20 @@ public class MainPageController implements Initializable {
         generado_column_editar.setCellValueFactory(new PropertyValueFactory<>("editar"));
         generado_column_eliminar.setCellValueFactory(new PropertyValueFactory<>("eliminar"));
         editar_generados_tv.getItems().setAll(permisos);
+        editar_generados_tv.setRowFactory(new Callback<TableView<Permiso>, TableRow<Permiso>>() {
+            @Override
+            public TableRow<Permiso> call(TableView<Permiso> tableView2) {
+                final TableRow<Permiso> row = new TableRow<>();
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        editar_generados_tv.getSelectionModel().clearSelection();
+                        event.consume();
+                    }
+                });
+                return row;
+            }
+        });
         editar_generados_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
@@ -2942,6 +2979,20 @@ public class MainPageController implements Initializable {
         consultar_column_fecha_caducidad.setCellValueFactory(new PropertyValueFactory<>("fecha_expiracion"));
         consultar_column_visualizar.setCellValueFactory(new PropertyValueFactory<>("ver"));
         consultar_tv.getItems().setAll(permisos);
+        consultar_tv.setRowFactory(new Callback<TableView<Permiso>, TableRow<Permiso>>() {
+            @Override
+            public TableRow<Permiso> call(TableView<Permiso> tableView2) {
+                final TableRow<Permiso> row = new TableRow<>();
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        consultar_tv.getSelectionModel().clearSelection();
+                        event.consume();
+                    }
+                });
+                return row;
+            }
+        });
         consultar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
@@ -3073,6 +3124,20 @@ public class MainPageController implements Initializable {
         editar_column_precio_permiso.setCellValueFactory(new PropertyValueFactory<>("precio"));
         editar_column_activo_permiso.setCellValueFactory(new PropertyValueFactory<>("activado"));
         editar_tv.getItems().setAll(tps);
+        editar_tv.setRowFactory(new Callback<TableView<Tipo_Permiso>, TableRow<Tipo_Permiso>>() {
+            @Override
+            public TableRow<Tipo_Permiso> call(TableView<Tipo_Permiso> tableView2) {
+                final TableRow<Tipo_Permiso> row = new TableRow<>();
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        editar_tv.getSelectionModel().clearSelection();
+                        event.consume();
+                    }
+                });
+                return row;
+            }
+        });
         editar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
@@ -3238,6 +3303,20 @@ public class MainPageController implements Initializable {
         detalle_column_fecha_caducidad.setCellValueFactory(new PropertyValueFactory<>("fecha_expiracion"));
         detalle_column_visualizar.setCellValueFactory(new PropertyValueFactory<>("ver"));
         detalle_tv.getItems().setAll(permisos);
+        detalle_tv.setRowFactory(new Callback<TableView<Permiso>, TableRow<Permiso>>() {
+            @Override
+            public TableRow<Permiso> call(TableView<Permiso> tableView2) {
+                final TableRow<Permiso> row = new TableRow<>();
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        detalle_tv.getSelectionModel().clearSelection();
+                        event.consume();
+                    }
+                });
+                return row;
+            }
+        });
         detalle_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
@@ -3455,6 +3534,20 @@ public class MainPageController implements Initializable {
         arqueo_column_valor.setCellValueFactory(new PropertyValueFactory<>("valor"));
         arqueo_column_visualizar.setCellValueFactory(new PropertyValueFactory<>("ver"));
         arqueo_tv.getItems().setAll(permisos);
+        arqueo_tv.setRowFactory(new Callback<TableView<Permiso>, TableRow<Permiso>>() {
+            @Override
+            public TableRow<Permiso> call(TableView<Permiso> tableView2) {
+                final TableRow<Permiso> row = new TableRow<>();
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        arqueo_tv.getSelectionModel().clearSelection();
+                        event.consume();
+                    }
+                });
+                return row;
+            }
+        });
         arqueo_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
@@ -3747,27 +3840,26 @@ public class MainPageController implements Initializable {
     }
 
     // REPORTES
-    
     @FXML
     private void generarPDFConstruccion(ActionEvent event) {
         generate_Construccion_Funcionamiento("Construcción");
     }
-    
+
     @FXML
     private void generarPDFFuncionamiento(ActionEvent event) {
         generate_Construccion_Funcionamiento("Funcionamiento");
     }
-    
+
     @FXML
     private void generarPDFOcasional(ActionEvent event) {
         generate_Ocasional_Transporte("Ocasional");
     }
-    
+
     @FXML
     private void generarPDFTransporte(ActionEvent event) {
         generate_Ocasional_Transporte("Transporte");
     }
-    
+
     private void generate_Construccion_Funcionamiento(String titulo) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
@@ -3778,7 +3870,7 @@ public class MainPageController implements Initializable {
         ArrayList<Permiso> permisosList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
-            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = '"+titulo+"' ORDER BY permisos.ID;";
+            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = '" + titulo + "' ORDER BY permisos.ID;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
@@ -3961,7 +4053,7 @@ public class MainPageController implements Initializable {
         ArrayList<Permiso> permisosList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
-            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = '"+titulo+"' ORDER BY permisos.ID;";
+            String sql = "SELECT permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = '" + titulo + "' ORDER BY permisos.ID;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
@@ -4471,6 +4563,20 @@ public class MainPageController implements Initializable {
         usuario_column_is_superuser.setCellValueFactory(new PropertyValueFactory<>("admin"));
 
         usuario_tv.getItems().setAll(usuarioList);
+        usuario_tv.setRowFactory(new Callback<TableView<Usuario>, TableRow<Usuario>>() {
+            @Override
+            public TableRow<Usuario> call(TableView<Usuario> tableView2) {
+                final TableRow<Usuario> row = new TableRow<>();
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        usuario_tv.getSelectionModel().clearSelection();
+                        event.consume();
+                    }
+                });
+                return row;
+            }
+        });
         usuario_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
             public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
