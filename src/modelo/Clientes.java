@@ -16,10 +16,19 @@ public class Clientes {
     private String cedula;
     private String razon_social;
     private String direccion;
+    private String actividad_economica;
     private Boolean is_active;
     private Boolean is_closed;
 
     public Clientes() {
+    }
+
+    public String getActividad_economica() {
+        return actividad_economica;
+    }
+
+    public void setActividad_economica(String actividad_economica) {
+        this.actividad_economica = actividad_economica;
     }
 
     public int getId() {

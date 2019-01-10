@@ -6,6 +6,7 @@
 package modelo;
 
 import cbb_reportes.PrecioToLetras;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,6 +17,7 @@ import java.util.Locale;
  * @author saulmestanza
  */
 public class Permiso {
+
     private int id;
     private String descripcion;
     private String fecha_emision;
@@ -94,7 +96,7 @@ public class Permiso {
         try {
             SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
             Date date = dt.parse(fecha_emision);
-            SimpleDateFormat dt1 = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
+            SimpleDateFormat dt1 = new SimpleDateFormat("d, MMMM yyyy", new Locale("es", "ES"));
             return dt1.format(date);
         } catch (ParseException ex) {
             return fecha_emision;
@@ -109,7 +111,7 @@ public class Permiso {
         try {
             SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
             Date date = dt.parse(fecha_expiracion);
-            SimpleDateFormat dt1 = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
+            SimpleDateFormat dt1 = new SimpleDateFormat("d, MMMM yyyy", new Locale("es", "ES"));
             return dt1.format(date);
         } catch (ParseException ex) {
             return fecha_expiracion;
@@ -135,28 +137,28 @@ public class Permiso {
     public void setPermiso(Tipo_Permiso permiso) {
         this.permiso = permiso;
     }
-    
-    public String getValor(){
+
+    public String getValor() {
         return String.format("$%1$,.2f", this.permiso.getPrecio());
     }
-    
-    public String getVer(){
+
+    public String getVer() {
         return "Ver";
     }
-    
-    public String getEditar(){
+
+    public String getEditar() {
         return "Editar";
     }
-    
-    public String getEliminar(){
+
+    public String getEliminar() {
         return "Eliminar";
     }
-    
-    public String getNombre(){
+
+    public String getNombre() {
         return getCliente().getFullName();
     }
-    
-    public String getCedula(){
+
+    public String getCedula() {
         return getCliente().getCedula();
     }
 
@@ -183,63 +185,69 @@ public class Permiso {
     public void setFecha_documento(String fecha_documento) {
         this.fecha_documento = fecha_documento;
     }
-    
-    public String getFullName(){
+
+    public String getFullName() {
         return clientes.getFullName();
     }
-    
-    public String getFullCode(){
-        if(this.getId() < 10){
+
+    public String getFullCode() {
+        if (this.getId() < 10) {
             return String.format("0000%d", this.getId());
-        }else if(this.getId() >= 10 && this.getId() < 100){
+        } else if (this.getId() >= 10 && this.getId() < 100) {
             return String.format("000%d", this.getId());
-        }else if(this.getId() >= 100 && this.getId() < 1000){
+        } else if (this.getId() >= 100 && this.getId() < 1000) {
             return String.format("00%d", this.getId());
-        }else if(this.getId() >= 1000 && this.getId() < 10000){
+        } else if (this.getId() >= 1000 && this.getId() < 10000) {
             return String.format("00%d", this.getId());
-        }else{
+        } else {
             return String.format("%d", this.getId());
         }
     }
-    
-    public String getFullFechaExpiracion(){
+
+    public String getFullFechaExpiracion() {
         try {
             SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
             Date date = dt.parse(this.getFecha_expiracion());
-            SimpleDateFormat dt1 = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
+            SimpleDateFormat dt1 = new SimpleDateFormat("d, MMMM yyyy", new Locale("es", "ES"));
             return dt1.format(date);
         } catch (ParseException ex) {
             return this.getFecha_expiracion();
         }
     }
-    
-    public String getPrecioEnLetras(){
+
+    public String getPrecioEnLetras() {
         double precio = 34.671;
         String entero = PrecioToLetras.cantidadConLetra(String.valueOf(precio));
         double x = precio - (long) precio;
-        String decimal = String.format("%.0f/100", x*100);
+        String decimal = String.format("%.0f/100", x * 100);
         return String.format("%s %s", entero, decimal);
     }
-    
-    public String getAnoEmision(){
+
+    public String getAnoEmision() {
         try {
             SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
             Date date = dt.parse(fecha_emision);
-            SimpleDateFormat dt1 = new SimpleDateFormat("yyyy", new Locale("es","ES"));
+            SimpleDateFormat dt1 = new SimpleDateFormat("yyyy", new Locale("es", "ES"));
             return dt1.format(date);
         } catch (ParseException ex) {
             return fecha_emision;
         }
     }
-    
-    public String getFullFechaEmision(){
+
+    public String getFullFechaEmision() {
         try {
             SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
             Date date = dt.parse(this.getFecha_emision());
-            SimpleDateFormat dt1 = new SimpleDateFormat("d, MMMM yyyy", new Locale("es","ES"));
+            SimpleDateFormat dt1 = new SimpleDateFormat("d, MMMM yyyy", new Locale("es", "ES"));
             return dt1.format(date);
         } catch (ParseException ex) {
             return this.getFecha_emision();
         }
+    }
+
+    public String getHora() {
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

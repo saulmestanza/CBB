@@ -83,6 +83,7 @@ public class FXMLDocumentController implements Initializable {
                                 showDialog("Error en el formulario", "Contraseña invalida");
                             } else {
                                 int _id_usuario = rs.getInt("id");
+                                Settings.setUser_id(_id_usuario);
                                 st = (Statement) mysqlConnect.connect().createStatement();
                                 st.execute("DELETE FROM config");
                                 st.executeUpdate("INSERT INTO config (is_logged, user_id) VALUES (1, " + _id_usuario + ")");

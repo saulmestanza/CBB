@@ -219,9 +219,9 @@
                   <Label alignment="CENTER" layoutX="40.0" layoutY="122.0" prefHeight="27.0" prefWidth="764.0" text="Ingrese la siguiente información para poder generar el permiso." />
                   <TextField id="emision_nombre" fx:id="emision_nombre" layoutX="40.0" layoutY="215.0" prefHeight="27.0" prefWidth="336.0" promptText="Nombres" />
                   <TextField id="emision_apellido" fx:id="emision_apellido" layoutX="383.0" layoutY="215.0" prefHeight="27.0" prefWidth="421.0" promptText="Apellidos" />
-                  <TextField id="emision_cedula" fx:id="emision_cedula" layoutX="40.0" layoutY="304.0" prefHeight="27.0" prefWidth="764.0" promptText="Cédula/RUC" />
-                  <TextField id="emision_razon_social" fx:id="emision_razon_social" layoutX="40.0" layoutY="351.0" prefHeight="27.0" prefWidth="764.0" promptText="Razón Social" />
-                  <TextField id="emision_direccion" fx:id="emision_direccion" layoutX="40.0" layoutY="398.0" prefHeight="27.0" prefWidth="764.0" promptText="Dirección" />
+                  <TextField id="emision_cedula" fx:id="emision_cedula" layoutX="40.0" layoutY="296.0" prefHeight="27.0" prefWidth="764.0" promptText="Cédula/RUC" />
+                  <TextField id="emision_razon_social" fx:id="emision_razon_social" layoutX="40.0" layoutY="332.0" prefHeight="27.0" prefWidth="764.0" promptText="Razón Social" />
+                  <TextField id="emision_direccion" fx:id="emision_direccion" layoutX="40.0" layoutY="408.0" prefHeight="27.0" prefWidth="764.0" promptText="Dirección" />
                   <DatePicker fx:id="emision_fecha" editable="false" layoutX="40.0" layoutY="257.0" prefHeight="27.0" prefWidth="764.0" promptText="Fecha Emisión" />
                   <Separator layoutY="151.0" prefHeight="4.0" prefWidth="837.0" />
                   <JFXButton fx:id="emision_generar" layoutX="221.0" layoutY="522.0" onAction="#emisionGenerarPermiso" prefHeight="64.0" prefWidth="375.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Generar" textFill="WHITE">
@@ -242,6 +242,7 @@
                   <TextField fx:id="emision_placa" layoutX="473.0" layoutY="483.0" prefWidth="200.0" promptText="Placa" />
                   <CheckBox fx:id="emision_extintor" layoutX="699.0" layoutY="483.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="104.0" text="Extintor" />
                   <TextField fx:id="emision_descripcion" layoutX="40.0" layoutY="443.0" prefHeight="27.0" prefWidth="764.0" promptText="Descripción" />
+                  <TextField fx:id="emision_actividad_economica" layoutX="40.0" layoutY="371.0" prefHeight="27.0" prefWidth="764.0" promptText="Actividad Económica" />
                </children>
             </Pane>
             <Pane fx:id="pane_lista_usuarios" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
@@ -295,13 +296,12 @@
                <children>
                   <TableView fx:id="editar_generados_tv" layoutX="40.0" layoutY="124.0" prefHeight="458.0" prefWidth="764.0">
                      <columns>
-                        <TableColumn fx:id="generado_column_id" prefWidth="92.0" text="ID" />
-                        <TableColumn fx:id="generado_column_nombre" prefWidth="131.0" text="Nombre" />
-                        <TableColumn fx:id="generado_column_cedula" prefWidth="124.0" text="Cédula" />
-                        <TableColumn fx:id="generado_column_permiso" prefWidth="125.0" text="Permiso" />
-                        <TableColumn fx:id="generado_column_fecha_emision" prefWidth="126.0" text="Fecha Emisión" />
-                        <TableColumn fx:id="generado_column_editar" prefWidth="86.0" text="Editar" />
-                        <TableColumn fx:id="generado_column_eliminar" prefWidth="76.0" text="Eliminar" />
+                        <TableColumn fx:id="generado_column_id" prefWidth="101.0" text="ID" />
+                        <TableColumn fx:id="generado_column_nombre" prefWidth="122.0" text="Nombre" />
+                        <TableColumn fx:id="generado_column_cedula" prefWidth="148.0" text="Cédula" />
+                        <TableColumn fx:id="generado_column_permiso" prefWidth="189.0" text="Permiso" />
+                        <TableColumn fx:id="generado_column_fecha_emision" prefWidth="132.0" text="Fecha Emisión" />
+                        <TableColumn fx:id="generado_column_eliminar" prefWidth="68.0" text="Eliminar" />
                      </columns>
                   </TableView>
                   <Button focusTraversable="false" layoutX="637.0" layoutY="33.0" mnemonicParsing="false" onAction="#buscarGenerado" prefHeight="38.0" prefWidth="167.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Buscar" textFill="WHITE">
@@ -314,43 +314,7 @@
                   <TextField fx:id="generado_search_permiso" layoutX="40.0" layoutY="80.0" prefHeight="27.0" prefWidth="487.0" promptText="Ingrese nombre de permiso para búsqueda" />
                </children>
             </Pane>
-            <Pane id="pane_emision_permiso" fx:id="pane_generado_editar_permiso" layoutX="-1.0" layoutY="-1.0" prefHeight="601.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
-               <children>
-                  <Label layoutX="40.0" layoutY="40.0" text="Seleccionar tipo de permiso" />
-                  <Label alignment="CENTER" layoutX="40.0" layoutY="122.0" prefHeight="27.0" prefWidth="764.0" text="Ingrese la siguiente información para poder generar el permiso." />
-                  <TextField id="emision_nombre" fx:id="generado_editar_nombre" layoutX="230.0" layoutY="215.0" prefHeight="27.0" prefWidth="280.0" promptText="Nombres" />
-                  <TextField id="emision_apellido" fx:id="generado_editar_apellido" layoutX="524.0" layoutY="215.0" prefHeight="27.0" prefWidth="280.0" promptText="Apellidos" />
-                  <TextField id="emision_cedula" fx:id="generado_editar_cedula" layoutX="40.0" layoutY="257.0" prefHeight="27.0" prefWidth="764.0" promptText="Cédula" />
-                  <TextField id="emision_razon_social" fx:id="generado_editar_razon_social" layoutX="40.0" layoutY="301.0" prefHeight="27.0" prefWidth="764.0" promptText="Razón Social" />
-                  <TextField id="emision_direccion" fx:id="generado_editar_direccion" layoutX="40.0" layoutY="344.0" prefHeight="27.0" prefWidth="764.0" promptText="Dirección" />
-                  <TextArea id="emision_descripcion" fx:id="generado_editar_descripcion" layoutX="40.0" layoutY="387.0" prefHeight="117.0" prefWidth="764.0" promptText="Descripcion" text="para " />
-                  <Label layoutX="40.0" layoutY="171.0" text="Fecha" />
-                  <DatePicker fx:id="generado_editar_fecha" editable="false" layoutX="91.0" layoutY="166.0" prefHeight="27.0" prefWidth="711.0" />
-                  <Separator layoutY="151.0" prefHeight="4.0" prefWidth="837.0" />
-                  <RadioButton fx:id="generado_editar_rd_1" layoutX="38.0" layoutY="220.0" mnemonicParsing="false" selected="true" text="al señor">
-                     <toggleGroup>
-                        <ToggleGroup fx:id="prefijo1" />
-                     </toggleGroup>
-                  </RadioButton>
-                  <RadioButton fx:id="generado_editar_rd_2" layoutX="122.0" layoutY="220.0" mnemonicParsing="false" text="a la señora" toggleGroup="$prefijo1" />
-                  <JFXButton fx:id="generado_editar_editar" layoutX="221.0" layoutY="522.0" onAction="#generarEditarPermiso" prefHeight="64.0" prefWidth="375.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Editar" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </JFXButton>
-                  <ComboBox fx:id="generado_editar_tipo_permiso" layoutX="526.0" layoutY="35.0" prefHeight="27.0" prefWidth="281.0" />
-                  <TextField fx:id="generado_editar_search_permiso" layoutX="231.0" layoutY="35.0" prefHeight="27.0" prefWidth="286.0" promptText="Ingrese nombre de permiso para búsqueda" />
-                  <Separator layoutY="118.0" prefHeight="4.0" prefWidth="837.0" />
-                  <RadioButton fx:id="generado_editar_modo_permanente" layoutX="132.0" layoutY="87.0" mnemonicParsing="false" selected="true" text="Permanente">
-                     <toggleGroup>
-                        <ToggleGroup fx:id="modo1" />
-                     </toggleGroup>
-                  </RadioButton>
-                  <RadioButton fx:id="generado_editar_modo_ocasional" layoutX="260.0" layoutY="87.0" mnemonicParsing="false" text="Ocasional" toggleGroup="$modo1" />
-                  <Label layoutX="40.0" layoutY="87.0" text="Permiso es: " />
-                  <DatePicker fx:id="generado_editar_fecha_ocasional" disable="true" editable="false" layoutX="362.0" layoutY="82.0" prefHeight="27.0" prefWidth="445.0" />
-               </children>
-            </Pane>
+            <Pane id="pane_emision_permiso" fx:id="pane_generado_editar_permiso" layoutX="-1.0" layoutY="-1.0" prefHeight="601.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false" />
             <Pane fx:id="pane_liquidacion" layoutX="-2.0" layoutY="1.0" prefHeight="609.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
                <children>
                   <TableView fx:id="liquidar_tv" layoutX="14.0" layoutY="52.0" prefHeight="540.0" prefWidth="809.0">
@@ -384,7 +348,7 @@
               <items>
                 <MenuItem fx:id="menu_liquidar_persona" mnemonicParsing="false" onAction="#liquidarMenuAction" text="Liquidar Persona" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="edit_permiso_generado" mnemonicParsing="false" onAction="#editarGeneradosMenuAction" text="Editar Permisos Generados" />
+                  <MenuItem fx:id="eliminar_permiso_generado" mnemonicParsing="false" onAction="#eliminarGeneradosMenuAction" text="Eliminar Permisos Generados" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Permisos">
