@@ -1,3 +1,4 @@
+
 # Compiled class file
 *.class
 
@@ -28,3 +29,7 @@ dist/**
 .dist/**
 .build/**
 build/**
+recreate_db.sql
+Credenciales.txt
+cbb.sql
+create_db.sql
