@@ -23,11 +23,20 @@ public class Cantidad {
     private String fechaemision;
     private String fechaexpiracion;
     private int id;
+    private String codigo_permiso;
     private double precio;
     private String permiso;
     
     public Cantidad(){
         
+    }
+
+    public String getCodigo_permiso() {
+        return codigo_permiso;
+    }
+
+    public void setCodigo_permiso(String codigo_permiso) {
+        this.codigo_permiso = codigo_permiso;
     }
 
     public double getPrecio() {
@@ -120,20 +129,5 @@ public class Cantidad {
 
     public void setCedula(String cedula) {
         this.cedula = cedula;
-    }
-    
-    public String getFullCode(){
-        if(this.getId() < 10){
-            return String.format("0000%d", this.getId());
-        }else if(this.getId() >= 10 && this.getId() < 100){
-            return String.format("000%d", this.getId());
-        }else if(this.getId() >= 100 && this.getId() < 1000){
-            return String.format("00%d", this.getId());
-        }else if(this.getId() >= 1000 && this.getId() < 10000){
-            return String.format("00%d", this.getId());
-        }else{
-            return String.format("%d", this.getId());
-        }
-    }
-    
+    }  
 }

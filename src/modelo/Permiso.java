@@ -32,8 +32,26 @@ public class Permiso {
     private String capacidad;
     private Tipo_Permiso permiso;
     private Clientes clientes;
+    private String codigo_permiso;
+    private Boolean deleted;
 
     public Permiso() {
+    }
+
+    public String getCodigo_permiso() {
+        return codigo_permiso;
+    }
+
+    public void setCodigo_permiso(String codigo_permiso) {
+        this.codigo_permiso = codigo_permiso;
+    }
+
+    public Boolean getIs_deleted() {
+        return deleted;
+    }
+
+    public void setIs_deleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
     public String getVehiculo_marca() {
@@ -189,21 +207,7 @@ public class Permiso {
     public String getFullName() {
         return clientes.getFullName();
     }
-
-    public String getFullCode() {
-        if (this.getId() < 10) {
-            return String.format("0000%d", this.getId());
-        } else if (this.getId() >= 10 && this.getId() < 100) {
-            return String.format("000%d", this.getId());
-        } else if (this.getId() >= 100 && this.getId() < 1000) {
-            return String.format("00%d", this.getId());
-        } else if (this.getId() >= 1000 && this.getId() < 10000) {
-            return String.format("00%d", this.getId());
-        } else {
-            return String.format("%d", this.getId());
-        }
-    }
-
+    
     public String getFullFechaExpiracion() {
         try {
             SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
@@ -216,7 +220,7 @@ public class Permiso {
     }
 
     public String getPrecioEnLetras() {
-        double precio = 34.671;
+        double precio = this.getPermiso().getPrecio();
         String entero = PrecioToLetras.cantidadConLetra(String.valueOf(precio));
         double x = precio - (long) precio;
         String decimal = String.format("%.0f/100", x * 100);

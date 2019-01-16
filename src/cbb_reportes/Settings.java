@@ -12,7 +12,9 @@ package cbb_reportes;
 public class Settings {
     private static boolean DEBUG = false;
     public static String host = DEBUG ? "localhost" : "167.99.11.161";
-    public static String version = "1.0.2";
+    public static String username = DEBUG ? "cbc_user" : "cbb_user";
+    public static String password = DEBUG ? "cbc_password" : "g/u}5?n~sA2x<fR>*(5~es(v]P}MC<fg";
+    public static String version = "1.1.0";
     public static int user_id = 1;
     public static int LENGTH_NATIONAL_ID = 15;
     public static int LENGTH_NAMES = 250;
@@ -24,5 +26,19 @@ public class Settings {
 
     public static void setUser_id(int user_id) {
         Settings.user_id = user_id;
+    }
+    
+    public static String getFullCode(int id) {
+        if (id < 10) {
+            return String.format("0000%d", id);
+        } else if (id >= 10 && id < 100) {
+            return String.format("000%d", id);
+        } else if (id >= 100 && id < 1000) {
+            return String.format("00%d", id);
+        } else if (id >= 1000 && id < 10000) {
+            return String.format("00%d", id);
+        } else {
+            return String.format("%d", id);
+        }
     }
 }

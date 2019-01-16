@@ -153,7 +153,7 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
-                  <Label id="arqueo_total_permisos" fx:id="arqueo_total_permiso" layoutX="198.0" layoutY="116.0" prefHeight="23.0" prefWidth="131.0" text="0">
+                  <Label id="arqueo_total_permisos" fx:id="arqueo_total_permiso" layoutX="177.0" layoutY="116.0" prefHeight="23.0" prefWidth="50.0" text="0">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -183,6 +183,11 @@
                   </Button>
                   <TextField fx:id="arqueo_search_permiso" layoutX="40.0" layoutY="79.0" prefHeight="27.0" prefWidth="429.0" promptText="Ingrese nombre de permiso para búsqueda" />
                   <ComboBox fx:id="arqueo_modo_permiso" layoutX="40.0" layoutY="11.0" prefHeight="27.0" prefWidth="768.0" promptText="Tipo de Permiso" />
+                  <Label fx:id="arqueo_total_anulados" layoutX="263.0" layoutY="116.0" prefHeight="23.0" prefWidth="192.0" text="Total Anulados: ">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
                </children>
             </Pane>
             <Pane fx:id="pane_agregar_permiso" layoutY="-2.0" prefHeight="602.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false">
