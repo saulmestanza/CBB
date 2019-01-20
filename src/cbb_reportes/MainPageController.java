@@ -78,6 +78,8 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
@@ -444,7 +446,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -492,7 +494,7 @@ public class MainPageController implements Initializable {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    // 
                 }
             }
         });
@@ -525,7 +527,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -567,7 +569,7 @@ public class MainPageController implements Initializable {
             liquidar_tv.getItems().addAll(clientesList);
             empezarLiquidarPDF(cliente);
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -599,7 +601,7 @@ public class MainPageController implements Initializable {
             liquidar_tv.getItems().clear();
             liquidar_tv.getItems().addAll(clientesList);
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -620,32 +622,31 @@ public class MainPageController implements Initializable {
              */
 
             _file_ = new File(String.format("%sliquidacion_%s.pdf", directoryName, cliente.getApellido()));
-            OutputStream file = new FileOutputStream(_file_);
-            Document document = new Document();
-            PdfWriter writer = PdfWriter.getInstance(document, file);
-            document.open();
-            PdfContentByte canvas = writer.getDirectContentUnder();
-            Image image = null;
+            try (OutputStream file = new FileOutputStream(_file_)) {
+                Document document = new Document();
+                PdfWriter writer = PdfWriter.getInstance(document, file);
+                document.open();
+                PdfContentByte canvas = writer.getDirectContentUnder();
+                Image image = null;
 
-            document.setPageSize(PageSize.A4);
-            document.setMargins(40, 40, 73, 10);
-            document.newPage();
-            generateLiquidarPDF(document, writer, cliente);
-            canvas = writer.getDirectContentUnder();
-            image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_liquidacion.png"));
-            image.scaleAbsolute(PageSize.A4);
-            image.setAbsolutePosition(0, 0);
-            canvas.addImage(image);
-            /**
-             * ************* CIERRE **************
-             *
-             */
-            document.close();
-            file.close();
+                document.setPageSize(PageSize.A4);
+                document.setMargins(40, 40, 73, 10);
+                document.newPage();
+                generateLiquidarPDF(document, writer, cliente);
+                canvas = writer.getDirectContentUnder();
+                image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_liquidacion.png"));
+                image.scaleAbsolute(PageSize.A4);
+                image.setAbsolutePosition(0, 0);
+                canvas.addImage(image);
+                /**
+                 * ************* CIERRE **************
+                 *
+                 */
+                document.close();
+            }
             goToPrintDialog(_file_.getAbsolutePath());
         } catch (Exception e) {
-            e.printStackTrace();
-
+            saveLogError(e);
         }
     }
 
@@ -808,7 +809,7 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -876,7 +877,7 @@ public class MainPageController implements Initializable {
             document.add(p1);
             document.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
         return path;
     }
@@ -983,7 +984,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -1145,11 +1146,11 @@ public class MainPageController implements Initializable {
                                 cliente.setActividad_economica(rs.getString("actividad_economica"));
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            saveLogError(e);
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    saveLogError(e);
                 }
                 try {
                     final String _modo_permiso_ = modo_permiso.getSelectionModel().getSelectedItem().toString();
@@ -1167,7 +1168,7 @@ public class MainPageController implements Initializable {
                         }
                         rs.close();
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        saveLogError(e);
                     } finally {
                         mysqlConnect.disconnect();
                     }
@@ -1230,7 +1231,7 @@ public class MainPageController implements Initializable {
                         goToPrintDialog(_path_list_);
                     });
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    saveLogError(e);
                     showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
                 } finally {
                     mysqlConnect.disconnect();
@@ -1311,7 +1312,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -1422,13 +1423,12 @@ public class MainPageController implements Initializable {
                 preparedStmt.setInt(2, id);
                 preparedStmt.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                saveLogError(e);
             } finally {
                 mysqlConnect.disconnect();
             }
         } catch (Exception e) {
-            e.printStackTrace();
-
+            saveLogError(e);
         }
     }
 
@@ -1568,7 +1568,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -1719,7 +1719,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -1860,7 +1860,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -2012,7 +2012,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -2148,7 +2148,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -2295,7 +2295,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -2434,7 +2434,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -2584,7 +2584,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -2614,7 +2614,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -2657,12 +2657,9 @@ public class MainPageController implements Initializable {
             @Override
             public TableRow<Permiso> call(TableView<Permiso> tableView2) {
                 final TableRow<Permiso> row = new TableRow<>();
-                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        editar_generados_tv.getSelectionModel().clearSelection();
-                        event.consume();
-                    }
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
+                    editar_generados_tv.getSelectionModel().clearSelection();
+                    event1.consume();
                 });
                 return row;
             }
@@ -2798,7 +2795,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -2834,7 +2831,7 @@ public class MainPageController implements Initializable {
             pstmt = mysqlConnect.connect().prepareStatement(query);
             pstmt.setString(1, String.valueOf(_permiso_.getId()));
             pstmt.executeUpdate();
-            permisos = new ArrayList<Permiso>();
+            permisos = new ArrayList<>();
             String sql = "SELECT `permisos`.`id`,  `permisos`.`codigo_permiso`,  `permisos`.`modo_permiso`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false ORDER BY permisos.id;";
             try {
                 ResultSet rs;
@@ -2872,7 +2869,7 @@ public class MainPageController implements Initializable {
                 }
                 rs.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                saveLogError(e);
             } finally {
                 mysqlConnect.disconnect();
             }
@@ -2880,7 +2877,7 @@ public class MainPageController implements Initializable {
             editar_generados_tv.getItems().clear();
             editar_generados_tv.getItems().addAll(permisos);
         } catch (SQLException | IndexOutOfBoundsException ex) {
-            ex.printStackTrace();
+            saveLogError(ex);
         }
     }
 
@@ -2939,7 +2936,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -2977,7 +2974,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -3025,12 +3022,9 @@ public class MainPageController implements Initializable {
             @Override
             public TableRow<Permiso> call(TableView<Permiso> tableView2) {
                 final TableRow<Permiso> row = new TableRow<>();
-                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        consultar_tv.getSelectionModel().clearSelection();
-                        event.consume();
-                    }
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
+                    consultar_tv.getSelectionModel().clearSelection();
+                    event1.consume();
                 });
                 return row;
             }
@@ -3126,7 +3120,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -3161,7 +3155,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -3182,12 +3176,9 @@ public class MainPageController implements Initializable {
             @Override
             public TableRow<Tipo_Permiso> call(TableView<Tipo_Permiso> tableView2) {
                 final TableRow<Tipo_Permiso> row = new TableRow<>();
-                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        editar_tv.getSelectionModel().clearSelection();
-                        event.consume();
-                    }
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
+                    editar_tv.getSelectionModel().clearSelection();
+                    event1.consume();
                 });
                 return row;
             }
@@ -3239,7 +3230,7 @@ public class MainPageController implements Initializable {
                 editar_tv.getItems().addAll(tps);
                 showDialog("Permiso Editado", "Permiso editado exitosamente", AlertType.INFORMATION);
             } catch (Exception e) {
-                e.printStackTrace();
+                saveLogError(e);
                 showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
             } finally {
                 mysqlConnect.disconnect();
@@ -3280,7 +3271,7 @@ public class MainPageController implements Initializable {
                 agregar_permiso_is_active.setSelected(false);
                 showDialog("Exitos", "Nuevo tipo permiso creado", AlertType.INFORMATION);
             } catch (Exception e) {
-                e.printStackTrace();
+                saveLogError(e);
                 showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
             } finally {
                 mysqlConnect.disconnect();
@@ -3313,7 +3304,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -3361,12 +3352,9 @@ public class MainPageController implements Initializable {
             @Override
             public TableRow<Permiso> call(TableView<Permiso> tableView2) {
                 final TableRow<Permiso> row = new TableRow<>();
-                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        detalle_tv.getSelectionModel().clearSelection();
-                        event.consume();
-                    }
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
+                    detalle_tv.getSelectionModel().clearSelection();
+                    event1.consume();
                 });
                 return row;
             }
@@ -3402,8 +3390,7 @@ public class MainPageController implements Initializable {
         detalle_date_picker_hasta.setEditable(false);
 
         // detalle_date_picker_desde.setValue(LocalDate.now());
-        final Callback<DatePicker, DateCell> dayCellFactory
-                = new Callback<DatePicker, DateCell>() {
+        final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
             @Override
             public DateCell call(final DatePicker datePicker) {
                 return new DateCell() {
@@ -3423,8 +3410,7 @@ public class MainPageController implements Initializable {
         };
         detalle_date_picker_hasta.setDayCellFactory(dayCellFactory);
 
-        final Callback<DatePicker, DateCell> desdeCellFactory
-                = new Callback<DatePicker, DateCell>() {
+        final Callback<DatePicker, DateCell> desdeCellFactory = new Callback<DatePicker, DateCell>() {
             @Override
             public DateCell call(final DatePicker datePicker) {
                 return new DateCell() {
@@ -3515,7 +3501,7 @@ public class MainPageController implements Initializable {
                 }
                 rs.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                saveLogError(e);
             } finally {
                 mysqlConnect.disconnect();
             }
@@ -3555,7 +3541,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -3617,12 +3603,9 @@ public class MainPageController implements Initializable {
             @Override
             public TableRow<Permiso> call(TableView<Permiso> tableView2) {
                 final TableRow<Permiso> row = new TableRow<>();
-                row.addEventFilter(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        arqueo_tv.getSelectionModel().clearSelection();
-                        event.consume();
-                    }
+                row.addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
+                    arqueo_tv.getSelectionModel().clearSelection();
+                    event1.consume();
                 });
                 return row;
             }
@@ -3839,7 +3822,7 @@ public class MainPageController implements Initializable {
 
             goToPrintDialog(_file_.getAbsolutePath());
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -3921,7 +3904,7 @@ public class MainPageController implements Initializable {
                 }
                 rs.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                saveLogError(e);
             } finally {
                 mysqlConnect.disconnect();
             }
@@ -4004,7 +3987,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -4138,7 +4121,7 @@ public class MainPageController implements Initializable {
 
             goToPrintDialog(_file_.getAbsolutePath());
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -4187,7 +4170,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -4330,7 +4313,7 @@ public class MainPageController implements Initializable {
 
             goToPrintDialog(_file_.getAbsolutePath());
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -4366,7 +4349,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -4506,7 +4489,7 @@ public class MainPageController implements Initializable {
 
             goToPrintDialog(_file_.getAbsolutePath());
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         }
     }
 
@@ -4527,7 +4510,7 @@ public class MainPageController implements Initializable {
             stage.show();
             ap_main_page.getScene().getWindow().hide();
         } catch (SQLException | IOException ex) {
-            Logger.getLogger(MainPageController.class.getName()).log(Level.SEVERE, null, ex);
+            saveLogError(ex);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -4575,29 +4558,25 @@ public class MainPageController implements Initializable {
         permisos = new ArrayList<>();
         usuario = new Usuario();
         MysqlConnect mysqlConnect = new MysqlConnect();
+        String sql = "SELECT * FROM usuarios WHERE id=" + Settings.getUser_id() + ";";
         try {
-            String sql = "SELECT * FROM usuarios WHERE id=" + Settings.getUser_id() + ";";
-            try {
-                Statement st = (Statement) mysqlConnect.connect().createStatement();
-                ResultSet rs = st.executeQuery(sql);
-                while (rs.next()) {
-                    boolean is_active = rs.getBoolean("is_active");
-                    if (is_active) {
-                        usuario.setId(rs.getInt("id"));
-                        usuario.setFirst_name(rs.getString("nombre"));
-                        usuario.setLast_name(rs.getString("apellido"));
-                        usuario.setUsuario(rs.getString("usuario"));
-                        usuario.setIs_active(rs.getBoolean("is_active"));
-                        usuario.setIs_superuser(rs.getBoolean("is_superuser"));
-                    }
+            Statement st = (Statement) mysqlConnect.connect().createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                boolean is_active = rs.getBoolean("is_active");
+                if (is_active) {
+                    usuario.setId(rs.getInt("id"));
+                    usuario.setFirst_name(rs.getString("nombre"));
+                    usuario.setLast_name(rs.getString("apellido"));
+                    usuario.setUsuario(rs.getString("usuario"));
+                    usuario.setIs_active(rs.getBoolean("is_active"));
+                    usuario.setIs_superuser(rs.getBoolean("is_superuser"));
                 }
-                st.close();
-                rs.close();
-            } catch (Exception e1) {
-                e1.printStackTrace();
             }
+            st.close();
+            rs.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -4645,7 +4624,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+           saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }
@@ -4753,7 +4732,7 @@ public class MainPageController implements Initializable {
                 usuario_tv.getItems().addAll(usuarioList);
                 showDialog("Usuario Editado", "Usuario editado exitosamente", AlertType.INFORMATION);
             } catch (Exception e) {
-                e.printStackTrace();
+                saveLogError(e);
                 showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
             } finally {
                 mysqlConnect.disconnect();
@@ -4802,7 +4781,7 @@ public class MainPageController implements Initializable {
                 usuario_agregar_is_superuser.setSelected(false);
                 showDialog("Exitos", "Nuevo usuario creado", AlertType.INFORMATION);
             } catch (Exception e) {
-                e.printStackTrace();
+                saveLogError(e);
                 showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
             } finally {
                 mysqlConnect.disconnect();
@@ -4822,9 +4801,26 @@ public class MainPageController implements Initializable {
                 }
                 Desktop.getDesktop().open(myFile);
             } catch (IOException | IllegalArgumentException | NullPointerException ex) {
+                saveLogError(ex);
                 showDialog("Error", "No se ha encontrado el archivo seleccionado", AlertType.ERROR);
             }
         }
     }
 
+    private void saveLogError(Exception error) {
+        MysqlConnect mysqlConnect = new MysqlConnect();
+        try {
+            StringWriter sw = new StringWriter();
+            error.printStackTrace(new PrintWriter(sw));
+            String query = "INSERT INTO error(error_simple, error) values (?,?)";
+            PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
+            preparedStmt.setString(1, error.getLocalizedMessage());
+            preparedStmt.setString(2, sw.toString());
+            preparedStmt.execute();
+        } catch (SQLException e) {
+            //
+        } finally {
+            mysqlConnect.disconnect();
+        }
+    }
 }
