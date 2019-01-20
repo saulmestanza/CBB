@@ -67,6 +67,7 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 
 import com.itextpdf.text.pdf.PdfWriter;
 import com.jfoenix.controls.JFXButton;
@@ -76,6 +77,7 @@ import com.jfoenix.controls.JFXTextField;
 import com.sun.javafx.scene.control.skin.ComboBoxListViewSkin;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -86,6 +88,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.EventHandler;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
@@ -98,7 +101,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableRow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
 import modelo.Cantidad;
 import modelo.Clientes;
 
@@ -403,8 +405,6 @@ public class MainPageController implements Initializable {
     @FXML
     private TableColumn<Clientes, String> liquidar_nombre;
     @FXML
-    private TableColumn<Clientes, String> liquidar_razon_social;
-    @FXML
     private TableColumn<Clientes, String> liquidar_ruc;
     @FXML
     private TableColumn<Clientes, String> liquidar_liquidar;
@@ -438,9 +438,6 @@ public class MainPageController implements Initializable {
                     clientes.setNombre(rs.getString("nombre"));
                     clientes.setApellido(rs.getString("apellido"));
                     clientes.setCedula(rs.getString("cedula"));
-                    clientes.setDireccion(rs.getString("direccion"));
-                    clientes.setRazon_social(rs.getString("razon_social"));
-                    clientes.setActividad_economica(rs.getString("actividad_economica"));
                     clientesList.add(clientes);
                 }
             }
@@ -451,7 +448,6 @@ public class MainPageController implements Initializable {
             mysqlConnect.disconnect();
         }
         liquidar_nombre.setCellValueFactory(new PropertyValueFactory<>("FullName"));
-        liquidar_razon_social.setCellValueFactory(new PropertyValueFactory<>("razon_social"));
         liquidar_ruc.setCellValueFactory(new PropertyValueFactory<>("cedula"));
         liquidar_liquidar.setCellValueFactory(new PropertyValueFactory<>("liquidar"));
 
@@ -557,9 +553,6 @@ public class MainPageController implements Initializable {
                     clientes.setNombre(rs.getString("nombre"));
                     clientes.setApellido(rs.getString("apellido"));
                     clientes.setCedula(rs.getString("cedula"));
-                    clientes.setDireccion(rs.getString("direccion"));
-                    clientes.setRazon_social(rs.getString("razon_social"));
-                    clientes.setActividad_economica(rs.getString("actividad_economica"));
                     clientesList.add(clientes);
                 }
             }
@@ -591,8 +584,6 @@ public class MainPageController implements Initializable {
                     clientes.setNombre(rs.getString("nombre"));
                     clientes.setApellido(rs.getString("apellido"));
                     clientes.setCedula(rs.getString("cedula"));
-                    clientes.setDireccion(rs.getString("direccion"));
-                    clientes.setRazon_social(rs.getString("razon_social"));
                     clientesList.add(clientes);
                 }
             }
@@ -708,7 +699,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("     %s", cliente.getActividad_economica()));
+            _p1_.add("");
             p1.add(_p1_);
             document.add(p1);
 
@@ -722,7 +713,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", cliente.getDireccion()));
+            _p1_.add("");
             p1.add(_p1_);
             document.add(p1);
 
@@ -790,7 +781,7 @@ public class MainPageController implements Initializable {
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("    %s", cliente.getActividad_economica()));
+            _p1_.add("");
             p1.add(_p1_);
             document.add(p1);
 
@@ -804,7 +795,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", cliente.getDireccion()));
+            _p1_.add("");
             p1.add(_p1_);
             document.add(p1);
 
@@ -1114,21 +1105,15 @@ public class MainPageController implements Initializable {
                         cliente.setNombre(emision_nombre.getText());
                         cliente.setApellido(emision_apellido.getText());
                         cliente.setCedula(emision_cedula.getText());
-                        cliente.setRazon_social(emision_razon_social.getText());
-                        cliente.setDireccion(emision_direccion.getText());
                         cliente.setIs_active(rs.getBoolean("is_active"));
                         cliente.setIs_closed(rs.getBoolean("is_closed"));
-                        cliente.setActividad_economica(emision_actividad_economica.getText());
                     } else {
-                        String query = "INSERT INTO clientes(nombre, apellido, cedula, razon_social, direccion, actividad_economica)"
-                                + " values (?,?,?,?,?,?)";
+                        String query = "INSERT INTO clientes(nombre, apellido, cedula)"
+                                + " values (?,?,?)";
                         PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
                         preparedStmt.setString(1, emision_nombre.getText());
                         preparedStmt.setString(2, emision_apellido.getText());
                         preparedStmt.setString(3, emision_cedula.getText());
-                        preparedStmt.setString(4, emision_razon_social.getText());
-                        preparedStmt.setString(5, emision_direccion.getText());
-                        preparedStmt.setString(6, emision_actividad_economica.getText());
                         preparedStmt.execute();
                         sql = "SELECT * FROM clientes WHERE cedula = '" + emision_cedula.getText() + "';";
                         try {
@@ -1139,11 +1124,8 @@ public class MainPageController implements Initializable {
                                 cliente.setNombre(rs.getString("nombre"));
                                 cliente.setApellido(rs.getString("apellido"));
                                 cliente.setCedula(rs.getString("cedula"));
-                                cliente.setRazon_social(rs.getString("razon_social"));
-                                cliente.setDireccion(rs.getString("direccion"));
                                 cliente.setIs_active(rs.getBoolean("is_active"));
                                 cliente.setIs_closed(rs.getBoolean("is_closed"));
-                                cliente.setActividad_economica(rs.getString("actividad_economica"));
                             }
                         } catch (Exception e) {
                             saveLogError(e);
@@ -1178,14 +1160,14 @@ public class MainPageController implements Initializable {
                             + "modo_permiso, id_usuario, id_tipo_permiso, "
                             + "id_clientes, numero_deposito, fecha_documento,"
                             + "vehiculo_marca, extintor, capacidad, placa,"
-                            + "codigo_permiso"
+                            + "codigo_permiso, razon_social, direccion, actividad_economica"
                             + ")"
                             + " values ("
                             + "?,?,?,"
                             + "?,?,?,"
                             + "?,?,?,"
                             + "?,?,?,?,"
-                            + "?"
+                            + "?,?,?,?"
                             + ")";
                     PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
                     preparedStmt.setString(1, emision_descripcion.getText());
@@ -1203,6 +1185,9 @@ public class MainPageController implements Initializable {
                     preparedStmt.setString(12, emision_capacidad.getText());
                     preparedStmt.setString(13, emision_placa.getText());
                     preparedStmt.setString(14, codigo_permiso);
+                    preparedStmt.setString(15, emision_razon_social.getText());
+                    preparedStmt.setString(16, emision_direccion.getText());
+                    preparedStmt.setString(17, emision_actividad_economica.getText());
                     preparedStmt.executeUpdate();
 
                     emision_nombre.setText("");
@@ -1259,12 +1244,12 @@ public class MainPageController implements Initializable {
                     + "permisos.capacidad, permisos.id, permisos.descripcion, "
                     + "permisos.fecha_emision, permisos.fecha_expiracion, "
                     + "permisos.ruta_pdf, permisos.modo_permiso, permisos.codigo_permiso, "
-                    + "permisos.deleted, "
+                    + "permisos.deleted, permisos.direccion, permisos.razon_social, "
+                    + "permisos.actividad_economica, "
                     + "tipo_permiso.id as id_tipo_permiso, tipo_permiso.precio, "
                     + "tipo_permiso.is_active as tipo_permiso_is_active, "
                     + "tipo_permiso.tipo_permiso, clientes.id as id_clientes, "
-                    + "clientes.nombre, clientes.apellido, clientes.direccion, "
-                    + "clientes.razon_social, clientes.actividad_economica, "
+                    + "clientes.nombre, clientes.apellido, "
                     + "clientes.is_active as cliente_is_active, clientes.cedula "
                     + "FROM permisos , tipo_permiso, clientes "
                     + "WHERE permisos.id_tipo_permiso = tipo_permiso.id AND "
@@ -1288,17 +1273,17 @@ public class MainPageController implements Initializable {
                     permiso.setPlaca(rs.getString("placa"));
                     permiso.setCapacidad(rs.getString("capacidad"));
                     permiso.setCodigo_permiso(rs.getString("codigo_permiso"));
-                    permiso.setIs_deleted(rs.getBoolean("deleted"));
+                    permiso.setDeleted(rs.getBoolean("deleted"));
+                    permiso.setRazon_social(rs.getString("razon_social"));
+                    permiso.setDireccion(rs.getString("direccion"));
+                    permiso.setActividad_economica(rs.getString("actividad_economica"));
 
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
                     cliente.setNombre(rs.getString("nombre"));
                     cliente.setApellido(rs.getString("apellido"));
                     cliente.setCedula(rs.getString("cedula"));
-                    cliente.setRazon_social(rs.getString("razon_social"));
-                    cliente.setDireccion(rs.getString("direccion"));
                     cliente.setIs_active(rs.getBoolean("cliente_is_active"));
-                    cliente.setActividad_economica(rs.getString("actividad_economica"));
 
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id_tipo_permiso"));
@@ -1319,22 +1304,33 @@ public class MainPageController implements Initializable {
         generatePDF(permiso);
     }
 
+    private void makeDirectory(String directoryName) {
+        File directory = new File(directoryName);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+    }
+
     private void generatePDF(Permiso permiso) {
         File _file_ = null;
         try {
             String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
             String directoryName = String.format("%s/pdfs/%s/", _directory_, permiso.getCliente().getApellido());
-            File directory = new File(directoryName);
-            if (!directory.exists()) {
-                directory.mkdirs();
+            makeDirectory(directoryName);
+            _file_ = new File(String.format("%spermiso_%s.pdf", directoryName, permiso.getCodigo_permiso()));
+            OutputStream file = null;
+            try {
+                file = new FileOutputStream(_file_);
+            } catch (FileNotFoundException ef) {
+                directoryName = String.format("%s/pdfs/VACIO/", _directory_);
+                makeDirectory(directoryName);
+                _file_ = new File(String.format("%spermiso_%s.pdf", directoryName, permiso.getCodigo_permiso()));
+                file = new FileOutputStream(_file_);
             }
             /**
              * ************* PERMISO **************
              *
              */
-
-            _file_ = new File(String.format("%spermiso_%s.pdf", directoryName, permiso.getCodigo_permiso()));
-            OutputStream file = new FileOutputStream(_file_);
             Document document = new Document();
             PdfWriter writer = PdfWriter.getInstance(document, file);
             document.open();
@@ -1346,38 +1342,27 @@ public class MainPageController implements Initializable {
             document.newPage();
             switch (permiso.getModo_permiso()) {
                 case "Transporte":
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_transporte.png"));
                     generateTransportePDF(document, writer, permiso);
                     break;
                 case "Ocasional":
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_ocasional.png"));
                     generateOcasionalPDF(document, writer, permiso);
                     break;
                 case "Construcción":
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_construccion.png"));
                     generateConstruccionPDF(document, writer, permiso);
                     break;
                 case "Funcionamiento":
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_funcionamiento.png"));
                     generateFuncionamientoPDF(document, writer, permiso);
                     break;
                 default:
+                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_transporte.png"));
                     generateTransportePDF(document, writer, permiso);
             }
 
             canvas = writer.getDirectContentUnder();
-            switch (permiso.getModo_permiso()) {
-                case "Transporte":
-                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_transporte.png"));
-                    break;
-                case "Ocasional":
-                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_ocasional.png"));
-                    break;
-                case "Construcción":
-                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_construccion.png"));
-                    break;
-                case "Funcionamiento":
-                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_funcionamiento.png"));
-                    break;
-                default:
-                    image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_transporte.png"));
-            }
             image.scaleAbsolute(PageSize.A4);
             image.setAbsolutePosition(0, 0);
             canvas.addImage(image);
@@ -1830,35 +1815,81 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getDescripcion()));
-            p1.add(_p1_);
-            document.add(p1);
+            String descripcion = permiso.getDescripcion();
+            if (descripcion.toCharArray().length > 60) {
+                _p1_.add(String.format("%s", descripcion.substring(0, 60)));
+                p1.add(_p1_);
+                document.add(p1);
+                
+                p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.setFont(smallfont);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", descripcion.substring(60, descripcion.toCharArray().length)));
+                p1.add(_p1_);
+                document.add(p1);
 
-            p1.clear();
-            p1.setSpacingBefore(12f);
-            _p1_.clear();
-            _p1_.setFont(smallfont);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
-            p1.add(_p1_);
-            document.add(p1);
+                p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.setFont(smallfont);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getDireccion()));
+                p1.add(_p1_);
+                document.add(p1);
 
-            p1.clear();
-            p1.setSpacingBefore(8f);
-            _p1_.clear();
-            _p1_.setFont(font);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
-            p1.add(_p1_);
-            document.add(p1);
+                p1.clear();
+                p1.setSpacingBefore(6f);
+                _p1_.clear();
+                _p1_.setFont(font);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
+                p1.add(_p1_);
+                document.add(p1);
+            } else {
+                _p1_.add(String.format("%s", permiso.getDescripcion()));
+                p1.add(_p1_);
+                document.add(p1);
+
+                p1.clear();
+                p1.setSpacingBefore(12f);
+                _p1_.clear();
+                _p1_.setFont(smallfont);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getDireccion()));
+                p1.add(_p1_);
+                document.add(p1);
+
+                p1.clear();
+                p1.setSpacingBefore(8f);
+                _p1_.clear();
+                _p1_.setFont(font);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
+                p1.add(_p1_);
+                document.add(p1);
+            }
         } catch (Exception e) {
             saveLogError(e);
         }
@@ -1982,35 +2013,81 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getDescripcion()));
-            p1.add(_p1_);
-            document.add(p1);
+            String descripcion = permiso.getDescripcion();
+            if (descripcion.toCharArray().length > 60) {
+                _p1_.add(String.format("%s", descripcion.substring(0, 60)));
+                p1.add(_p1_);
+                document.add(p1);
+                
+                p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.setFont(smallfont);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", descripcion.substring(60, descripcion.toCharArray().length)));
+                p1.add(_p1_);
+                document.add(p1);
 
-            p1.clear();
-            p1.setSpacingBefore(12f);
-            _p1_.clear();
-            _p1_.setFont(smallfont);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
-            p1.add(_p1_);
-            document.add(p1);
+                p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.setFont(smallfont);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getDireccion()));
+                p1.add(_p1_);
+                document.add(p1);
 
-            p1.clear();
-            p1.setSpacingBefore(8f);
-            _p1_.clear();
-            _p1_.setFont(font);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
-            p1.add(_p1_);
-            document.add(p1);
+                p1.clear();
+                p1.setSpacingBefore(6f);
+                _p1_.clear();
+                _p1_.setFont(font);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
+                p1.add(_p1_);
+                document.add(p1);
+            } else {
+                _p1_.add(String.format("%s", permiso.getDescripcion()));
+                p1.add(_p1_);
+                document.add(p1);
+
+                p1.clear();
+                p1.setSpacingBefore(12f);
+                _p1_.clear();
+                _p1_.setFont(smallfont);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getDireccion()));
+                p1.add(_p1_);
+                document.add(p1);
+
+                p1.clear();
+                p1.setSpacingBefore(8f);
+                _p1_.clear();
+                _p1_.setFont(font);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
+                p1.add(_p1_);
+                document.add(p1);
+            }
         } catch (Exception e) {
             saveLogError(e);
         }
@@ -2132,7 +2209,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
+            _p1_.add(String.format("%s", permiso.getDireccion()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -2279,7 +2356,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
+            _p1_.add(String.format("%s", permiso.getDireccion()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -2383,7 +2460,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(permiso.getCliente().getRazon_social());
+            _p1_.add(permiso.getRazon_social());
             p1.add(_p1_);
             document.add(p1);
 
@@ -2395,7 +2472,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getCliente().getActividad_economica()));
+            _p1_.add(String.format("%s", permiso.getActividad_economica()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -2407,7 +2484,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
+            _p1_.add(String.format("%s", permiso.getDireccion()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -2533,7 +2610,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(permiso.getCliente().getRazon_social());
+            _p1_.add(permiso.getRazon_social());
             p1.add(_p1_);
             document.add(p1);
 
@@ -2545,7 +2622,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getCliente().getActividad_economica()));
+            _p1_.add(String.format("%s", permiso.getActividad_economica()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -2557,7 +2634,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getCliente().getDireccion()));
+            _p1_.add(String.format("%s", permiso.getDireccion()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -2726,7 +2803,7 @@ public class MainPageController implements Initializable {
                 }
             }
         });
-        generado_editar_razon_social.setText(_permiso_.getCliente().getRazon_social());
+        generado_editar_razon_social.setText(_permiso_.getRazon_social());
         generado_editar_direccion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (generado_editar_direccion.getText().length() >= Settings.LENGTH_NAMES) {
@@ -2734,7 +2811,7 @@ public class MainPageController implements Initializable {
                 }
             }
         });
-        generado_editar_direccion.setText(_permiso_.getCliente().getDireccion());
+        generado_editar_direccion.setText(_permiso_.getDireccion());
         generado_editar_descripcion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
             if (newValue.intValue() > oldValue.intValue()) {
                 if (generado_editar_descripcion.getText().length() >= Settings.LENGTH_DESCRIPTION) {
@@ -2832,7 +2909,19 @@ public class MainPageController implements Initializable {
             pstmt.setString(1, String.valueOf(_permiso_.getId()));
             pstmt.executeUpdate();
             permisos = new ArrayList<>();
-            String sql = "SELECT `permisos`.`id`,  `permisos`.`codigo_permiso`,  `permisos`.`modo_permiso`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false ORDER BY permisos.id;";
+            String sql = "SELECT `permisos`.`id`,  `permisos`.`codigo_permiso`,"
+                    + "  `permisos`.`modo_permiso`, `clientes`.`nombre`, "
+                    + "`clientes`.`apellido`, `clientes`.`cedula`, "
+                    + "`permisos`.`razon_social`, `permisos`.`direccion`, "
+                    + "`permisos`.`descripcion`, `permisos`.`fecha_emision`, "
+                    + "`permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, "
+                    + "`permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, "
+                    + "`tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, "
+                    + "`tipo_permiso`.is_active FROM `cbb_db`.`permisos`, "
+                    + "tipo_permiso, clientes, permisos.actividad_economica "
+                    + "WHERE permisos.id_tipo_permiso = tipo_permiso.id AND "
+                    + "permisos.id_clientes = clientes.id AND "
+                    + "permisos.deleted = false ORDER BY permisos.id;";
             try {
                 ResultSet rs;
                 try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
@@ -2846,14 +2935,15 @@ public class MainPageController implements Initializable {
                         permiso.setRuta_pdf(rs.getString("ruta_pdf"));
                         permiso.setCodigo_permiso(rs.getString("codigo_permiso"));
                         permiso.setModo_permiso(rs.getString("modo_permiso"));
+                        permiso.setRazon_social(rs.getString("razon_social"));
+                        permiso.setDireccion(rs.getString("direccion"));
+                        permiso.setActividad_economica(rs.getString("actividad_economica"));
 
                         Clientes cliente = new Clientes();
                         cliente.setId(rs.getInt("id_clientes"));
                         cliente.setNombre(rs.getString("nombre"));
                         cliente.setApellido(rs.getString("apellido"));
                         cliente.setCedula(rs.getString("cedula"));
-                        cliente.setRazon_social(rs.getString("razon_social"));
-                        cliente.setDireccion(rs.getString("direccion"));
 
                         Tipo_Permiso tp = new Tipo_Permiso();
                         tp.setId(rs.getInt("id_tipo_permiso"));
@@ -2887,15 +2977,15 @@ public class MainPageController implements Initializable {
         String _ddl_ = "";
         String sql = "";
         if (!_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
         } else if (_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = generado_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
         } else if (!_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = generado_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
         } else if (_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id ORDER BY permisos.id;";
         }
         permisos = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
@@ -2912,14 +3002,15 @@ public class MainPageController implements Initializable {
                     permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
                     permiso.setRuta_pdf(rs.getString("ruta_pdf"));
                     permiso.setCodigo_permiso(rs.getString("codigo_permiso"));
+                    permiso.setRazon_social(rs.getString("razon_social"));
+                    permiso.setDireccion(rs.getString("direccion"));
+                    permiso.setActividad_economica(rs.getString("actividad_economica"));
 
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
                     cliente.setNombre(rs.getString("nombre"));
                     cliente.setApellido(rs.getString("apellido"));
                     cliente.setCedula(rs.getString("cedula"));
-                    cliente.setRazon_social(rs.getString("razon_social"));
-                    cliente.setDireccion(rs.getString("direccion"));
 
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id_tipo_permiso"));
@@ -3007,16 +3098,119 @@ public class MainPageController implements Initializable {
         consultar_tipo_permiso.setTooltip(new Tooltip("Elija un tipo de permiso"));
         consultar_tipo_permiso.getSelectionModel().clearSelection();
         int _count_permiso_ = 0;
-        // double _precio_permiso_ = 0;
         consultar_total_permiso.setText(String.format("%d", _count_permiso_));
-        // s.setText(String.format("$%1$,.2f", _precio_permiso_));
         consultar_column_id.setCellValueFactory(new PropertyValueFactory<>("codigo_permiso"));
-        consultar_column_permiso.setCellValueFactory(new PropertyValueFactory<>("permiso"));
+        consultar_column_id.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
+        consultar_column_permiso.setCellValueFactory(new PropertyValueFactory<>("spermiso"));
+        consultar_column_permiso.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         consultar_column_fecha_emision.setCellValueFactory(new PropertyValueFactory<>("fecha_emision"));
+        consultar_column_fecha_emision.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         consultar_column_nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        consultar_column_nombre.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         consultar_column_cedula.setCellValueFactory(new PropertyValueFactory<>("cedula"));
+        consultar_column_cedula.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         consultar_column_fecha_caducidad.setCellValueFactory(new PropertyValueFactory<>("fecha_expiracion"));
+        consultar_column_fecha_caducidad.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         consultar_column_visualizar.setCellValueFactory(new PropertyValueFactory<>("ver"));
+        consultar_column_visualizar.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         consultar_tv.getItems().setAll(permisos);
         consultar_tv.setRowFactory(new Callback<TableView<Permiso>, TableRow<Permiso>>() {
             @Override
@@ -3068,15 +3262,15 @@ public class MainPageController implements Initializable {
         String _ddl_ = "";
         String sql = "";
         if (!_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
         } else if (_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = consultar_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
         } else if (!_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = consultar_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
         } else if (_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND permisos.deleted = false ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id ORDER BY permisos.id;";
         }
         permisos = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
@@ -3095,14 +3289,16 @@ public class MainPageController implements Initializable {
                     permiso.setRuta_pdf(rs.getString("ruta_pdf"));
                     permiso.setCodigo_permiso(rs.getString("codigo_permiso"));
                     permiso.setModo_permiso(rs.getString("modo_permiso"));
+                    permiso.setRazon_social(rs.getString("razon_social"));
+                    permiso.setDireccion(rs.getString("direccion"));
+                    permiso.setDeleted(rs.getBoolean("deleted"));
+                    permiso.setActividad_economica(rs.getString("actividad_economica"));
 
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
                     cliente.setNombre(rs.getString("nombre"));
                     cliente.setApellido(rs.getString("apellido"));
                     cliente.setCedula(rs.getString("cedula"));
-                    cliente.setRazon_social(rs.getString("razon_social"));
-                    cliente.setDireccion(rs.getString("direccion"));
 
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id_tipo_permiso"));
@@ -3337,16 +3533,119 @@ public class MainPageController implements Initializable {
         detalle_tipo_permiso.setTooltip(new Tooltip("Elija un tipo de permiso"));
         detalle_tipo_permiso.getSelectionModel().clearSelection();
         int _count_permiso_ = 0;
-        // double _precio_permiso_ = 0;
         detalle_total_permiso.setText(String.format("%d", _count_permiso_));
-        // detalle_total_precio.setText(String.format("$%1$,.2f", _precio_permiso_));
         detalle_column_id.setCellValueFactory(new PropertyValueFactory<>("codigo_permiso"));
-        detalle_column_permiso.setCellValueFactory(new PropertyValueFactory<>("permiso"));
+        detalle_column_id.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
+        detalle_column_permiso.setCellValueFactory(new PropertyValueFactory<>("spermiso"));
+        detalle_column_permiso.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         detalle_column_fecha_emision.setCellValueFactory(new PropertyValueFactory<>("fecha_emision"));
+        detalle_column_fecha_emision.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         detalle_column_nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        detalle_column_nombre.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         detalle_column_cedula.setCellValueFactory(new PropertyValueFactory<>("cedula"));
+        detalle_column_cedula.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         detalle_column_fecha_caducidad.setCellValueFactory(new PropertyValueFactory<>("fecha_expiracion"));
+        detalle_column_fecha_caducidad.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         detalle_column_visualizar.setCellValueFactory(new PropertyValueFactory<>("ver"));
+        detalle_column_visualizar.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         detalle_tv.getItems().setAll(permisos);
         detalle_tv.setRowFactory(new Callback<TableView<Permiso>, TableRow<Permiso>>() {
             @Override
@@ -3448,18 +3747,18 @@ public class MainPageController implements Initializable {
             String sql = "";
             // RANGO TIEMPO
             if (!_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.deleted = false AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
                 // TIPO PERMISO
             } else if (_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = detalle_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.deleted = false AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // AMBOS
             } else if (!_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = detalle_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.deleted = false AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // NINGUNO
             } else if (_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.deleted = false ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
             }
             permisos = new ArrayList<>();
             MysqlConnect mysqlConnect = new MysqlConnect();
@@ -3477,14 +3776,16 @@ public class MainPageController implements Initializable {
                         permiso.setRuta_pdf(rs.getString("ruta_pdf"));
                         permiso.setCodigo_permiso(rs.getString("codigo_permiso"));
                         permiso.setModo_permiso(rs.getString("modo_permiso"));
+                        permiso.setRazon_social(rs.getString("razon_social"));
+                        permiso.setDireccion(rs.getString("direccion"));
+                        permiso.setDeleted(rs.getBoolean("deleted"));
+                        permiso.setActividad_economica(rs.getString("actividad_economica"));
 
                         Clientes cliente = new Clientes();
                         cliente.setId(rs.getInt("clientes_id"));
                         cliente.setNombre(rs.getString("nombre"));
                         cliente.setApellido(rs.getString("apellido"));
                         cliente.setCedula(rs.getString("cedula"));
-                        cliente.setRazon_social(rs.getString("razon_social"));
-                        cliente.setDireccion(rs.getString("direccion"));
 
                         Tipo_Permiso tp = new Tipo_Permiso();
                         tp.setId(rs.getInt("id_tipo_permiso"));
@@ -3579,25 +3880,133 @@ public class MainPageController implements Initializable {
         arqueo_total_permiso.setText(String.format("%d", _count_permiso_));
         arqueo_total_precio.setText(String.format("$%1$,.2f", _precio_permiso_));
         arqueo_column_id.setCellValueFactory(new PropertyValueFactory<>("codigo_permiso"));
-        arqueo_column_id.setCellFactory(new Callback<TableColumn<Permiso, String>, TableCell<Permiso, String>>() {
+        arqueo_column_id.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
             @Override
-            public TableCell<Permiso, String> call(TableColumn<Permiso, String> param) {
-                return new TableCell<Permiso, String>() {
-                    @Override
-                    public void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        setText(item);
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
                     }
-                };
+                }
             }
         });
-        arqueo_column_permiso.setCellValueFactory(new PropertyValueFactory<>("permiso"));
+        arqueo_column_permiso.setCellValueFactory(new PropertyValueFactory<>("spermiso"));
+        arqueo_column_permiso.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         arqueo_column_fecha_emision.setCellValueFactory(new PropertyValueFactory<>("fecha_emision"));
+        arqueo_column_fecha_emision.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         arqueo_column_nombre.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+        arqueo_column_nombre.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         arqueo_column_cedula.setCellValueFactory(new PropertyValueFactory<>("cedula"));
+        arqueo_column_cedula.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         arqueo_column_fecha_caducidad.setCellValueFactory(new PropertyValueFactory<>("fecha_expiracion"));
+        arqueo_column_fecha_caducidad.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         arqueo_column_valor.setCellValueFactory(new PropertyValueFactory<>("valor"));
+        arqueo_column_valor.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         arqueo_column_visualizar.setCellValueFactory(new PropertyValueFactory<>("ver"));
+        arqueo_column_visualizar.setCellFactory((TableColumn<Permiso, String> param) -> new TableCell<Permiso, String>() {
+            @Override
+            public void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(item);
+                if (!empty) {
+                    Permiso permiso = getTableView().getItems().get(getIndex());
+                    if (permiso.getDeleted()) {
+                        this.setStyle("-fx-strikethrough: true; -fx-text-fill: red;");
+                    } else {
+                        this.setStyle("-fx-strikethrough: false; -fx-text-fill: black;");
+                    }
+                }
+            }
+        });
         arqueo_tv.getItems().setAll(permisos);
         arqueo_tv.setRowFactory(new Callback<TableView<Permiso>, TableRow<Permiso>>() {
             @Override
@@ -3766,8 +4175,13 @@ public class MainPageController implements Initializable {
             cell = new PdfPCell(new Phrase("Valor"));
             cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
             table.addCell(cell);
-            Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
             arqueo_tv.getItems().forEach((permiso) -> {
+                Font smallFont;
+                if (permiso.getDeleted()) {
+                    smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.RED);
+                } else {
+                    smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
+                }
                 Phrase p = new Phrase(permiso.getCodigo_permiso(), smallFont);
                 PdfPCell cel = new PdfPCell(p);
                 cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
@@ -3788,7 +4202,7 @@ public class MainPageController implements Initializable {
                 cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cel);
 
-                p = new Phrase(permiso.getPermiso().getTipo_permiso(), smallFont);
+                p = new Phrase(permiso.getActividad_economica(), smallFont);
                 cel = new PdfPCell(p);
                 cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cel);
@@ -3804,6 +4218,14 @@ public class MainPageController implements Initializable {
             _p1_.setFont(normalFont);
             p1.setAlignment(Element.ALIGN_LEFT);
             _p1_.add(String.format("Total Permisos: %s", arqueo_total_permiso.getText()));
+            p1.add(_p1_);
+            document.add(p1);
+
+            p1.clear();
+            _p1_.clear();
+            _p1_.setFont(normalFont);
+            p1.setAlignment(Element.ALIGN_LEFT);
+            _p1_.add(String.format("%s", arqueo_total_anulados.getText()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -3843,18 +4265,18 @@ public class MainPageController implements Initializable {
             String sql = "";
             // RANGO TIEMPO
             if (!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
                 // TIPO PERMISO
             } else if (_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = arqueo_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // AMBOS
             } else if (!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = arqueo_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // NINGUNO
             } else if (_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `clientes`.`razon_social`, `clientes`.`direccion`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
             }
             permisos = new ArrayList<>();
             MysqlConnect mysqlConnect = new MysqlConnect();
@@ -3874,15 +4296,16 @@ public class MainPageController implements Initializable {
                         permiso.setRuta_pdf(rs.getString("ruta_pdf"));
                         permiso.setModo_permiso(rs.getString("modo_permiso"));
                         permiso.setCodigo_permiso(rs.getString("codigo_permiso"));
-                        permiso.setIs_deleted(rs.getBoolean("deleted"));
+                        permiso.setDeleted(rs.getBoolean("deleted"));
+                        permiso.setRazon_social(rs.getString("razon_social"));
+                        permiso.setDireccion(rs.getString("direccion"));
+                        permiso.setActividad_economica(rs.getString("actividad_economica"));
 
                         Clientes cliente = new Clientes();
                         cliente.setId(rs.getInt("clientes_id"));
                         cliente.setNombre(rs.getString("nombre"));
                         cliente.setApellido(rs.getString("apellido"));
                         cliente.setCedula(rs.getString("cedula"));
-                        cliente.setRazon_social(rs.getString("razon_social"));
-                        cliente.setDireccion(rs.getString("direccion"));
 
                         Tipo_Permiso tp = new Tipo_Permiso();
                         tp.setId(rs.getInt("id_tipo_permiso"));
@@ -3894,7 +4317,7 @@ public class MainPageController implements Initializable {
                         permiso.setPermiso(tp);
 
                         permisos.add(permiso);
-                        if (!permiso.getIs_deleted()) {
+                        if (!permiso.getDeleted()) {
                             _count_permiso_++;
                             _precio_permiso_ += permiso.getPermiso().getPrecio();
                         } else {
@@ -3951,7 +4374,20 @@ public class MainPageController implements Initializable {
         ArrayList<Permiso> permisosList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
-            String sql = "SELECT `permisos`.`codigo_permiso`, permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = '" + titulo + "' ORDER BY permisos.ID;";
+            String sql = "SELECT `permisos`.`codigo_permiso`, permisos.id, "
+                    + "permisos.descripcion, permisos.fecha_emision, "
+                    + "permisos.fecha_expiracion, permisos.ruta_pdf, "
+                    + "permisos.id_usuario, permisos.id_tipo_permiso, "
+                    + "`permisos`.`razon_social`, `permisos`.`direccion`, "
+                    + "`permisos`.`actividad_economica`,"
+                    + "permisos.id_clientes, clientes.cedula, clientes.nombre, "
+                    + "clientes.apellido, clientes.is_active, tipo_permiso, "
+                    + "precio, tipo_permiso.is_active as permiso_active "
+                    + "FROM permisos , tipo_permiso, clientes "
+                    + "WHERE clientes.id = permisos.id_clientes AND "
+                    + "permisos.id_tipo_permiso = tipo_permiso.id AND "
+                    + "permisos.modo_permiso = '" + titulo + "' "
+                    + "ORDER BY permisos.ID;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
@@ -3963,14 +4399,15 @@ public class MainPageController implements Initializable {
                     permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
                     permiso.setRuta_pdf(rs.getString("ruta_pdf"));
                     permiso.setCodigo_permiso(rs.getString("codigo_permiso"));
+                    permiso.setRazon_social(rs.getString("razon_social"));
+                    permiso.setDireccion(rs.getString("direccion"));
+                    permiso.setActividad_economica(rs.getString("actividad_economica"));
 
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
                     cliente.setNombre(rs.getString("nombre"));
                     cliente.setApellido(rs.getString("apellido"));
                     cliente.setCedula(rs.getString("cedula"));
-                    cliente.setRazon_social(rs.getString("razon_social"));
-                    cliente.setDireccion(rs.getString("direccion"));
 
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id_tipo_permiso"));
@@ -4082,7 +4519,7 @@ public class MainPageController implements Initializable {
                 cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cel);
 
-                p = new Phrase(permiso.getCliente().getRazon_social(), smallFont);
+                p = new Phrase(permiso.getRazon_social(), smallFont);
                 cel = new PdfPCell(p);
                 cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cel);
@@ -4135,7 +4572,19 @@ public class MainPageController implements Initializable {
         ArrayList<Permiso> permisosList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
-            String sql = "SELECT `permisos`.`codigo_permiso`, permisos.id, permisos.descripcion, permisos.fecha_emision, permisos.fecha_expiracion, permisos.ruta_pdf, permisos.id_usuario, permisos.id_tipo_permiso, permisos.id_clientes, clientes.cedula, clientes.nombre, clientes.apellido, clientes.direccion, clientes.razon_social, clientes.is_active, tipo_permiso, precio, tipo_permiso.is_active as permiso_active FROM permisos , tipo_permiso, clientes WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND permisos.modo_permiso = '" + titulo + "' ORDER BY permisos.ID;";
+            String sql = "SELECT `permisos`.`codigo_permiso`, permisos.id, "
+                    + "permisos.descripcion, permisos.fecha_emision, "
+                    + "permisos.fecha_expiracion, permisos.ruta_pdf, "
+                    + "permisos.id_usuario, permisos.id_tipo_permiso, "
+                    + "permisos.id_clientes, clientes.cedula, clientes.nombre, "
+                    + "clientes.apellido, permisos.direccion, permisos.actividad_economica, "
+                    + "permisos.razon_social, clientes.is_active, "
+                    + "tipo_permiso, precio, tipo_permiso.is_active as "
+                    + "permiso_active FROM permisos , tipo_permiso, clientes "
+                    + "WHERE clientes.id = permisos.id_clientes AND "
+                    + "permisos.id_tipo_permiso = tipo_permiso.id AND "
+                    + "permisos.modo_permiso = '" + titulo + "' "
+                    + "ORDER BY permisos.ID;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
@@ -4147,14 +4596,15 @@ public class MainPageController implements Initializable {
                     permiso.setFecha_expiracion(rs.getString("fecha_expiracion"));
                     permiso.setRuta_pdf(rs.getString("ruta_pdf"));
                     permiso.setCodigo_permiso(rs.getString("codigo_permiso"));
+                    permiso.setRazon_social(rs.getString("razon_social"));
+                    permiso.setDireccion(rs.getString("direccion"));
+                    permiso.setActividad_economica(rs.getString("actividad_economica"));
 
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
                     cliente.setNombre(rs.getString("nombre"));
                     cliente.setApellido(rs.getString("apellido"));
                     cliente.setCedula(rs.getString("cedula"));
-                    cliente.setRazon_social(rs.getString("razon_social"));
-                    cliente.setDireccion(rs.getString("direccion"));
 
                     Tipo_Permiso tp = new Tipo_Permiso();
                     tp.setId(rs.getInt("id_tipo_permiso"));
@@ -4269,7 +4719,7 @@ public class MainPageController implements Initializable {
                 cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cel);
 
-                p = new Phrase(permiso.getCliente().getRazon_social(), smallFont);
+                p = new Phrase(permiso.getRazon_social(), smallFont);
                 cel = new PdfPCell(p);
                 cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cel);
@@ -4624,7 +5074,7 @@ public class MainPageController implements Initializable {
             }
             rs.close();
         } catch (SQLException e) {
-           saveLogError(e);
+            saveLogError(e);
         } finally {
             mysqlConnect.disconnect();
         }

@@ -14,21 +14,10 @@ public class Clientes {
     private String nombre;
     private String apellido;
     private String cedula;
-    private String razon_social;
-    private String direccion;
-    private String actividad_economica;
     private Boolean is_active;
     private Boolean is_closed;
 
     public Clientes() {
-    }
-
-    public String getActividad_economica() {
-        return actividad_economica;
-    }
-
-    public void setActividad_economica(String actividad_economica) {
-        this.actividad_economica = actividad_economica;
     }
 
     public int getId() {
@@ -61,22 +50,6 @@ public class Clientes {
 
     public void setCedula(String cedula) {
         this.cedula = cedula;
-    }
-
-    public String getRazon_social() {
-        return razon_social;
-    }
-
-    public void setRazon_social(String razon_social) {
-        this.razon_social = razon_social;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
     }
 
     public Boolean getIs_active() {

@@ -34,6 +34,9 @@ public class Permiso {
     private Clientes clientes;
     private String codigo_permiso;
     private Boolean deleted;
+    private String razon_social;
+    private String direccion;
+    private String actividad_economica;
 
     public Permiso() {
     }
@@ -44,14 +47,6 @@ public class Permiso {
 
     public void setCodigo_permiso(String codigo_permiso) {
         this.codigo_permiso = codigo_permiso;
-    }
-
-    public Boolean getIs_deleted() {
-        return deleted;
-    }
-
-    public void setIs_deleted(Boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getVehiculo_marca() {
@@ -157,7 +152,7 @@ public class Permiso {
     }
 
     public String getValor() {
-        return String.format("$%1$,.2f", this.permiso.getPrecio());
+        return this.deleted ? "ANULADO" : String.format("$%1$,.2f", this.permiso.getPrecio());
     }
 
     public String getVer() {
@@ -202,6 +197,38 @@ public class Permiso {
 
     public void setFecha_documento(String fecha_documento) {
         this.fecha_documento = fecha_documento;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public String getRazon_social() {
+        return razon_social;
+    }
+
+    public void setRazon_social(String razon_social) {
+        this.razon_social = razon_social;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getActividad_economica() {
+        return actividad_economica;
+    }
+
+    public void setActividad_economica(String actividad_economica) {
+        this.actividad_economica = actividad_economica;
     }
 
     public String getFullName() {
@@ -253,5 +280,9 @@ public class Permiso {
         DateFormat dateFormat = new SimpleDateFormat("HH:mm");
         Date date = new Date();
         return dateFormat.format(date);
+    }
+    
+    public String getSpermiso(){
+        return this.getPermiso().getTipo_permiso();
     }
 }
