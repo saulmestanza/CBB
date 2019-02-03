@@ -39,7 +39,7 @@
                   </Button>
                </bottom>
                <center>
-                  <Pane prefHeight="200.0" prefWidth="200.0" visible="false" BorderPane.alignment="CENTER">
+                  <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <children>
                         <TextField id="editar_nombre" fx:id="editar_nombre" layoutX="84.0" layoutY="13.0" prefHeight="32.0" prefWidth="804.0" />
                         <TextField id="editar_precio" fx:id="editar_precio" layoutX="84.0" layoutY="57.0" prefHeight="32.0" prefWidth="804.0" />
@@ -304,9 +304,10 @@
                         <TableColumn fx:id="generado_column_id" prefWidth="101.0" text="ID" />
                         <TableColumn fx:id="generado_column_nombre" prefWidth="185.97181701660156" text="Nombre" />
                         <TableColumn fx:id="generado_column_cedula" prefWidth="187.0281982421875" text="Cédula" />
-                        <TableColumn fx:id="generado_column_permiso" prefWidth="198.64517211914062" text="Permiso" />
-                        <TableColumn fx:id="generado_column_fecha_emision" prefWidth="157.6890869140625" text="Fecha Emisión" />
-                        <TableColumn fx:id="generado_column_eliminar" prefWidth="65.100341796875" text="Eliminar" />
+                        <TableColumn fx:id="generado_column_permiso" prefWidth="159.45135498046875" text="Permiso" />
+                        <TableColumn fx:id="generado_column_fecha_emision" prefWidth="125.16143798828125" text="Fecha Emisión" />
+                        <TableColumn fx:id="generado_column_editar" prefWidth="61.67742919921875" text="Editar" />
+                        <TableColumn fx:id="generado_column_eliminar" prefWidth="63.645263671875" text="Eliminar" />
                      </columns>
                   </TableView>
                   <Button focusTraversable="false" layoutX="741.0" layoutY="18.0" mnemonicParsing="false" onAction="#buscarGenerado" prefHeight="38.0" prefWidth="167.0" style="-fx-background-color: E57373; -fx-background-radius: 15;" text="Buscar" textFill="WHITE">
@@ -319,7 +320,6 @@
                   <TextField fx:id="generado_search_permiso" layoutX="40.0" layoutY="75.0" prefHeight="27.0" prefWidth="519.0" promptText="Ingrese nombre de permiso para búsqueda" />
                </children>
             </Pane>
-            <Pane id="pane_emision_permiso" fx:id="pane_generado_editar_permiso" layoutX="-1.0" layoutY="-1.0" prefHeight="601.0" prefWidth="837.0" style="-fx-background-color: F5F5F5;" visible="false" />
             <Pane fx:id="pane_liquidacion" layoutX="-2.0" layoutY="1.0" prefHeight="609.0" prefWidth="979.0" style="-fx-background-color: F5F5F5;" visible="false">
                <children>
                   <TableView fx:id="liquidar_tv" layoutX="14.0" layoutY="52.0" prefHeight="540.0" prefWidth="954.0">
@@ -352,7 +352,7 @@
               <items>
                 <MenuItem fx:id="menu_liquidar_persona" mnemonicParsing="false" onAction="#liquidarMenuAction" text="Liquidar Persona" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem fx:id="eliminar_permiso_generado" mnemonicParsing="false" onAction="#eliminarGeneradosMenuAction" text="Eliminar Permisos Generados" />
+                  <MenuItem fx:id="eliminar_permiso_generado" mnemonicParsing="false" onAction="#eliminarGeneradosMenuAction" text="Editar/Eliminar Permisos Generados" />
               </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Permisos">

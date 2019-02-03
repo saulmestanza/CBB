@@ -164,6 +164,7 @@ public class MainPageController implements Initializable {
     @FXML
     private CheckBox emision_extintor;
     private String _path_list_;
+    private boolean isEdit = false;
 
     @FXML
     private Pane pane_consultar_permiso;
@@ -197,34 +198,6 @@ public class MainPageController implements Initializable {
     @FXML
     private Pane pane_generado_editar_permiso;
     @FXML
-    private TextField generado_editar_search_permiso;
-    @FXML
-    private ComboBox generado_editar_tipo_permiso;
-    @FXML
-    private DatePicker generado_editar_fecha;
-    @FXML
-    private TextField generado_editar_nombre;
-    @FXML
-    private TextField generado_editar_apellido;
-    @FXML
-    private TextField generado_editar_cedula;
-    @FXML
-    private TextField generado_editar_razon_social;
-    @FXML
-    private TextField generado_editar_direccion;
-    @FXML
-    private TextArea generado_editar_descripcion;
-    @FXML
-    private RadioButton generado_editar_rd_1;
-    @FXML
-    private RadioButton generado_editar_rd_2;
-    @FXML
-    private RadioButton generado_editar_modo_permanente;
-    @FXML
-    private RadioButton generado_editar_modo_ocasional;
-    @FXML
-    private DatePicker generado_editar_fecha_ocasional;
-    @FXML
     private Pane pane_generado_permiso;
     @FXML
     private TextField generado_search_permiso;
@@ -244,6 +217,8 @@ public class MainPageController implements Initializable {
     private TableColumn<Permiso, String> generado_column_nombre;
     @FXML
     private TableColumn<Permiso, String> generado_column_cedula;
+    @FXML
+    private TableColumn<Permiso, String> generado_column_editar;
     @FXML
     private TableColumn<Permiso, String> generado_column_eliminar;
 
@@ -278,6 +253,7 @@ public class MainPageController implements Initializable {
     private CheckBox editar_is_active;
     private int _id_edit_permiso;
     private int _id_edit_row_;
+    private int _id_permiso_edit_;
 
     @FXML
     private Pane pane_detalle_permiso;
@@ -877,6 +853,11 @@ public class MainPageController implements Initializable {
     @FXML
     private void emisionMenuAction(ActionEvent event) {
         setVisiblePane(true, false, false, false, false, false, false, false, false, false, false);
+        isEdit = false;
+        setEmisionPermisos();
+    }
+
+    private void setEmisionPermisos() {
         emision_cedula.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             if (!newValue.matches("\\d*")) {
                 emision_cedula.setText(newValue.replaceAll("[^\\d]", ""));
@@ -1096,7 +1077,7 @@ public class MainPageController implements Initializable {
                 MysqlConnect mysqlConnect = new MysqlConnect();
                 Clientes cliente = new Clientes();
                 String sql = "SELECT * FROM clientes WHERE cedula = '" + emision_cedula.getText() + "';";
-                ResultSet rs;
+                ResultSet rs = null;
                 try {
                     Statement st = (Statement) mysqlConnect.connect().createStatement();
                     rs = st.executeQuery(sql);
@@ -1134,96 +1115,162 @@ public class MainPageController implements Initializable {
                 } catch (Exception e) {
                     saveLogError(e);
                 }
-                try {
-                    final String _modo_permiso_ = modo_permiso.getSelectionModel().getSelectedItem().toString();
-                    String _sql_ = "SELECT codigo_permiso FROM permisos WHERE modo_permiso = '" + _modo_permiso_ + "' ORDER BY id DESC LIMIT 1;";
-                    String codigo_permiso = "";
-                    try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
-                        rs = st.executeQuery(_sql_);
-                        if (!rs.isBeforeFirst()) {
-                            codigo_permiso = Settings.getFullCode(1);
-                        } else {
-                            while (rs.next()) {
-                                String _c_permiso = rs.getString("codigo_permiso");
-                                codigo_permiso = Settings.getFullCode(Integer.parseInt(_c_permiso) + 1);
-                            }
-                        }
-                        rs.close();
-                    } catch (SQLException e) {
-                        saveLogError(e);
-                    } finally {
-                        mysqlConnect.disconnect();
-                    }
-                    final String _codigo_permiso_ = codigo_permiso;
-                    String query = "INSERT INTO permisos("
-                            + "descripcion, fecha_emision, fecha_expiracion, "
-                            + "modo_permiso, id_usuario, id_tipo_permiso, "
-                            + "id_clientes, numero_deposito, fecha_documento,"
-                            + "vehiculo_marca, extintor, capacidad, placa,"
-                            + "codigo_permiso, razon_social, direccion, actividad_economica"
-                            + ")"
-                            + " values ("
-                            + "?,?,?,"
-                            + "?,?,?,"
-                            + "?,?,?,"
-                            + "?,?,?,?,"
-                            + "?,?,?,?"
-                            + ")";
-                    PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
-                    preparedStmt.setString(1, emision_descripcion.getText());
-                    preparedStmt.setString(2, emision_fecha.getValue().toString());
-                    preparedStmt.setString(3, expiration_date);
-                    preparedStmt.setString(4, _modo_permiso_);
-                    preparedStmt.setInt(5, usuario.getId());
-                    int position = emision_tipo_permiso.getSelectionModel().getSelectedIndex();
-                    preparedStmt.setInt(6, tps.get(position).getId());
-                    preparedStmt.setInt(7, cliente.getId());
-                    preparedStmt.setString(8, numero_deposito.getText());
-                    preparedStmt.setString(9, fecha_documento.getValue().toString());
-                    preparedStmt.setString(10, emision_vehiculo.getText());
-                    preparedStmt.setBoolean(11, emision_extintor.isSelected());
-                    preparedStmt.setString(12, emision_capacidad.getText());
-                    preparedStmt.setString(13, emision_placa.getText());
-                    preparedStmt.setString(14, codigo_permiso);
-                    preparedStmt.setString(15, emision_razon_social.getText());
-                    preparedStmt.setString(16, emision_direccion.getText());
-                    preparedStmt.setString(17, emision_actividad_economica.getText());
-                    preparedStmt.executeUpdate();
-
-                    emision_nombre.setText("");
-                    emision_apellido.setText("");
-                    emision_cedula.setText("");
-                    emision_razon_social.setText("");
-                    emision_direccion.setText("");
-                    emision_descripcion.setText("");
-                    fecha_documento.getEditor().setText("");
-                    numero_deposito.setText("");
-                    emision_vehiculo.setText("");
-                    emision_capacidad.setText("");
-                    emision_placa.setText("");
-                    emision_actividad_economica.setText("");
-                    emision_extintor.setSelected(false);
-
-                    Alert alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Cuerpo Bomberos de Balzar");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Espere unos momentos....");
-                    alert.show();
-                    CompletableFuture<Void> thenRun = CompletableFuture.supplyAsync(() -> {
-                        getPermiso(_modo_permiso_, _codigo_permiso_);
-                        return null;
-                    }).thenRun(() -> {
-                        goToPrintDialog(_path_list_);
-                    });
-                } catch (Exception e) {
-                    saveLogError(e);
-                    showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
-                } finally {
-                    mysqlConnect.disconnect();
+                if (isEdit) {
+                    updatePermiso(mysqlConnect, cliente, expiration_date);
+                } else {
+                    insertPermiso(rs, mysqlConnect, cliente, expiration_date);
                 }
             }
         } else {
             showDialog("Error", "Debe de elegir un tipo de permiso.", AlertType.ERROR);
+        }
+    }
+
+    private void updatePermiso(MysqlConnect mysqlConnect, Clientes cliente, String expiration_date) {
+        try {
+            final String _modo_permiso_ = modo_permiso.getSelectionModel().getSelectedItem().toString();
+            String query = "UPDATE permisos SET "
+                    + "descripcion = ?, fecha_emision = ?, fecha_expiracion = ?, "
+                    + "modo_permiso = ?, id_usuario = ?, id_tipo_permiso = ?, "
+                    + "id_clientes = ?, numero_deposito = ?, fecha_documento = ?,"
+                    + "vehiculo_marca = ?, extintor = ?, capacidad = ?, placa = ?,"
+                    + "razon_social = ?, direccion = ?, actividad_economica = ? "
+                    + "WHERE id = ?";
+            PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
+            preparedStmt.setString(1, emision_descripcion.getText());
+            preparedStmt.setString(2, emision_fecha.getValue().toString());
+            preparedStmt.setString(3, expiration_date);
+            preparedStmt.setString(4, _modo_permiso_);
+            preparedStmt.setInt(5, usuario.getId());
+            int position = emision_tipo_permiso.getSelectionModel().getSelectedIndex();
+            preparedStmt.setInt(6, tps.get(position).getId());
+            preparedStmt.setInt(7, cliente.getId());
+            preparedStmt.setString(8, numero_deposito.getText());
+            preparedStmt.setString(9, fecha_documento.getValue().toString());
+            preparedStmt.setString(10, emision_vehiculo.getText());
+            preparedStmt.setBoolean(11, emision_extintor.isSelected());
+            preparedStmt.setString(12, emision_capacidad.getText());
+            preparedStmt.setString(13, emision_placa.getText());
+            preparedStmt.setString(14, emision_razon_social.getText());
+            preparedStmt.setString(15, emision_direccion.getText());
+            preparedStmt.setString(16, emision_actividad_economica.getText());
+            preparedStmt.setInt(17, _id_permiso_edit_);
+            preparedStmt.executeUpdate();
+
+            emision_nombre.setText("");
+            emision_apellido.setText("");
+            emision_cedula.setText("");
+            emision_razon_social.setText("");
+            emision_direccion.setText("");
+            emision_descripcion.setText("");
+            fecha_documento.getEditor().setText("");
+            numero_deposito.setText("");
+            emision_vehiculo.setText("");
+            emision_capacidad.setText("");
+            emision_placa.setText("");
+            emision_actividad_economica.setText("");
+            emision_extintor.setSelected(false);
+
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Cuerpo Bomberos de Balzar");
+            alert.setHeaderText(null);
+            alert.setContentText("Permiso actualizado con exito.");
+            alert.show();
+        } catch (Exception e) {
+            saveLogError(e);
+            showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
+        } finally {
+            mysqlConnect.disconnect();
+        }
+    }
+
+    private void insertPermiso(ResultSet rs, MysqlConnect mysqlConnect, Clientes cliente, String expiration_date) {
+        try {
+            final String _modo_permiso_ = modo_permiso.getSelectionModel().getSelectedItem().toString();
+            String _sql_ = "SELECT codigo_permiso FROM permisos WHERE modo_permiso = '" + _modo_permiso_ + "' ORDER BY id DESC LIMIT 1;";
+            String codigo_permiso = "";
+            try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
+                rs = st.executeQuery(_sql_);
+                if (!rs.isBeforeFirst()) {
+                    codigo_permiso = Settings.getFullCode(1);
+                } else {
+                    while (rs.next()) {
+                        String _c_permiso = rs.getString("codigo_permiso");
+                        codigo_permiso = Settings.getFullCode(Integer.parseInt(_c_permiso) + 1);
+                    }
+                }
+                rs.close();
+            } catch (SQLException e) {
+                saveLogError(e);
+            } finally {
+                mysqlConnect.disconnect();
+            }
+            final String _codigo_permiso_ = codigo_permiso;
+            String query = "INSERT INTO permisos("
+                    + "descripcion, fecha_emision, fecha_expiracion, "
+                    + "modo_permiso, id_usuario, id_tipo_permiso, "
+                    + "id_clientes, numero_deposito, fecha_documento,"
+                    + "vehiculo_marca, extintor, capacidad, placa,"
+                    + "codigo_permiso, razon_social, direccion, actividad_economica"
+                    + ")"
+                    + " values ("
+                    + "?,?,?,"
+                    + "?,?,?,"
+                    + "?,?,?,"
+                    + "?,?,?,?,"
+                    + "?,?,?,?"
+                    + ")";
+            PreparedStatement preparedStmt = mysqlConnect.connect().prepareStatement(query);
+            preparedStmt.setString(1, emision_descripcion.getText());
+            preparedStmt.setString(2, emision_fecha.getValue().toString());
+            preparedStmt.setString(3, expiration_date);
+            preparedStmt.setString(4, _modo_permiso_);
+            preparedStmt.setInt(5, usuario.getId());
+            int position = emision_tipo_permiso.getSelectionModel().getSelectedIndex();
+            preparedStmt.setInt(6, tps.get(position).getId());
+            preparedStmt.setInt(7, cliente.getId());
+            preparedStmt.setString(8, numero_deposito.getText());
+            preparedStmt.setString(9, fecha_documento.getValue().toString());
+            preparedStmt.setString(10, emision_vehiculo.getText());
+            preparedStmt.setBoolean(11, emision_extintor.isSelected());
+            preparedStmt.setString(12, emision_capacidad.getText());
+            preparedStmt.setString(13, emision_placa.getText());
+            preparedStmt.setString(14, codigo_permiso);
+            preparedStmt.setString(15, emision_razon_social.getText());
+            preparedStmt.setString(16, emision_direccion.getText());
+            preparedStmt.setString(17, emision_actividad_economica.getText());
+            preparedStmt.executeUpdate();
+
+            emision_nombre.setText("");
+            emision_apellido.setText("");
+            emision_cedula.setText("");
+            emision_razon_social.setText("");
+            emision_direccion.setText("");
+            emision_descripcion.setText("");
+            fecha_documento.getEditor().setText("");
+            numero_deposito.setText("");
+            emision_vehiculo.setText("");
+            emision_capacidad.setText("");
+            emision_placa.setText("");
+            emision_actividad_economica.setText("");
+            emision_extintor.setSelected(false);
+
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Cuerpo Bomberos de Balzar");
+            alert.setHeaderText(null);
+            alert.setContentText("Espere unos momentos....");
+            alert.show();
+            CompletableFuture<Void> thenRun = CompletableFuture.supplyAsync(() -> {
+                getPermiso(_modo_permiso_, _codigo_permiso_);
+                return null;
+            }).thenRun(() -> {
+                goToPrintDialog(_path_list_);
+            });
+        } catch (Exception e) {
+            saveLogError(e);
+            showDialog("Error", "Ha ocurrido un error", AlertType.ERROR);
+        } finally {
+            mysqlConnect.disconnect();
         }
     }
 
@@ -1820,7 +1867,7 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", descripcion.substring(0, 60)));
                 p1.add(_p1_);
                 document.add(p1);
-                
+
                 p1.clear();
                 p1.setSpacingBefore(0f);
                 _p1_.clear();
@@ -2018,7 +2065,7 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", descripcion.substring(0, 60)));
                 p1.add(_p1_);
                 document.add(p1);
-                
+
                 p1.clear();
                 p1.setSpacingBefore(0f);
                 _p1_.clear();
@@ -2665,7 +2712,7 @@ public class MainPageController implements Initializable {
         }
     }
 
-    // EDITAR PERMISOS GENERADOS
+    // EDITAR - ELIMINAR PERMISOS GENERADOS
     @FXML
     private void eliminarGeneradosMenuAction(ActionEvent event) {
         setVisiblePane(false, false, false, false, false, false, false, false, true, false, false);
@@ -2728,6 +2775,7 @@ public class MainPageController implements Initializable {
         generado_column_fecha_emision.setCellValueFactory(new PropertyValueFactory<>("fecha_emision"));
         generado_column_nombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         generado_column_cedula.setCellValueFactory(new PropertyValueFactory<>("cedula"));
+        generado_column_editar.setCellValueFactory(new PropertyValueFactory<>("editar"));
         generado_column_eliminar.setCellValueFactory(new PropertyValueFactory<>("eliminar"));
         editar_generados_tv.getItems().setAll(permisos);
         editar_generados_tv.setRowFactory(new Callback<TableView<Permiso>, TableRow<Permiso>>() {
@@ -2751,8 +2799,10 @@ public class MainPageController implements Initializable {
                     Object val = tablePosition.getTableColumn().getCellData(newValue);
                     Permiso _permiso_ = editar_generados_tv.getSelectionModel().getSelectedItem();
                     if (val.equals("Editar")) {
-                        // setVisiblePane(false, false, false, false, false, false, false, false, false, true, false);
-                        // setGeneradoEditarPane(_permiso_);
+                        setVisiblePane(true, false, false, false, false, false, false, false, false, false, false);
+                        isEdit = true;
+                        setEmisionPermisos();
+                        setEditarPermiso(_permiso_);
                     }
 
                     if (val.equals("Eliminar")) {
@@ -2773,131 +2823,132 @@ public class MainPageController implements Initializable {
         });
     }
 
-    private void setGeneradoEditarPane(Permiso _permiso_) {
-        generado_editar_cedula.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                generado_editar_cedula.setText(newValue.replaceAll("[^\\d]", ""));
-            }
+    private void setEditarPermiso(Permiso permiso) {
+        _id_permiso_edit_ = permiso.getId();
+        emision_nombre.setText(permiso.getCliente().getNombre());
+        emision_apellido.setText(permiso.getCliente().getApellido());
+        emision_cedula.setText(permiso.getCliente().getCedula());
+        //
+        numero_deposito.setText(permiso.getNumero_deposito());
+        emision_placa.setText(permiso.getPlaca());
+        emision_capacidad.setText(permiso.getCapacidad());
+        emision_extintor.setSelected(permiso.getExtintor());
+        emision_vehiculo.setText(permiso.getVehiculo_marca());
+        emision_actividad_economica.setText(permiso.getActividad_economica());
+        emision_descripcion.setText(permiso.getDescripcion());
+        emision_direccion.setText(permiso.getDireccion());
+        emision_razon_social.setText(permiso.getRazon_social());
+        tps.stream().filter((tp) -> (tp.getTipo_permiso().equals(permiso.getPermiso().getTipo_permiso()))).forEachOrdered((tp) -> {
+            emision_tipo_permiso.getSelectionModel().select(tp);
         });
-        generado_editar_cedula.setText(_permiso_.getCliente().getCedula());
-        generado_editar_nombre.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (generado_editar_nombre.getText().length() >= Settings.LENGTH_NAMES) {
-                    generado_editar_nombre.setText(generado_editar_nombre.getText().substring(0, Settings.LENGTH_NAMES));
-                }
-            }
-        });
-        generado_editar_nombre.setText(_permiso_.getCliente().getNombre());
-        generado_editar_apellido.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (generado_editar_apellido.getText().length() >= Settings.LENGTH_NAMES) {
-                    generado_editar_apellido.setText(generado_editar_apellido.getText().substring(0, Settings.LENGTH_NAMES));
-                }
-            }
-        });
-        generado_editar_apellido.setText(_permiso_.getCliente().getApellido());
-        generado_editar_razon_social.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (generado_editar_razon_social.getText().length() >= Settings.LENGTH_NAMES) {
-                    generado_editar_razon_social.setText(generado_editar_razon_social.getText().substring(0, Settings.LENGTH_NAMES));
-                }
-            }
-        });
-        generado_editar_razon_social.setText(_permiso_.getRazon_social());
-        generado_editar_direccion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (generado_editar_direccion.getText().length() >= Settings.LENGTH_NAMES) {
-                    generado_editar_direccion.setText(generado_editar_direccion.getText().substring(0, Settings.LENGTH_NAMES));
-                }
-            }
-        });
-        generado_editar_direccion.setText(_permiso_.getDireccion());
-        generado_editar_descripcion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (generado_editar_descripcion.getText().length() >= Settings.LENGTH_DESCRIPTION) {
-                    generado_editar_descripcion.setText(generado_editar_descripcion.getText().substring(0, Settings.LENGTH_DESCRIPTION));
-                }
-            }
-        });
-        generado_editar_descripcion.setText(_permiso_.getDescripcion());
-        generado_editar_cedula.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (generado_editar_cedula.getText().length() >= Settings.LENGTH_NATIONAL_ID) {
-                    generado_editar_cedula.setText(generado_editar_cedula.getText().substring(0, Settings.LENGTH_NATIONAL_ID));
-                }
-            }
-        });
-        generado_editar_tipo_permiso.getStylesheets().add(
-                getClass().getResource(
-                        "ComboBoxCSS.css"
-                ).toExternalForm()
-        );
-        generado_editar_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.equals("")) {
-                List<String> _tps_ = generado_editar_tipo_permiso.getItems();
-                int _count_ = 0;
-                for (String tp : _tps_) {
-                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
-                        generado_editar_tipo_permiso.getSelectionModel().select(_count_);
-
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_editar_tipo_permiso.getSkin();
-                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
-                        break;
-                    }
-                    _count_++;
-                }
-            } else {
-                generado_editar_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_editar_tipo_permiso.getSkin();
-                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
-            }
-        });
-        tps = new ArrayList<>();
-        ObservableList cursors = FXCollections.observableArrayList();
-        MysqlConnect mysqlConnect = new MysqlConnect();
-        try {
-            String sql = "SELECT * FROM tipo_permiso WHERE is_active = True;";
-            ResultSet rs;
-            try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
-                rs = st.executeQuery(sql);
-                while (rs.next()) {
-                    Tipo_Permiso tp = new Tipo_Permiso();
-                    tp.setId(rs.getInt("id"));
-                    tp.setTipo_permiso(rs.getString("tipo_permiso"));
-                    tp.setPrecio(rs.getDouble("precio"));
-                    tp.setIs_active(rs.getBoolean("is_active"));
-                    tps.add(tp);
-                    cursors.add(tp.getTipo_permiso());
-                }
-            }
-            rs.close();
-        } catch (SQLException e) {
-            saveLogError(e);
-        } finally {
-            mysqlConnect.disconnect();
+        switch (permiso.getModo_permiso()) {
+            case "Transporte":
+                modo_permiso.getSelectionModel().select(0);
+                break;
+            case "Ocasional":
+                modo_permiso.getSelectionModel().select(1);
+                break;
+            case "Construcción":
+                modo_permiso.getSelectionModel().select(2);
+                break;
+            case "Funcionamiento":
+                modo_permiso.getSelectionModel().select(3);
+                break;
         }
-        generado_editar_tipo_permiso.setItems(cursors);
-        generado_editar_tipo_permiso.getSelectionModel().selectFirst();
-        generado_editar_tipo_permiso.setTooltip(new Tooltip("Elija un tipo de permiso"));
-        generado_editar_fecha.setValue(LocalDate.now());
-
-        generado_editar_modo_ocasional.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> obs, Boolean wasPreviouslySelected, Boolean isNowSelected) {
-                if (isNowSelected) {
-                    generado_editar_fecha_ocasional.setDisable(false);
-                    generado_editar_fecha_ocasional.setValue(LocalDate.now());
-                } else {
-                    generado_editar_fecha_ocasional.setDisable(true);
-                    generado_editar_fecha_ocasional.setValue(null);
+        try {
+            String fecha[] = permiso.getFecha_documento().split("-");
+            fecha_documento.setValue(LocalDate.of(
+                    Integer.parseInt(fecha[0]),
+                    Integer.parseInt(fecha[1]),
+                    Integer.parseInt(fecha[2]))
+            );
+        } catch (Exception e) {
+        }
+        try {
+            String fecha[] = permiso.getFecha_emision().split("-");
+            emision_fecha.setValue(LocalDate.of(
+                    Integer.parseInt(fecha[0]),
+                    Integer.parseInt(fecha[1]),
+                    Integer.parseInt(fecha[2]))
+            );
+        } catch (Exception e) {
+        }
+        modo_permiso.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            if (newValue != null) {
+                switch (newValue.toString()) {
+                    case "Transporte":
+                        fecha_ocasional.setDisable(false);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Para que transporte");
+                        emision_vehiculo.setVisible(true);
+                        emision_placa.setVisible(true);
+                        emision_capacidad.setVisible(true);
+                        emision_extintor.setVisible(true);
+                        emision_actividad_economica.setVisible(false);
+                        break;
+                    case "Ocasional":
+                        fecha_ocasional.setDisable(false);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Por permiso ocasional de");
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(false);
+                        try {
+                            String fecha[] = permiso.getFecha_expiracion().split("-");
+                            fecha_ocasional.setValue(LocalDate.of(
+                                    Integer.parseInt(fecha[0]),
+                                    Integer.parseInt(fecha[1]),
+                                    Integer.parseInt(fecha[2]))
+                            );
+                        } catch (Exception e) {
+                        }
+                        break;
+                    case "Construcción":
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Construcción de");
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(false);
+                        break;
+                    case "Funcionamiento":
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(false);
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(true);
+                        try {
+                            String fecha[] = permiso.getFecha_expiracion().split("-");
+                            fecha_ocasional.setValue(LocalDate.of(
+                                    Integer.parseInt(fecha[0]),
+                                    Integer.parseInt(fecha[1]),
+                                    Integer.parseInt(fecha[2]))
+                            );
+                        } catch (Exception e) {
+                        }
+                        break;
+                    default:
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(false);
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(false);
                 }
             }
         });
-    }
-
-    @FXML
-    private void generarEditarPermiso(ActionEvent event) {
-
     }
 
     private void eliminarGenerado(Permiso _permiso_, ActionEvent event) {
@@ -2911,6 +2962,8 @@ public class MainPageController implements Initializable {
             permisos = new ArrayList<>();
             String sql = "SELECT `permisos`.`id`,  `permisos`.`codigo_permiso`,"
                     + "  `permisos`.`modo_permiso`, `clientes`.`nombre`, "
+                    + " permisos.numero_deposito, permisos.fecha_documento, permisos.vehiculo_marca, "
+                    + " permisos.extintor, permisos.capacidad, permisos.placa, "
                     + "`clientes`.`apellido`, `clientes`.`cedula`, "
                     + "`permisos`.`razon_social`, `permisos`.`direccion`, "
                     + "`permisos`.`descripcion`, `permisos`.`fecha_emision`, "
@@ -2938,6 +2991,12 @@ public class MainPageController implements Initializable {
                         permiso.setRazon_social(rs.getString("razon_social"));
                         permiso.setDireccion(rs.getString("direccion"));
                         permiso.setActividad_economica(rs.getString("actividad_economica"));
+                        permiso.setNumero_deposito(rs.getString("numero_deposito"));
+                        permiso.setFecha_documento(rs.getString("fecha_documento"));
+                        permiso.setVehiculo_marca(rs.getString("vehiculo_marca"));
+                        permiso.setExtintor(rs.getBoolean("extintor"));
+                        permiso.setCapacidad(rs.getString("capacidad"));
+                        permiso.setPlaca(rs.getString("placa"));
 
                         Clientes cliente = new Clientes();
                         cliente.setId(rs.getInt("id_clientes"));
@@ -2977,15 +3036,15 @@ public class MainPageController implements Initializable {
         String _ddl_ = "";
         String sql = "";
         if (!_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
+            sql = "SELECT permisos.modo_permiso, permisos.numero_deposito, permisos.fecha_documento, permisos.vehiculo_marca, permisos.extintor, permisos.capacidad, permisos.placa, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
         } else if (_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = generado_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+            sql = "SELECT permisos.modo_permiso, permisos.numero_deposito, permisos.fecha_documento, permisos.vehiculo_marca, permisos.extintor, permisos.capacidad, permisos.placa,  `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
         } else if (!_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = generado_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+            sql = "SELECT permisos.modo_permiso, permisos.numero_deposito, permisos.fecha_documento, permisos.vehiculo_marca, permisos.extintor, permisos.capacidad, permisos.placa,  `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
         } else if (_parametro_.isEmpty() && generado_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-            sql = "SELECT `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id ORDER BY permisos.id;";
+            sql = "SELECT permisos.modo_permiso, permisos.numero_deposito, permisos.fecha_documento, permisos.vehiculo_marca, permisos.extintor, permisos.capacidad, permisos.placa,  `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`codigo_permiso`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id ORDER BY permisos.id;";
         }
         permisos = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
@@ -3005,6 +3064,13 @@ public class MainPageController implements Initializable {
                     permiso.setRazon_social(rs.getString("razon_social"));
                     permiso.setDireccion(rs.getString("direccion"));
                     permiso.setActividad_economica(rs.getString("actividad_economica"));
+                    permiso.setNumero_deposito(rs.getString("numero_deposito"));
+                    permiso.setFecha_documento(rs.getString("fecha_documento"));
+                    permiso.setVehiculo_marca(rs.getString("vehiculo_marca"));
+                    permiso.setExtintor(rs.getBoolean("extintor"));
+                    permiso.setCapacidad(rs.getString("capacidad"));
+                    permiso.setPlaca(rs.getString("placa"));
+                    permiso.setModo_permiso(rs.getString("modo_permiso"));
 
                     Clientes cliente = new Clientes();
                     cliente.setId(rs.getInt("id_clientes"));
@@ -3259,18 +3325,41 @@ public class MainPageController implements Initializable {
     @FXML
     private void buscarConsultar(ActionEvent event) {
         String _parametro_ = consultar_parametro.getText();
+        String _modo_permiso_ = "";
+        try {
+            _modo_permiso_ = consultar_modo_permiso.getSelectionModel().getSelectedItem().toString();
+            switch (_modo_permiso_) {
+                case "Transporte":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Transporte' AND ";
+                    break;
+                case "Ocasional":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Ocasional' AND ";
+                    break;
+                case "Construcción":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Construcción' AND ";
+                    break;
+                case "Funcionamiento":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Funcionamiento' AND ";
+                    break;
+                default:
+                    _modo_permiso_ = "";
+                    break;
+            }
+        } catch (NullPointerException e) {
+            _modo_permiso_ = "";
+        }
         String _ddl_ = "";
         String sql = "";
         if (!_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE " + _modo_permiso_ + " permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') ORDER BY permisos.id;";
         } else if (_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = consultar_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE " + _modo_permiso_ + " permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
         } else if (!_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
             _ddl_ = consultar_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE " + _modo_permiso_ + " permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id AND (nombre LIKE '%" + _parametro_ + "%' OR cedula LIKE '%" + _parametro_ + "%') AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
         } else if (_parametro_.isEmpty() && consultar_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id ORDER BY permisos.id;";
+            sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`descripcion`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `permisos`.`id_clientes`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`permisos`, tipo_permiso, clientes WHERE " + _modo_permiso_ + " permisos.id_tipo_permiso = tipo_permiso.id AND permisos.id_clientes = clientes.id ORDER BY permisos.id;";
         }
         permisos = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
@@ -3732,6 +3821,29 @@ public class MainPageController implements Initializable {
 
     @FXML
     private void buscarDetalle(ActionEvent event) {
+        String _modo_permiso_ = "";
+        try {
+            _modo_permiso_ = detalle_modo_permiso.getSelectionModel().getSelectedItem().toString();
+            switch (_modo_permiso_) {
+                case "Transporte":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Transporte' AND ";
+                    break;
+                case "Ocasional":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Ocasional' AND ";
+                    break;
+                case "Construcción":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Construcción' AND ";
+                    break;
+                case "Funcionamiento":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Funcionamiento' AND ";
+                    break;
+                default:
+                    _modo_permiso_ = "";
+                    break;
+            }
+        } catch (NullPointerException e) {
+            _modo_permiso_ = "";
+        }
         String _desde_ = "";
         if (detalle_date_picker_desde.getValue() != null) {
             _desde_ = detalle_date_picker_desde.getValue().toString();
@@ -3747,18 +3859,18 @@ public class MainPageController implements Initializable {
             String sql = "";
             // RANGO TIEMPO
             if (!_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
                 // TIPO PERMISO
             } else if (_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = detalle_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // AMBOS
             } else if (!_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = detalle_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // NINGUNO
             } else if (_desde_.isEmpty() && detalle_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`deleted`, `permisos`.`id`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`codigo_permiso`, `permisos`.`modo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
             }
             permisos = new ArrayList<>();
             MysqlConnect mysqlConnect = new MysqlConnect();
@@ -4250,6 +4362,29 @@ public class MainPageController implements Initializable {
 
     @FXML
     private void buscarArqueo(ActionEvent event) {
+        String _modo_permiso_ = "";
+        try {
+            _modo_permiso_ = arqueo_modo_permiso.getSelectionModel().getSelectedItem().toString();
+            switch (_modo_permiso_) {
+                case "Transporte":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Transporte' AND ";
+                    break;
+                case "Ocasional":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Ocasional' AND ";
+                    break;
+                case "Construcción":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Construcción' AND ";
+                    break;
+                case "Funcionamiento":
+                    _modo_permiso_ = " permisos.modo_permiso = 'Funcionamiento' AND ";
+                    break;
+                default:
+                    _modo_permiso_ = "";
+                    break;
+            }
+        } catch (NullPointerException e) {
+            _modo_permiso_ = "";
+        }
         String _desde_ = "";
         if (arqueo_date_picker_desde.getValue() != null) {
             _desde_ = arqueo_date_picker_desde.getValue().toString();
@@ -4265,18 +4400,18 @@ public class MainPageController implements Initializable {
             String sql = "";
             // RANGO TIEMPO
             if (!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
                 // TIPO PERMISO
             } else if (_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = arqueo_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // AMBOS
             } else if (!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = arqueo_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // NINGUNO
             } else if (_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
             }
             permisos = new ArrayList<>();
             MysqlConnect mysqlConnect = new MysqlConnect();
@@ -4983,7 +5118,6 @@ public class MainPageController implements Initializable {
         pane_lista_usuarios.setVisible(b7);
         pane_agregar_usuario.setVisible(b8);
         pane_generado_permiso.setVisible(b9);
-        pane_generado_editar_permiso.setVisible(b10);
         pane_liquidacion.setVisible(b11);
     }
 

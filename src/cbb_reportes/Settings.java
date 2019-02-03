@@ -10,7 +10,7 @@ package cbb_reportes;
  * @author saulmestanza
  */
 public class Settings {
-    private static boolean DEBUG = false;
+    private static final boolean DEBUG = false;
     public static String host = DEBUG ? "localhost" : "167.99.11.161";
     public static String username = DEBUG ? "cbc_user" : "cbb_user";
     public static String password = DEBUG ? "cbc_password" : "g/u}5?n~sA2x<fR>*(5~es(v]P}MC<fg";
