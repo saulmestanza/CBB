@@ -164,7 +164,7 @@ public class Permiso {
     }
 
     public String getEliminar() {
-        return "Eliminar";
+        return "Anular";
     }
 
     public String getNombre() {
