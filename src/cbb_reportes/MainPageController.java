@@ -4585,8 +4585,8 @@ public class MainPageController implements Initializable {
         File _file_ = new File(String.format("%sinforme_permisos_%s.pdf", directoryName, titulo.toLowerCase()));
         try {
             Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
-            Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
             Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font normalBoldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD, BaseColor.BLACK);
             Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
 
             OutputStream file = new FileOutputStream(_file_);
@@ -4610,7 +4610,7 @@ public class MainPageController implements Initializable {
             _p1_.clear();
             _p1_.setFont(boldRedFont);
             p1.setAlignment(Element.ALIGN_CENTER);
-            _p1_.add(String.format("INFORME PERMISOS %s - CUERPO BOMBERO DE BALZAR", titulo.toUpperCase(Locale.US)));
+            _p1_.add(String.format("INFORME PERMISOS %s\nCUERPO BOMBERO DE BALZAR", titulo.toUpperCase(Locale.US)));
             p1.add(_p1_);
             document.add(p1);
 
@@ -4620,41 +4620,54 @@ public class MainPageController implements Initializable {
             Calendar c = Calendar.getInstance();
             _p1_.setFont(normalFont);
             p1.setAlignment(Element.ALIGN_LEFT);
-            _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
+            _p1_.add(String.format("\nFecha emisión: %s", sdf.format(c.getTime())));
             p1.add(_p1_);
             document.add(p1);
 
             PdfPTable table = new PdfPTable(6);
-            table.setTotalWidth(450);
+            table.setTotalWidth(550);
             table.setLockedWidth(true);
 
-            PdfPCell cell = new PdfPCell(new Phrase("Código"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            Phrase phrase = new Phrase("Código");
+            phrase.setFont(normalBoldFont);
+            PdfPCell cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Nombre"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Nombre");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Cédula/RUC"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Cédula/RUC");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Razón Social"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Razón Social");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Permiso"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Permiso");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Fecha Emisión"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Fecha Emisión");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
+            
             for (Permiso permiso : permisosList) {
                 Phrase p = new Phrase(permiso.getCodigo_permiso(), smallFont);
                 PdfPCell cel = new PdfPCell(p);
-                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                cel.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cel);
 
                 p = new Phrase(permiso.getCliente().getNombre(), smallFont);
@@ -4664,7 +4677,7 @@ public class MainPageController implements Initializable {
 
                 p = new Phrase(permiso.getCliente().getCedula(), smallFont);
                 cel = new PdfPCell(p);
-                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                cel.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cel);
 
                 p = new Phrase(permiso.getRazon_social(), smallFont);
@@ -4710,6 +4723,7 @@ public class MainPageController implements Initializable {
         }
     }
 
+    
     private void generate_Ocasional_Transporte(String titulo) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
@@ -4781,7 +4795,7 @@ public class MainPageController implements Initializable {
         File _file_ = new File(String.format("%sinforme_permisos_%s.pdf", directoryName, titulo.toLowerCase()));
         try {
             Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
-            Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font normalBoldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
             Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
             Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
 
@@ -4806,7 +4820,7 @@ public class MainPageController implements Initializable {
             _p1_.clear();
             _p1_.setFont(boldRedFont);
             p1.setAlignment(Element.ALIGN_CENTER);
-            _p1_.add(String.format("INFORME PERMISOS %s - CUERPO BOMBERO DE BALZAR", titulo.toUpperCase()));
+            _p1_.add(String.format("INFORME PERMISOS %s\nCUERPO BOMBERO DE BALZAR", titulo.toUpperCase()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -4816,45 +4830,60 @@ public class MainPageController implements Initializable {
             Calendar c = Calendar.getInstance();
             _p1_.setFont(normalFont);
             p1.setAlignment(Element.ALIGN_LEFT);
-            _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
+            _p1_.add(String.format("\nFecha emisión: %s", sdf.format(c.getTime())));
             p1.add(_p1_);
             document.add(p1);
 
             PdfPTable table = new PdfPTable(7);
-            table.setTotalWidth(450);
+            table.setTotalWidth(550);
             table.setLockedWidth(true);
 
-            PdfPCell cell = new PdfPCell(new Phrase("Código"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            Phrase phrase = new Phrase("Código");
+            phrase.setFont(normalBoldFont);
+            PdfPCell cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Nombre"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Nombre");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Cédula/RUC"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Cédula/RUC");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Razón Social"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Razón Social");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Permiso"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Permiso");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Fecha Emisión"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Fecha Emisión");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
-
-            cell = new PdfPCell(new Phrase("Fecha Caducidad"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            
+            phrase = new Phrase("Fecha Caducidad");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
+            
             for (Permiso permiso : permisosList) {
                 Phrase p = new Phrase(permiso.getCodigo_permiso(), smallFont);
                 PdfPCell cel = new PdfPCell(p);
-                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                cel.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cel);
 
                 p = new Phrase(permiso.getCliente().getNombre(), smallFont);
@@ -4864,7 +4893,7 @@ public class MainPageController implements Initializable {
 
                 p = new Phrase(permiso.getCliente().getCedula(), smallFont);
                 cel = new PdfPCell(p);
-                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                cel.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cel);
 
                 p = new Phrase(permiso.getRazon_social(), smallFont);
@@ -4915,6 +4944,7 @@ public class MainPageController implements Initializable {
         }
     }
 
+    
     @FXML
     private void generarPDFempresa(ActionEvent event) {
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -4960,7 +4990,7 @@ public class MainPageController implements Initializable {
         File _file_ = new File(String.format("%sinforme_usuarios.pdf", directoryName));
         try {
             Font boldRedFont = new Font(Font.FontFamily.TIMES_ROMAN, 14, Font.BOLD, BaseColor.RED);
-            Font boldBlackFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
+            Font normalBoldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
             Font normalFont = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.NORMAL, BaseColor.BLACK);
             Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8, Font.NORMAL, BaseColor.BLACK);
 
@@ -4995,41 +5025,54 @@ public class MainPageController implements Initializable {
             Calendar c = Calendar.getInstance();
             _p1_.setFont(normalFont);
             p1.setAlignment(Element.ALIGN_LEFT);
-            _p1_.add(String.format("Fecha emisión: %s", sdf.format(c.getTime())));
+            _p1_.add(String.format("\nFecha emisión: %s", sdf.format(c.getTime())));
             p1.add(_p1_);
             document.add(p1);
 
             PdfPTable table = new PdfPTable(6);
-            table.setTotalWidth(450);
+            table.setTotalWidth(550);
             table.setLockedWidth(true);
 
-            PdfPCell cell = new PdfPCell(new Phrase("Código"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            Phrase phrase = new Phrase("Código");
+            phrase.setFont(normalBoldFont);
+            PdfPCell cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Nombre"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Nombre");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Cédula/RUC"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Cédula/RUC");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Razón Social"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Razón Social");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Permiso"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Permiso");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Fecha Emisión"));
-            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            phrase = new Phrase("Fecha Emisión");
+            phrase.setFont(normalBoldFont);
+            cell = new PdfPCell(phrase);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
+            
             cantidads.stream().map((cantidad) -> {
                 Phrase p = new Phrase(cantidad.getCodigo_permiso(), smallFont);
                 PdfPCell cel = new PdfPCell(p);
-                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                cel.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cel);
 
                 p = new Phrase(cantidad.getNombre(), smallFont);
@@ -5039,7 +5082,7 @@ public class MainPageController implements Initializable {
 
                 p = new Phrase(cantidad.getCedula(), smallFont);
                 cel = new PdfPCell(p);
-                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                cel.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cel);
 
                 p = new Phrase(cantidad.getRazonsocial(), smallFont);
