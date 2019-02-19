@@ -1090,7 +1090,7 @@ public class MainPageController implements Initializable {
                         preparedStmt.setString(2, emision_apellido.getText());
                         preparedStmt.setString(3, emision_cedula.getText());
                         preparedStmt.executeUpdate();
-                        
+
                         cliente.setId(rs.getInt("id"));
                         cliente.setNombre(emision_nombre.getText());
                         cliente.setApellido(emision_apellido.getText());
@@ -1473,6 +1473,7 @@ public class MainPageController implements Initializable {
         }
     }
 
+    //
     private void generateTransportePDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font font = new Font(Font.FontFamily.COURIER, 10, Font.NORMAL);
@@ -1543,47 +1544,55 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getCliente().getFullName()));
             p1.add(_p1_);
             document.add(p1);
+            
+            boolean isLonger = false;
 
             p1.clear();
-            p1.setSpacingBefore(12f);
             _p1_.clear();
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getDescripcion()));
+            if (permiso.getDescripcion().toCharArray().length > 60) {
+                isLonger = true;
+                _p1_.add(String.format("%s", permiso.getDescripcion().substring(0, 60)));
+                p1.add(_p1_);
+                document.add(p1);
 
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            //_p1_.add(String.format("%s", permiso.getCapacidad()));
-            p1.add(_p1_);
-            document.add(p1);
+                p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getDescripcion().substring(60, permiso.getDescripcion().toCharArray().length)));
+                p1.add(_p1_);
+                document.add(p1);
+            }else{
+                _p1_.add(String.format("%s", permiso.getDescripcion()));
+                p1.add(_p1_);
+                document.add(p1);
+            }
 
             p1.clear();
-            p1.setSpacingBefore(4f);
+            if(isLonger){
+                p1.setSpacingBefore(2f);
+            }else{
+                p1.setSpacingBefore(18f);
+            }
             _p1_.clear();
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format("%s", permiso.getVehiculo_marca()));
-
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            // _p1_.add(String.format("%s", permiso.getPlaca()));
+            _p1_.add(String.format("  %s", permiso.getCapacidad()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -1595,6 +1604,13 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format("%s", permiso.getExtintor() ? "Si" : "No"));
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("    %s", permiso.getPlaca()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -1695,46 +1711,54 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
 
+            boolean isLonger = false;
+
             p1.clear();
-            p1.setSpacingBefore(12f);
             _p1_.clear();
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getDescripcion()));
+            if (permiso.getDescripcion().toCharArray().length > 60) {
+                isLonger = true;
+                _p1_.add(String.format("%s", permiso.getDescripcion().substring(0, 60)));
+                p1.add(_p1_);
+                document.add(p1);
 
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getCapacidad()));
-            p1.add(_p1_);
-            document.add(p1);
+                p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getDescripcion().substring(60, permiso.getDescripcion().toCharArray().length)));
+                p1.add(_p1_);
+                document.add(p1);
+            }else{
+                _p1_.add(String.format("%s", permiso.getDescripcion()));
+                p1.add(_p1_);
+                document.add(p1);
+            }
 
             p1.clear();
-            p1.setSpacingBefore(13f);
+            if(isLonger){
+                p1.setSpacingBefore(2f);
+            }else{
+                p1.setSpacingBefore(18f);
+            }
             _p1_.clear();
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format("%s", permiso.getVehiculo_marca()));
-
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getPlaca()));
+            _p1_.add(String.format("  %s", permiso.getCapacidad()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -1746,6 +1770,13 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format("%s", permiso.getExtintor() ? "Si" : "No"));
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("    %s", permiso.getPlaca()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -1764,6 +1795,7 @@ public class MainPageController implements Initializable {
         }
     }
 
+    //
     private void generateOcasionalPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
@@ -2149,6 +2181,7 @@ public class MainPageController implements Initializable {
         }
     }
 
+    //
     private void generateConstruccionPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
@@ -2245,6 +2278,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
 
+            boolean isLonger = false;
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -2253,12 +2287,34 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getDescripcion()));
-            p1.add(_p1_);
-            document.add(p1);
+            if (permiso.getDescripcion().toCharArray().length > 60) {
+                isLonger = true;
+                _p1_.add(String.format("%s", permiso.getDescripcion().substring(0, 60)));
+                p1.add(_p1_);
+                document.add(p1);
+
+                p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getDescripcion().substring(60, permiso.getDescripcion().toCharArray().length)));
+                p1.add(_p1_);
+                document.add(p1);
+            }else{
+                _p1_.add(String.format("%s", permiso.getDescripcion()));
+                p1.add(_p1_);
+                document.add(p1);
+            }
 
             p1.clear();
-            p1.setSpacingBefore(12f);
+            if(isLonger){
+                p1.setSpacingBefore(0f);
+            }else{
+                p1.setSpacingBefore(12f);
+            }
             _p1_.clear();
             _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
@@ -2270,7 +2326,11 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
             p1.clear();
-            p1.setSpacingBefore(8f);
+            if(isLonger){
+                p1.setSpacingBefore(4f);
+            }else{
+                p1.setSpacingBefore(8f);
+            }
             _p1_.clear();
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
@@ -2392,6 +2452,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
 
+            boolean isLonger = false;
             p1.clear();
             p1.setSpacingBefore(8f);
             _p1_.clear();
@@ -2400,12 +2461,34 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getDescripcion()));
-            p1.add(_p1_);
-            document.add(p1);
+            if (permiso.getDescripcion().toCharArray().length > 60) {
+                isLonger = true;
+                _p1_.add(String.format("%s", permiso.getDescripcion().substring(0, 60)));
+                p1.add(_p1_);
+                document.add(p1);
+
+                p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getDescripcion().substring(60, permiso.getDescripcion().toCharArray().length)));
+                p1.add(_p1_);
+                document.add(p1);
+            }else{
+                _p1_.add(String.format("%s", permiso.getDescripcion()));
+                p1.add(_p1_);
+                document.add(p1);
+            }
 
             p1.clear();
-            p1.setSpacingBefore(12f);
+            if(isLonger){
+                p1.setSpacingBefore(0f);
+            }else{
+                p1.setSpacingBefore(12f);
+            }
             _p1_.clear();
             _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
@@ -2417,7 +2500,11 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
             p1.clear();
-            p1.setSpacingBefore(8f);
+            if(isLonger){
+                p1.setSpacingBefore(4f);
+            }else{
+                p1.setSpacingBefore(8f);
+            }
             _p1_.clear();
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
@@ -2432,6 +2519,7 @@ public class MainPageController implements Initializable {
         }
     }
 
+    //
     private void generateFuncionamientoPDF(Document document, PdfWriter writer, Permiso permiso) {
         try {
             Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
@@ -2520,20 +2608,44 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
 
+            boolean isLonger = false;
             p1.clear();
-            p1.setSpacingBefore(8f);
             _p1_.clear();
             _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getActividad_economica()));
-            p1.add(_p1_);
-            document.add(p1);
+            if (permiso.getActividad_economica().toCharArray().length > 60) {
+                p1.setSpacingBefore(4f);
+                isLonger = true;
+                _p1_.add(String.format("%s", permiso.getActividad_economica().substring(0, 60)));
+                p1.add(_p1_);
+                document.add(p1);
+                
+                 p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getActividad_economica().substring(60, permiso.getActividad_economica().toCharArray().length)));
+                p1.add(_p1_);
+                document.add(p1);
+            }else{
+                p1.setSpacingBefore(8f);
+                _p1_.add(String.format("%s", permiso.getActividad_economica()));
+                p1.add(_p1_);
+                document.add(p1);
+            }
 
             p1.clear();
-            p1.setSpacingBefore(10f);
+            if(isLonger){
+                p1.setSpacingBefore(0f);
+            }else{
+                p1.setSpacingBefore(10f);
+            }
             _p1_.clear();
             _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
@@ -2545,7 +2657,11 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
             p1.clear();
-            p1.setSpacingBefore(8f);
+            if(isLonger){
+                p1.setSpacingBefore(6f);
+            }else{
+                p1.setSpacingBefore(8f);
+            }
             _p1_.clear();
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
@@ -2670,20 +2786,44 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
 
+            boolean isLonger = false;
             p1.clear();
-            p1.setSpacingBefore(8f);
             _p1_.clear();
             _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(String.format("%s", permiso.getActividad_economica()));
-            p1.add(_p1_);
-            document.add(p1);
+            if (permiso.getActividad_economica().toCharArray().length > 60) {
+                p1.setSpacingBefore(4f);
+                isLonger = true;
+                _p1_.add(String.format("%s", permiso.getActividad_economica().substring(0, 60)));
+                p1.add(_p1_);
+                document.add(p1);
+                
+                 p1.clear();
+                p1.setSpacingBefore(0f);
+                _p1_.clear();
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(Chunk.TABBING);
+                _p1_.add(String.format("%s", permiso.getActividad_economica().substring(60, permiso.getActividad_economica().toCharArray().length)));
+                p1.add(_p1_);
+                document.add(p1);
+            }else{
+                p1.setSpacingBefore(8f);
+                _p1_.add(String.format("%s", permiso.getActividad_economica()));
+                p1.add(_p1_);
+                document.add(p1);
+            }
 
             p1.clear();
-            p1.setSpacingBefore(10f);
+            if(isLonger){
+                p1.setSpacingBefore(0f);
+            }else{
+                p1.setSpacingBefore(10f);
+            }
             _p1_.clear();
             _p1_.setFont(smallfont);
             _p1_.add(Chunk.TABBING);
@@ -2695,7 +2835,11 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
             p1.clear();
-            p1.setSpacingBefore(8f);
+            if(isLonger){
+                p1.setSpacingBefore(6f);
+            }else{
+                p1.setSpacingBefore(8f);
+            }
             _p1_.clear();
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
@@ -2895,6 +3039,15 @@ public class MainPageController implements Initializable {
                         emision_capacidad.setVisible(true);
                         emision_extintor.setVisible(true);
                         emision_actividad_economica.setVisible(false);
+                        try {
+                            String fecha[] = permiso.getFechaExpiracion().split("-");
+                            fecha_ocasional.setValue(LocalDate.of(
+                                    Integer.parseInt(fecha[0]),
+                                    Integer.parseInt(fecha[1]),
+                                    Integer.parseInt(fecha[2]))
+                            );
+                        } catch (Exception e) {
+                        }
                         break;
                     case "Ocasional":
                         fecha_ocasional.setDisable(false);
@@ -2907,7 +3060,7 @@ public class MainPageController implements Initializable {
                         emision_extintor.setVisible(false);
                         emision_actividad_economica.setVisible(false);
                         try {
-                            String fecha[] = permiso.getFecha_expiracion().split("-");
+                            String fecha[] = permiso.getFechaExpiracion().split("-");
                             fecha_ocasional.setValue(LocalDate.of(
                                     Integer.parseInt(fecha[0]),
                                     Integer.parseInt(fecha[1]),
@@ -2936,15 +3089,6 @@ public class MainPageController implements Initializable {
                         emision_capacidad.setVisible(false);
                         emision_extintor.setVisible(false);
                         emision_actividad_economica.setVisible(true);
-                        try {
-                            String fecha[] = permiso.getFecha_expiracion().split("-");
-                            fecha_ocasional.setValue(LocalDate.of(
-                                    Integer.parseInt(fecha[0]),
-                                    Integer.parseInt(fecha[1]),
-                                    Integer.parseInt(fecha[2]))
-                            );
-                        } catch (Exception e) {
-                        }
                         break;
                     default:
                         fecha_ocasional.setDisable(true);
@@ -2958,6 +3102,78 @@ public class MainPageController implements Initializable {
                 }
             }
         });
+        switch (permiso.getModo_permiso()) {
+            case "Transporte":
+                fecha_ocasional.setDisable(false);
+                fecha_ocasional.setValue(null);
+                emision_descripcion.setVisible(true);
+                emision_descripcion.setPromptText("Para que transporte");
+                emision_vehiculo.setVisible(true);
+                emision_placa.setVisible(true);
+                emision_capacidad.setVisible(true);
+                emision_extintor.setVisible(true);
+                emision_actividad_economica.setVisible(false);
+                try {
+                    String fecha[] = permiso.getFechaExpiracion().split("-");
+                    fecha_ocasional.setValue(LocalDate.of(
+                            Integer.parseInt(fecha[0]),
+                            Integer.parseInt(fecha[1]),
+                            Integer.parseInt(fecha[2]))
+                    );
+                } catch (Exception e) {
+                }
+                break;
+            case "Ocasional":
+                fecha_ocasional.setDisable(false);
+                fecha_ocasional.setValue(null);
+                emision_descripcion.setVisible(true);
+                emision_descripcion.setPromptText("Por permiso ocasional de");
+                emision_vehiculo.setVisible(false);
+                emision_placa.setVisible(false);
+                emision_capacidad.setVisible(false);
+                emision_extintor.setVisible(false);
+                emision_actividad_economica.setVisible(false);
+                try {
+                    String fecha[] = permiso.getFechaExpiracion().split("-");
+                    fecha_ocasional.setValue(LocalDate.of(
+                            Integer.parseInt(fecha[0]),
+                            Integer.parseInt(fecha[1]),
+                            Integer.parseInt(fecha[2]))
+                    );
+                } catch (Exception e) {
+                }
+                break;
+            case "Construcción":
+                fecha_ocasional.setDisable(true);
+                fecha_ocasional.setValue(null);
+                emision_descripcion.setVisible(true);
+                emision_descripcion.setPromptText("Construcción de");
+                emision_vehiculo.setVisible(false);
+                emision_placa.setVisible(false);
+                emision_capacidad.setVisible(false);
+                emision_extintor.setVisible(false);
+                emision_actividad_economica.setVisible(false);
+                break;
+            case "Funcionamiento":
+                fecha_ocasional.setDisable(true);
+                fecha_ocasional.setValue(null);
+                emision_descripcion.setVisible(false);
+                emision_vehiculo.setVisible(false);
+                emision_placa.setVisible(false);
+                emision_capacidad.setVisible(false);
+                emision_extintor.setVisible(false);
+                emision_actividad_economica.setVisible(true);
+                break;
+            default:
+                fecha_ocasional.setDisable(true);
+                fecha_ocasional.setValue(null);
+                emision_descripcion.setVisible(false);
+                emision_vehiculo.setVisible(false);
+                emision_placa.setVisible(false);
+                emision_capacidad.setVisible(false);
+                emision_extintor.setVisible(false);
+                emision_actividad_economica.setVisible(false);
+        }
     }
 
     private void eliminarGenerado(Permiso _permiso_, ActionEvent event) {
@@ -4663,7 +4879,7 @@ public class MainPageController implements Initializable {
             cell = new PdfPCell(phrase);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
-            
+
             for (Permiso permiso : permisosList) {
                 Phrase p = new Phrase(permiso.getCodigo_permiso(), smallFont);
                 PdfPCell cel = new PdfPCell(p);
@@ -4723,7 +4939,6 @@ public class MainPageController implements Initializable {
         }
     }
 
-    
     private void generate_Ocasional_Transporte(String titulo) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
@@ -4873,13 +5088,13 @@ public class MainPageController implements Initializable {
             cell = new PdfPCell(phrase);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
-            
+
             phrase = new Phrase("Fecha Caducidad");
             phrase.setFont(normalBoldFont);
             cell = new PdfPCell(phrase);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
-            
+
             for (Permiso permiso : permisosList) {
                 Phrase p = new Phrase(permiso.getCodigo_permiso(), smallFont);
                 PdfPCell cel = new PdfPCell(p);
@@ -4944,7 +5159,6 @@ public class MainPageController implements Initializable {
         }
     }
 
-    
     @FXML
     private void generarPDFempresa(ActionEvent event) {
         Alert alert = new Alert(AlertType.INFORMATION);
@@ -5068,7 +5282,7 @@ public class MainPageController implements Initializable {
             cell = new PdfPCell(phrase);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
-            
+
             cantidads.stream().map((cantidad) -> {
                 Phrase p = new Phrase(cantidad.getCodigo_permiso(), smallFont);
                 PdfPCell cel = new PdfPCell(p);

@@ -130,6 +130,10 @@ public class Permiso {
             return fecha_expiracion;
         }
     }
+    
+    public String getFechaExpiracion(){
+        return fecha_expiracion;
+    }
 
     public void setFecha_expiracion(String fecha_expiracion) {
         this.fecha_expiracion = fecha_expiracion;
