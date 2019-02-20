@@ -390,7 +390,7 @@ public class MainPageController implements Initializable {
     // VERSION
     @FXML
     private void versionMenuEvent(ActionEvent event) {
-        Alert alert = new Alert(AlertType.CONFIRMATION);
+        Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
         alert.setContentText(String.format("Versión %s", Settings.version));
@@ -535,7 +535,6 @@ public class MainPageController implements Initializable {
             rs.close();
             
             sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = "+cliente.getId()+" AND clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
-            System.out.println(sql);
             Permiso _permiso_ = new Permiso();
             mysqlConnect = new MysqlConnect();
             try {
