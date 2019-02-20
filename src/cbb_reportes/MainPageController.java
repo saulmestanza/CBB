@@ -513,7 +513,7 @@ public class MainPageController implements Initializable {
             pstmt = mysqlConnect.connect().prepareStatement(query);
             pstmt.setString(1, String.valueOf(cliente.getId()));
             pstmt.executeUpdate();
-            Alert alert = new Alert(AlertType.CONFIRMATION);
+            Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("Cuerpo Bomberos de Balzar");
             alert.setHeaderText(null);
             alert.setContentText(String.format("El cliente %s ha sido liquidado.", cliente.getFullName()));
@@ -533,10 +533,39 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
+            
+            sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = "+cliente.getId()+" AND clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
+            System.out.println(sql);
+            Permiso _permiso_ = new Permiso();
+            mysqlConnect = new MysqlConnect();
+            try {
+                try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
+                    rs = st.executeQuery(sql);
+                    while (rs.next()) {
+                        _permiso_ = new Permiso();
+                        _permiso_.setId(rs.getInt("id"));
+                        _permiso_.setDescripcion(rs.getString("descripcion"));
+                        _permiso_.setFecha_emision(rs.getString("fecha_emision"));
+                        _permiso_.setFecha_expiracion(rs.getString("fecha_expiracion"));
+                        _permiso_.setRuta_pdf(rs.getString("ruta_pdf"));
+                        _permiso_.setCodigo_permiso(rs.getString("codigo_permiso"));
+                        _permiso_.setModo_permiso(rs.getString("modo_permiso"));
+                        _permiso_.setRazon_social(rs.getString("razon_social"));
+                        _permiso_.setDireccion(rs.getString("direccion"));
+                        _permiso_.setDeleted(rs.getBoolean("deleted"));
+                        _permiso_.setActividad_economica(rs.getString("actividad_economica"));
+                    }
+                }
+                rs.close();
+            } catch (SQLException e) {
+                saveLogError(e);
+            } finally {
+                mysqlConnect.disconnect();
+            }
             liquidar_tv.refresh();
             liquidar_tv.getItems().clear();
             liquidar_tv.getItems().addAll(clientesList);
-            empezarLiquidarPDF(cliente);
+            empezarLiquidarPDF(cliente, _permiso_);
         } catch (Exception e) {
             saveLogError(e);
         } finally {
@@ -574,7 +603,7 @@ public class MainPageController implements Initializable {
         }
     }
 
-    private void empezarLiquidarPDF(Clientes cliente) {
+    private void empezarLiquidarPDF(Clientes cliente, Permiso permiso) {
         File _file_ = null;
         try {
             String _directory_ = javax.swing.filechooser.FileSystemView.getFileSystemView().getHomeDirectory().toString();
@@ -599,7 +628,7 @@ public class MainPageController implements Initializable {
                 document.setPageSize(PageSize.A4);
                 document.setMargins(40, 40, 73, 10);
                 document.newPage();
-                generateLiquidarPDF(document, writer, cliente);
+                generateLiquidarPDF(document, writer, cliente, permiso);
                 canvas = writer.getDirectContentUnder();
                 image = Image.getInstance(getClass().getClassLoader().getResource("img/permiso_liquidacion.png"));
                 image.scaleAbsolute(PageSize.A4);
@@ -617,7 +646,7 @@ public class MainPageController implements Initializable {
         }
     }
 
-    private void generateLiquidarPDF(Document document, PdfWriter writer, Clientes cliente) {
+    private void generateLiquidarPDF(Document document, PdfWriter writer, Clientes cliente, Permiso permiso) {
         try {
             Font smallfont = new Font(Font.FontFamily.COURIER, 9, Font.NORMAL);
             Font font = new Font(Font.FontFamily.COURIER, 11, Font.NORMAL);
@@ -675,7 +704,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add("");
+            _p1_.add(String.format("     %s", permiso.getActividad_economica()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -688,13 +717,14 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add("");
+            _p1_.add(String.format("    %s", permiso.getDireccion()));
             p1.add(_p1_);
             document.add(p1);
 
             // COPIA
-            document.add(Chunk.NEWLINE);
+            if(permiso.getDireccion().toCharArray().length < 50) {
+                document.add(Chunk.NEWLINE);
+            }
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
@@ -757,7 +787,9 @@ public class MainPageController implements Initializable {
             _p1_.setFont(font);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add("");
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("     %s", permiso.getActividad_economica()));
             p1.add(_p1_);
             document.add(p1);
 
@@ -770,8 +802,7 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
-            _p1_.add(Chunk.TABBING);
-            _p1_.add("");
+            _p1_.add(String.format("    %s", permiso.getDireccion()));
             p1.add(_p1_);
             document.add(p1);
 
