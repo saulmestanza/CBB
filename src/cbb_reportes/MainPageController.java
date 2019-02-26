@@ -442,34 +442,6 @@ public class MainPageController implements Initializable {
                 return row;
             }
         });
-        liquidar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                try {
-                    if (liquidar_tv.getSelectionModel().getSelectedItem() != null) {
-                        TableViewSelectionModel selectionModel = liquidar_tv.getSelectionModel();
-                        ObservableList selectedCells = selectionModel.getSelectedCells();
-                        TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                        Object val = tablePosition.getTableColumn().getCellData(newValue);
-                        if (val.equals("Liquidar")) {
-                            Clientes cliente = liquidar_tv.getSelectionModel().getSelectedItem();
-                            Alert alert = new Alert(AlertType.CONFIRMATION);
-                            alert.setTitle("Cuerpo Bomberos de Balzar");
-                            alert.setHeaderText(null);
-                            alert.setContentText(String.format("Está seguro que desea liquidar el usuario %s?", cliente.getFullName()));
-                            Optional<ButtonType> result = alert.showAndWait();
-                            if (result.get() == ButtonType.OK) {
-                                getLiquidacion(cliente, clientesList);
-                            } else {
-                                alert.close();
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    // 
-                }
-            }
-        });
     }
 
     private void getLiquidacion(Clientes cliente, ArrayList<Clientes> clientesList) {
@@ -533,8 +505,8 @@ public class MainPageController implements Initializable {
                 }
             }
             rs.close();
-            
-            sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = "+cliente.getId()+" AND clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
+
+            sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `cbb_db`.`clientes`, `cbb_db`.`permisos`, tipo_permiso WHERE clientes.id = " + cliente.getId() + " AND clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
             Permiso _permiso_ = new Permiso();
             mysqlConnect = new MysqlConnect();
             try {
@@ -721,7 +693,7 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
             // COPIA
-            if(permiso.getDireccion().toCharArray().length < 50) {
+            if (permiso.getDireccion().toCharArray().length < 50) {
                 document.add(Chunk.NEWLINE);
             }
             document.add(Chunk.NEWLINE);
@@ -882,90 +854,23 @@ public class MainPageController implements Initializable {
     //EMISION PERMISOS
     @FXML
     private void emisionMenuAction(ActionEvent event) {
+        limpiarEmision();
         setVisiblePane(true, false, false, false, false, false, false, false, false, false, false);
         isEdit = false;
         setEmisionPermisos();
     }
+    
+    private void limpiarEmision() {
+        emision_nombre.setText("");
+        emision_apellido.setText("");
+        emision_cedula.setText("");
+        emision_razon_social.setText("");
+        emision_direccion.setText("");
+        emision_descripcion.setText("");
+        fecha_ocasional.setValue(null);
+    }
 
     private void setEmisionPermisos() {
-        emision_cedula.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                emision_cedula.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
-
-        emision_nombre.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (emision_nombre.getText().length() >= Settings.LENGTH_NAMES) {
-                    emision_nombre.setText(emision_nombre.getText().substring(0, Settings.LENGTH_NAMES));
-                }
-            }
-        });
-
-        emision_apellido.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (emision_apellido.getText().length() >= Settings.LENGTH_NAMES) {
-                    emision_apellido.setText(emision_apellido.getText().substring(0, Settings.LENGTH_NAMES));
-                }
-            }
-        });
-
-        emision_razon_social.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (emision_razon_social.getText().length() >= Settings.LENGTH_NAMES) {
-                    emision_razon_social.setText(emision_razon_social.getText().substring(0, Settings.LENGTH_NAMES));
-                }
-            }
-        });
-
-        emision_direccion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (emision_direccion.getText().length() >= Settings.LENGTH_NAMES) {
-                    emision_direccion.setText(emision_direccion.getText().substring(0, Settings.LENGTH_NAMES));
-                }
-            }
-        });
-
-        emision_descripcion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (emision_descripcion.getText().length() >= Settings.LENGTH_DESCRIPTION) {
-                    emision_descripcion.setText(emision_descripcion.getText().substring(0, Settings.LENGTH_DESCRIPTION));
-                }
-            }
-        });
-
-        emision_cedula.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-            if (newValue.intValue() > oldValue.intValue()) {
-                if (emision_cedula.getText().length() >= Settings.LENGTH_NATIONAL_ID) {
-                    emision_cedula.setText(emision_cedula.getText().substring(0, Settings.LENGTH_NATIONAL_ID));
-                }
-            }
-        });
-        emision_tipo_permiso.getStylesheets().add(
-                getClass().getResource(
-                        "ComboBoxCSS.css"
-                ).toExternalForm()
-        );
-        emision_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.equals("")) {
-                List<String> _tps_ = emision_tipo_permiso.getItems();
-                int _count_ = 0;
-                for (String tp : _tps_) {
-                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
-                        emision_tipo_permiso.getSelectionModel().select(_count_);
-
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) emision_tipo_permiso.getSkin();
-                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
-                        break;
-                    }
-                    _count_++;
-                }
-            } else {
-                emision_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) emision_tipo_permiso.getSkin();
-                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
-            }
-        });
         tps = new ArrayList<>();
         ObservableList cursors = FXCollections.observableArrayList();
         MysqlConnect mysqlConnect = new MysqlConnect();
@@ -993,12 +898,6 @@ public class MainPageController implements Initializable {
         emision_tipo_permiso.setItems(cursors);
         emision_tipo_permiso.getSelectionModel().selectFirst();
         emision_tipo_permiso.setTooltip(new Tooltip("Elija un tipo de permiso"));
-        emision_tipo_permiso.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-
-            }
-        });
         emision_fecha.setValue(LocalDate.now());
 
         ObservableList _permisos_ = FXCollections.observableArrayList();
@@ -1015,64 +914,6 @@ public class MainPageController implements Initializable {
         emision_capacidad.setVisible(false);
         emision_extintor.setVisible(false);
         emision_actividad_economica.setVisible(false);
-        modo_permiso.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-            if (newValue != null) {
-                switch (newValue.toString()) {
-                    case "Transporte":
-                        fecha_ocasional.setDisable(false);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(true);
-                        emision_descripcion.setPromptText("Para que transporte");
-                        emision_vehiculo.setVisible(true);
-                        emision_placa.setVisible(true);
-                        emision_capacidad.setVisible(true);
-                        emision_extintor.setVisible(true);
-                        emision_actividad_economica.setVisible(false);
-                        break;
-                    case "Ocasional":
-                        fecha_ocasional.setDisable(false);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(true);
-                        emision_descripcion.setPromptText("Por permiso ocasional de");
-                        emision_vehiculo.setVisible(false);
-                        emision_placa.setVisible(false);
-                        emision_capacidad.setVisible(false);
-                        emision_extintor.setVisible(false);
-                        emision_actividad_economica.setVisible(false);
-                        break;
-                    case "Construcción":
-                        fecha_ocasional.setDisable(true);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(true);
-                        emision_descripcion.setPromptText("Construcción de");
-                        emision_vehiculo.setVisible(false);
-                        emision_placa.setVisible(false);
-                        emision_capacidad.setVisible(false);
-                        emision_extintor.setVisible(false);
-                        emision_actividad_economica.setVisible(false);
-                        break;
-                    case "Funcionamiento":
-                        fecha_ocasional.setDisable(true);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(false);
-                        emision_vehiculo.setVisible(false);
-                        emision_placa.setVisible(false);
-                        emision_capacidad.setVisible(false);
-                        emision_extintor.setVisible(false);
-                        emision_actividad_economica.setVisible(true);
-                        break;
-                    default:
-                        fecha_ocasional.setDisable(true);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(false);
-                        emision_vehiculo.setVisible(false);
-                        emision_placa.setVisible(false);
-                        emision_capacidad.setVisible(false);
-                        emision_extintor.setVisible(false);
-                        emision_actividad_economica.setVisible(false);
-                }
-            }
-        });
     }
 
     @FXML
@@ -1574,7 +1415,7 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getCliente().getFullName()));
             p1.add(_p1_);
             document.add(p1);
-            
+
             boolean isLonger = false;
 
             p1.clear();
@@ -1598,16 +1439,16 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", permiso.getDescripcion().substring(60, permiso.getDescripcion().toCharArray().length)));
                 p1.add(_p1_);
                 document.add(p1);
-            }else{
+            } else {
                 _p1_.add(String.format("%s", permiso.getDescripcion()));
                 p1.add(_p1_);
                 document.add(p1);
             }
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(2f);
-            }else{
+            } else {
                 p1.setSpacingBefore(18f);
             }
             _p1_.clear();
@@ -1764,16 +1605,16 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", permiso.getDescripcion().substring(60, permiso.getDescripcion().toCharArray().length)));
                 p1.add(_p1_);
                 document.add(p1);
-            }else{
+            } else {
                 _p1_.add(String.format("%s", permiso.getDescripcion()));
                 p1.add(_p1_);
                 document.add(p1);
             }
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(2f);
-            }else{
+            } else {
                 p1.setSpacingBefore(18f);
             }
             _p1_.clear();
@@ -2333,16 +2174,16 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", permiso.getDescripcion().substring(60, permiso.getDescripcion().toCharArray().length)));
                 p1.add(_p1_);
                 document.add(p1);
-            }else{
+            } else {
                 _p1_.add(String.format("%s", permiso.getDescripcion()));
                 p1.add(_p1_);
                 document.add(p1);
             }
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(0f);
-            }else{
+            } else {
                 p1.setSpacingBefore(12f);
             }
             _p1_.clear();
@@ -2356,9 +2197,9 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(4f);
-            }else{
+            } else {
                 p1.setSpacingBefore(8f);
             }
             _p1_.clear();
@@ -2507,16 +2348,16 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", permiso.getDescripcion().substring(60, permiso.getDescripcion().toCharArray().length)));
                 p1.add(_p1_);
                 document.add(p1);
-            }else{
+            } else {
                 _p1_.add(String.format("%s", permiso.getDescripcion()));
                 p1.add(_p1_);
                 document.add(p1);
             }
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(0f);
-            }else{
+            } else {
                 p1.setSpacingBefore(12f);
             }
             _p1_.clear();
@@ -2530,9 +2371,9 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(4f);
-            }else{
+            } else {
                 p1.setSpacingBefore(8f);
             }
             _p1_.clear();
@@ -2652,8 +2493,8 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", permiso.getActividad_economica().substring(0, 60)));
                 p1.add(_p1_);
                 document.add(p1);
-                
-                 p1.clear();
+
+                p1.clear();
                 p1.setSpacingBefore(0f);
                 _p1_.clear();
                 _p1_.add(Chunk.TABBING);
@@ -2663,7 +2504,7 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", permiso.getActividad_economica().substring(60, permiso.getActividad_economica().toCharArray().length)));
                 p1.add(_p1_);
                 document.add(p1);
-            }else{
+            } else {
                 p1.setSpacingBefore(8f);
                 _p1_.add(String.format("%s", permiso.getActividad_economica()));
                 p1.add(_p1_);
@@ -2671,9 +2512,9 @@ public class MainPageController implements Initializable {
             }
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(0f);
-            }else{
+            } else {
                 p1.setSpacingBefore(10f);
             }
             _p1_.clear();
@@ -2687,9 +2528,9 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(6f);
-            }else{
+            } else {
                 p1.setSpacingBefore(8f);
             }
             _p1_.clear();
@@ -2830,8 +2671,8 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", permiso.getActividad_economica().substring(0, 60)));
                 p1.add(_p1_);
                 document.add(p1);
-                
-                 p1.clear();
+
+                p1.clear();
                 p1.setSpacingBefore(0f);
                 _p1_.clear();
                 _p1_.add(Chunk.TABBING);
@@ -2841,7 +2682,7 @@ public class MainPageController implements Initializable {
                 _p1_.add(String.format("%s", permiso.getActividad_economica().substring(60, permiso.getActividad_economica().toCharArray().length)));
                 p1.add(_p1_);
                 document.add(p1);
-            }else{
+            } else {
                 p1.setSpacingBefore(8f);
                 _p1_.add(String.format("%s", permiso.getActividad_economica()));
                 p1.add(_p1_);
@@ -2849,9 +2690,9 @@ public class MainPageController implements Initializable {
             }
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(0f);
-            }else{
+            } else {
                 p1.setSpacingBefore(10f);
             }
             _p1_.clear();
@@ -2865,9 +2706,9 @@ public class MainPageController implements Initializable {
             document.add(p1);
 
             p1.clear();
-            if(isLonger){
+            if (isLonger) {
                 p1.setSpacingBefore(6f);
-            }else{
+            } else {
                 p1.setSpacingBefore(8f);
             }
             _p1_.clear();
@@ -2930,26 +2771,7 @@ public class MainPageController implements Initializable {
                         "ComboBoxCSS.css"
                 ).toExternalForm()
         );
-        generado_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.equals("")) {
-                List<String> _tps_ = generado_tipo_permiso.getItems();
-                int _count_ = 0;
-                for (String tp : _tps_) {
-                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
-                        generado_tipo_permiso.getSelectionModel().select(_count_);
 
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_tipo_permiso.getSkin();
-                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
-                        break;
-                    }
-                    _count_++;
-                }
-            } else {
-                generado_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_tipo_permiso.getSkin();
-                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
-            }
-        });
         generado_tipo_permiso.setItems(cursors);
         generado_tipo_permiso.setTooltip(new Tooltip("Elija un tipo de permiso"));
         generado_tipo_permiso.getSelectionModel().clearSelection();
@@ -2972,38 +2794,7 @@ public class MainPageController implements Initializable {
                 return row;
             }
         });
-        editar_generados_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if (editar_generados_tv.getSelectionModel().getSelectedItem() != null) {
-                    TableViewSelectionModel selectionModel = editar_generados_tv.getSelectionModel();
-                    ObservableList selectedCells = selectionModel.getSelectedCells();
-                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                    Object val = tablePosition.getTableColumn().getCellData(newValue);
-                    Permiso _permiso_ = editar_generados_tv.getSelectionModel().getSelectedItem();
-                    if (val.equals("Editar")) {
-                        setVisiblePane(true, false, false, false, false, false, false, false, false, false, false);
-                        isEdit = true;
-                        setEmisionPermisos();
-                        setEditarPermiso(_permiso_);
-                    }
 
-                    if (val.equals("Anular")) {
-                        Alert alert = new Alert(AlertType.CONFIRMATION);
-                        alert.setTitle("Cuerpo Bomberos de Balzar");
-                        alert.setHeaderText(null);
-                        alert.setContentText(String.format("Está seguro que desea eliminar el permiso #%s?", _permiso_.getCodigo_permiso()));
-                        Optional<ButtonType> result = alert.showAndWait();
-                        if (result.get() == ButtonType.OK) {
-                            editar_generados_tv.getSelectionModel().clearSelection();
-                            eliminarGenerado(_permiso_, event);
-                        } else {
-                            alert.close();
-                        }
-                    }
-                }
-            }
-        });
     }
 
     private void setEditarPermiso(Permiso permiso) {
@@ -3056,82 +2847,6 @@ public class MainPageController implements Initializable {
             );
         } catch (Exception e) {
         }
-        modo_permiso.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
-            if (newValue != null) {
-                switch (newValue.toString()) {
-                    case "Transporte":
-                        fecha_ocasional.setDisable(false);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(true);
-                        emision_descripcion.setPromptText("Para que transporte");
-                        emision_vehiculo.setVisible(true);
-                        emision_placa.setVisible(true);
-                        emision_capacidad.setVisible(true);
-                        emision_extintor.setVisible(true);
-                        emision_actividad_economica.setVisible(false);
-                        try {
-                            String fecha[] = permiso.getFechaExpiracion().split("-");
-                            fecha_ocasional.setValue(LocalDate.of(
-                                    Integer.parseInt(fecha[0]),
-                                    Integer.parseInt(fecha[1]),
-                                    Integer.parseInt(fecha[2]))
-                            );
-                        } catch (Exception e) {
-                        }
-                        break;
-                    case "Ocasional":
-                        fecha_ocasional.setDisable(false);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(true);
-                        emision_descripcion.setPromptText("Por permiso ocasional de");
-                        emision_vehiculo.setVisible(false);
-                        emision_placa.setVisible(false);
-                        emision_capacidad.setVisible(false);
-                        emision_extintor.setVisible(false);
-                        emision_actividad_economica.setVisible(false);
-                        try {
-                            String fecha[] = permiso.getFechaExpiracion().split("-");
-                            fecha_ocasional.setValue(LocalDate.of(
-                                    Integer.parseInt(fecha[0]),
-                                    Integer.parseInt(fecha[1]),
-                                    Integer.parseInt(fecha[2]))
-                            );
-                        } catch (Exception e) {
-                        }
-                        break;
-                    case "Construcción":
-                        fecha_ocasional.setDisable(true);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(true);
-                        emision_descripcion.setPromptText("Construcción de");
-                        emision_vehiculo.setVisible(false);
-                        emision_placa.setVisible(false);
-                        emision_capacidad.setVisible(false);
-                        emision_extintor.setVisible(false);
-                        emision_actividad_economica.setVisible(false);
-                        break;
-                    case "Funcionamiento":
-                        fecha_ocasional.setDisable(true);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(false);
-                        emision_vehiculo.setVisible(false);
-                        emision_placa.setVisible(false);
-                        emision_capacidad.setVisible(false);
-                        emision_extintor.setVisible(false);
-                        emision_actividad_economica.setVisible(true);
-                        break;
-                    default:
-                        fecha_ocasional.setDisable(true);
-                        fecha_ocasional.setValue(null);
-                        emision_descripcion.setVisible(false);
-                        emision_vehiculo.setVisible(false);
-                        emision_placa.setVisible(false);
-                        emision_capacidad.setVisible(false);
-                        emision_extintor.setVisible(false);
-                        emision_actividad_economica.setVisible(false);
-                }
-            }
-        });
         switch (permiso.getModo_permiso()) {
             case "Transporte":
                 fecha_ocasional.setDisable(false);
@@ -3206,7 +2921,7 @@ public class MainPageController implements Initializable {
         }
     }
 
-    private void eliminarGenerado(Permiso _permiso_, ActionEvent event) {
+    private void eliminarGenerado(Permiso _permiso_) {
         new Thread(() -> {
             try {
                 MysqlConnect mysqlConnect = new MysqlConnect();
@@ -3399,26 +3114,7 @@ public class MainPageController implements Initializable {
                         "ComboBoxCSS.css"
                 ).toExternalForm()
         );
-        consultar_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.equals("")) {
-                List<String> _tps_ = consultar_tipo_permiso.getItems();
-                int _count_ = 0;
-                for (String tp : _tps_) {
-                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
-                        consultar_tipo_permiso.getSelectionModel().select(_count_);
 
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) consultar_tipo_permiso.getSkin();
-                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
-                        break;
-                    }
-                    _count_++;
-                }
-            } else {
-                consultar_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) consultar_tipo_permiso.getSkin();
-                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
-            }
-        });
         consultar_tipo_permiso.setItems(cursors);
         consultar_tipo_permiso.setTooltip(new Tooltip("Elija un tipo de permiso"));
         consultar_tipo_permiso.getSelectionModel().clearSelection();
@@ -3546,31 +3242,6 @@ public class MainPageController implements Initializable {
                     event1.consume();
                 });
                 return row;
-            }
-        });
-        consultar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if (consultar_tv.getSelectionModel().getSelectedItem() != null) {
-                    TableViewSelectionModel selectionModel = consultar_tv.getSelectionModel();
-                    ObservableList selectedCells = selectionModel.getSelectedCells();
-                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                    Object val = tablePosition.getTableColumn().getCellData(newValue);
-                    if (val.equals("Ver")) {
-                        Alert alert = new Alert(AlertType.INFORMATION);
-                        alert.setTitle("Cuerpo Bomberos de Balzar");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Espere unos momentos....");
-                        alert.show();
-                        Permiso permiso = consultar_tv.getSelectionModel().getSelectedItem();
-                        CompletableFuture<Void> thenRun = CompletableFuture.supplyAsync(() -> {
-                            getPermiso(permiso.getModo_permiso(), permiso.getCodigo_permiso());
-                            return null;
-                        }).thenRun(() -> {
-                            goToPrintDialog(_path_list_);
-                        });
-                    }
-                }
             }
         });
         ObservableList _permisos_ = FXCollections.observableArrayList();
@@ -3703,11 +3374,6 @@ public class MainPageController implements Initializable {
         } finally {
             mysqlConnect.disconnect();
         }
-        editar_precio.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                editar_precio.setText(newValue.replaceAll("[^\\d+(\\.)?]", ""));
-            }
-        });
         editar_precio.setText("");
         editar_nombre.setText("");
         editar_is_active.setSelected(false);
@@ -3725,21 +3391,6 @@ public class MainPageController implements Initializable {
                     event1.consume();
                 });
                 return row;
-            }
-        });
-        editar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if (editar_tv.getSelectionModel().getSelectedItem() != null) {
-                    TableViewSelectionModel selectionModel = editar_tv.getSelectionModel();
-                    ObservableList selectedCells = selectionModel.getSelectedCells();
-                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                    editar_nombre.setText(tps.get(tablePosition.getRow()).getTipo_permiso());
-                    editar_precio.setText(tps.get(tablePosition.getRow()).getPrecio().toString());
-                    editar_is_active.setSelected(tps.get(tablePosition.getRow()).isIs_active());
-                    _id_edit_permiso = tps.get(tablePosition.getRow()).getId();
-                    _id_edit_row_ = tablePosition.getRow();
-                }
             }
         });
     }
@@ -3789,11 +3440,6 @@ public class MainPageController implements Initializable {
         agregar_permiso_nombre.setText("");
         agregar_permiso_precio.setText("");
         agregar_permiso_is_active.setSelected(false);
-        agregar_permiso_precio.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                agregar_permiso_precio.setText(newValue.replaceAll("[^\\d+(\\.)?]", ""));
-            }
-        });
     }
 
     @FXML
@@ -3857,26 +3503,6 @@ public class MainPageController implements Initializable {
                         "ComboBoxCSS.css"
                 ).toExternalForm()
         );
-        detalle_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.equals("")) {
-                List<String> _tps_ = detalle_tipo_permiso.getItems();
-                int _count_ = 0;
-                for (String tp : _tps_) {
-                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
-                        detalle_tipo_permiso.getSelectionModel().select(_count_);
-
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) detalle_tipo_permiso.getSkin();
-                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
-                        break;
-                    }
-                    _count_++;
-                }
-            } else {
-                detalle_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) detalle_tipo_permiso.getSkin();
-                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
-            }
-        });
         detalle_tipo_permiso.setItems(cursors);
         detalle_tipo_permiso.setTooltip(new Tooltip("Elija un tipo de permiso"));
         detalle_tipo_permiso.getSelectionModel().clearSelection();
@@ -4004,31 +3630,6 @@ public class MainPageController implements Initializable {
                     event1.consume();
                 });
                 return row;
-            }
-        });
-        detalle_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if (detalle_tv.getSelectionModel().getSelectedItem() != null) {
-                    TableViewSelectionModel selectionModel = detalle_tv.getSelectionModel();
-                    ObservableList selectedCells = selectionModel.getSelectedCells();
-                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                    Object val = tablePosition.getTableColumn().getCellData(newValue);
-                    if (val.equals("Ver")) {
-                        Alert alert = new Alert(AlertType.INFORMATION);
-                        alert.setTitle("Cuerpo Bomberos de Balzar");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Espere unos momentos....");
-                        alert.show();
-                        Permiso permiso = detalle_tv.getSelectionModel().getSelectedItem();
-                        CompletableFuture<Void> thenRun = CompletableFuture.supplyAsync(() -> {
-                            getPermiso(permiso.getModo_permiso(), permiso.getCodigo_permiso());
-                            return null;
-                        }).thenRun(() -> {
-                            goToPrintDialog(_path_list_);
-                        });
-                    }
-                }
             }
         });
         detalle_date_picker_hasta.setValue(null);
@@ -4222,26 +3823,6 @@ public class MainPageController implements Initializable {
                         "ComboBoxCSS.css"
                 ).toExternalForm()
         );
-        arqueo_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-            if (!newValue.equals("")) {
-                List<String> _tps_ = arqueo_tipo_permiso.getItems();
-                int _count_ = 0;
-                for (String tp : _tps_) {
-                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
-                        arqueo_tipo_permiso.getSelectionModel().select(_count_);
-
-                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) arqueo_tipo_permiso.getSkin();
-                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
-                        break;
-                    }
-                    _count_++;
-                }
-            } else {
-                arqueo_tipo_permiso.getSelectionModel().select(0);
-                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) arqueo_tipo_permiso.getSkin();
-                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
-            }
-        });
         arqueo_tipo_permiso.setItems(cursors);
         arqueo_tipo_permiso.setTooltip(new Tooltip("Elija un tipo de permiso"));
         arqueo_tipo_permiso.getSelectionModel().clearSelection();
@@ -4388,31 +3969,6 @@ public class MainPageController implements Initializable {
                     event1.consume();
                 });
                 return row;
-            }
-        });
-        arqueo_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if (arqueo_tv.getSelectionModel().getSelectedItem() != null) {
-                    TableViewSelectionModel selectionModel = arqueo_tv.getSelectionModel();
-                    ObservableList selectedCells = selectionModel.getSelectedCells();
-                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                    Object val = tablePosition.getTableColumn().getCellData(newValue);
-                    if (val.equals("Ver")) {
-                        Alert alert = new Alert(AlertType.INFORMATION);
-                        alert.setTitle("Cuerpo Bomberos de Balzar");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Espere unos momentos....");
-                        alert.show();
-                        Permiso permiso = arqueo_tv.getSelectionModel().getSelectedItem();
-                        CompletableFuture<Void> thenRun = CompletableFuture.supplyAsync(() -> {
-                            getPermiso(permiso.getModo_permiso(), permiso.getCodigo_permiso());
-                            return null;
-                        }).thenRun(() -> {
-                            goToPrintDialog(_path_list_);
-                        });
-                    }
-                }
             }
         });
         arqueo_date_picker_hasta.setValue(null);
@@ -5480,6 +5036,501 @@ public class MainPageController implements Initializable {
             edit_permiso.setDisable(true);
             eliminar_permiso_generado.setDisable(true);
         }
+        initListeeners();
+    }
+
+    private void initListeeners() {
+        liquidar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                try {
+                    if (liquidar_tv.getSelectionModel().getSelectedItem() != null) {
+                        MysqlConnect mysqlConnect = new MysqlConnect();
+                        ArrayList clientesList = new ArrayList();
+                        String sql = "SELECT * FROM clientes WHERE is_active = true;";
+                        ResultSet rs;
+                        try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
+                            rs = st.executeQuery(sql);
+                            while (rs.next()) {
+                                Clientes clientes = new Clientes();
+                                clientes.setId(rs.getInt("id"));
+                                clientes.setNombre(rs.getString("nombre"));
+                                clientes.setApellido(rs.getString("apellido"));
+                                clientes.setCedula(rs.getString("cedula"));
+                                clientesList.add(clientes);
+                            }
+                            rs.close();
+                            mysqlConnect.disconnect();
+                        } catch (Exception ex) {
+
+                        }
+                        TableViewSelectionModel selectionModel = liquidar_tv.getSelectionModel();
+                        ObservableList selectedCells = selectionModel.getSelectedCells();
+                        TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                        Object val = tablePosition.getTableColumn().getCellData(newValue);
+                        if (val.equals("Liquidar")) {
+                            Clientes cliente = liquidar_tv.getSelectionModel().getSelectedItem();
+                            Alert alert = new Alert(AlertType.CONFIRMATION);
+                            alert.setTitle("Cuerpo Bomberos de Balzar");
+                            alert.setHeaderText(null);
+                            alert.setContentText(String.format("Está seguro que desea liquidar el usuario %s?", cliente.getFullName()));
+                            Optional<ButtonType> result = alert.showAndWait();
+                            if (result.get() == ButtonType.OK) {
+                                // getLiquidacion(cliente, clientesList);
+                            } else {
+                                alert.close();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    // 
+                }
+            }
+        });
+
+        emision_cedula.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                emision_cedula.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+
+        emision_nombre.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            if (newValue.intValue() > oldValue.intValue()) {
+                if (emision_nombre.getText().length() >= Settings.LENGTH_NAMES) {
+                    emision_nombre.setText(emision_nombre.getText().substring(0, Settings.LENGTH_NAMES));
+                }
+            }
+        });
+
+        emision_apellido.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            if (newValue.intValue() > oldValue.intValue()) {
+                if (emision_apellido.getText().length() >= Settings.LENGTH_NAMES) {
+                    emision_apellido.setText(emision_apellido.getText().substring(0, Settings.LENGTH_NAMES));
+                }
+            }
+        });
+
+        emision_razon_social.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            if (newValue.intValue() > oldValue.intValue()) {
+                if (emision_razon_social.getText().length() >= Settings.LENGTH_NAMES) {
+                    emision_razon_social.setText(emision_razon_social.getText().substring(0, Settings.LENGTH_NAMES));
+                }
+            }
+        });
+
+        emision_direccion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            if (newValue.intValue() > oldValue.intValue()) {
+                if (emision_direccion.getText().length() >= Settings.LENGTH_NAMES) {
+                    emision_direccion.setText(emision_direccion.getText().substring(0, Settings.LENGTH_NAMES));
+                }
+            }
+        });
+
+        emision_descripcion.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            if (newValue.intValue() > oldValue.intValue()) {
+                if (emision_descripcion.getText().length() >= Settings.LENGTH_DESCRIPTION) {
+                    emision_descripcion.setText(emision_descripcion.getText().substring(0, Settings.LENGTH_DESCRIPTION));
+                }
+            }
+        });
+
+        emision_cedula.lengthProperty().addListener((ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+            if (newValue.intValue() > oldValue.intValue()) {
+                if (emision_cedula.getText().length() >= Settings.LENGTH_NATIONAL_ID) {
+                    emision_cedula.setText(emision_cedula.getText().substring(0, Settings.LENGTH_NATIONAL_ID));
+                }
+            }
+        });
+        emision_tipo_permiso.getStylesheets().add(
+                getClass().getResource(
+                        "ComboBoxCSS.css"
+                ).toExternalForm()
+        );
+        emision_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.equals("")) {
+                List<String> _tps_ = emision_tipo_permiso.getItems();
+                int _count_ = 0;
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
+                        emision_tipo_permiso.getSelectionModel().select(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) emision_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
+                        break;
+                    }
+                    _count_++;
+                }
+            } else {
+                emision_tipo_permiso.getSelectionModel().select(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) emision_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
+            }
+        });
+
+        emision_tipo_permiso.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+
+            }
+        });
+
+        modo_permiso.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            if (newValue != null) {
+                switch (newValue.toString()) {
+                    case "Transporte":
+                        fecha_ocasional.setDisable(false);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Para que transporte");
+                        emision_vehiculo.setVisible(true);
+                        emision_placa.setVisible(true);
+                        emision_capacidad.setVisible(true);
+                        emision_extintor.setVisible(true);
+                        emision_actividad_economica.setVisible(false);
+                        break;
+                    case "Ocasional":
+                        fecha_ocasional.setDisable(false);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Por permiso ocasional de");
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(false);
+                        break;
+                    case "Construcción":
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Construcción de");
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(false);
+                        break;
+                    case "Funcionamiento":
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(false);
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(true);
+                        break;
+                    default:
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(false);
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(false);
+                }
+            }
+        });
+
+        generado_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.equals("")) {
+                List<String> _tps_ = generado_tipo_permiso.getItems();
+                int _count_ = 0;
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
+                        generado_tipo_permiso.getSelectionModel().select(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
+                        break;
+                    }
+                    _count_++;
+                }
+            } else {
+                generado_tipo_permiso.getSelectionModel().select(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) generado_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
+            }
+        });
+        editar_generados_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                if (editar_generados_tv.getSelectionModel().getSelectedItem() != null) {
+                    TableViewSelectionModel selectionModel = editar_generados_tv.getSelectionModel();
+                    ObservableList selectedCells = selectionModel.getSelectedCells();
+                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                    Object val = tablePosition.getTableColumn().getCellData(newValue);
+                    Permiso _permiso_ = editar_generados_tv.getSelectionModel().getSelectedItem();
+                    if (val.equals("Editar")) {
+                        setVisiblePane(true, false, false, false, false, false, false, false, false, false, false);
+                        isEdit = true;
+                        setEmisionPermisos();
+                        setEditarPermiso(_permiso_);
+                    }
+
+                    if (val.equals("Anular")) {
+                        Alert alert = new Alert(AlertType.CONFIRMATION);
+                        alert.setTitle("Cuerpo Bomberos de Balzar");
+                        alert.setHeaderText(null);
+                        alert.setContentText(String.format("Está seguro que desea eliminar el permiso #%s?", _permiso_.getCodigo_permiso()));
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.get() == ButtonType.OK) {
+                            editar_generados_tv.getSelectionModel().clearSelection();
+                            eliminarGenerado(_permiso_);
+                        } else {
+                            alert.close();
+                        }
+                    }
+                }
+            }
+        });
+        modo_permiso.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue) -> {
+            if (newValue != null) {
+                switch (newValue.toString()) {
+                    case "Transporte":
+                        fecha_ocasional.setDisable(false);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Para que transporte");
+                        emision_vehiculo.setVisible(true);
+                        emision_placa.setVisible(true);
+                        emision_capacidad.setVisible(true);
+                        emision_extintor.setVisible(true);
+                        emision_actividad_economica.setVisible(false);
+                        break;
+                    case "Ocasional":
+                        fecha_ocasional.setDisable(false);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Por permiso ocasional de");
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(false);
+                        break;
+                    case "Construcción":
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(true);
+                        emision_descripcion.setPromptText("Construcción de");
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(false);
+                        break;
+                    case "Funcionamiento":
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(false);
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(true);
+                        break;
+                    default:
+                        fecha_ocasional.setDisable(true);
+                        fecha_ocasional.setValue(null);
+                        emision_descripcion.setVisible(false);
+                        emision_vehiculo.setVisible(false);
+                        emision_placa.setVisible(false);
+                        emision_capacidad.setVisible(false);
+                        emision_extintor.setVisible(false);
+                        emision_actividad_economica.setVisible(false);
+                }
+            }
+        });
+        consultar_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.equals("")) {
+                List<String> _tps_ = consultar_tipo_permiso.getItems();
+                int _count_ = 0;
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
+                        consultar_tipo_permiso.getSelectionModel().select(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) consultar_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
+                        break;
+                    }
+                    _count_++;
+                }
+            } else {
+                consultar_tipo_permiso.getSelectionModel().select(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) consultar_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
+            }
+        });
+        consultar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                if (consultar_tv.getSelectionModel().getSelectedItem() != null) {
+                    TableViewSelectionModel selectionModel = consultar_tv.getSelectionModel();
+                    ObservableList selectedCells = selectionModel.getSelectedCells();
+                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                    Object val = tablePosition.getTableColumn().getCellData(newValue);
+                    if (val.equals("Ver")) {
+                        Alert alert = new Alert(AlertType.INFORMATION);
+                        alert.setTitle("Cuerpo Bomberos de Balzar");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Espere unos momentos....");
+                        alert.show();
+                        Permiso permiso = consultar_tv.getSelectionModel().getSelectedItem();
+                        CompletableFuture<Void> thenRun = CompletableFuture.supplyAsync(() -> {
+                            getPermiso(permiso.getModo_permiso(), permiso.getCodigo_permiso());
+                            return null;
+                        }).thenRun(() -> {
+                            goToPrintDialog(_path_list_);
+                        });
+                    }
+                }
+            }
+        });
+        editar_precio.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                editar_precio.setText(newValue.replaceAll("[^\\d+(\\.)?]", ""));
+            }
+        });
+        editar_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                if (editar_tv.getSelectionModel().getSelectedItem() != null) {
+                    TableViewSelectionModel selectionModel = editar_tv.getSelectionModel();
+                    ObservableList selectedCells = selectionModel.getSelectedCells();
+                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                    editar_nombre.setText(tps.get(tablePosition.getRow()).getTipo_permiso());
+                    editar_precio.setText(tps.get(tablePosition.getRow()).getPrecio().toString());
+                    editar_is_active.setSelected(tps.get(tablePosition.getRow()).isIs_active());
+                    _id_edit_permiso = tps.get(tablePosition.getRow()).getId();
+                    _id_edit_row_ = tablePosition.getRow();
+                }
+            }
+        });
+        agregar_permiso_precio.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                agregar_permiso_precio.setText(newValue.replaceAll("[^\\d+(\\.)?]", ""));
+            }
+        });
+        detalle_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.equals("")) {
+                List<String> _tps_ = detalle_tipo_permiso.getItems();
+                int _count_ = 0;
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
+                        detalle_tipo_permiso.getSelectionModel().select(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) detalle_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
+                        break;
+                    }
+                    _count_++;
+                }
+            } else {
+                detalle_tipo_permiso.getSelectionModel().select(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) detalle_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
+            }
+        });
+        detalle_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                if (detalle_tv.getSelectionModel().getSelectedItem() != null) {
+                    TableViewSelectionModel selectionModel = detalle_tv.getSelectionModel();
+                    ObservableList selectedCells = selectionModel.getSelectedCells();
+                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                    Object val = tablePosition.getTableColumn().getCellData(newValue);
+                    if (val.equals("Ver")) {
+                        Alert alert = new Alert(AlertType.INFORMATION);
+                        alert.setTitle("Cuerpo Bomberos de Balzar");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Espere unos momentos....");
+                        alert.show();
+                        Permiso permiso = detalle_tv.getSelectionModel().getSelectedItem();
+                        CompletableFuture<Void> thenRun = CompletableFuture.supplyAsync(() -> {
+                            getPermiso(permiso.getModo_permiso(), permiso.getCodigo_permiso());
+                            return null;
+                        }).thenRun(() -> {
+                            goToPrintDialog(_path_list_);
+                        });
+                    }
+                }
+            }
+        });
+        arqueo_search_permiso.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            if (!newValue.equals("")) {
+                List<String> _tps_ = arqueo_tipo_permiso.getItems();
+                int _count_ = 0;
+                for (String tp : _tps_) {
+                    if (tp.toLowerCase().contains(newValue.toLowerCase())) {
+                        arqueo_tipo_permiso.getSelectionModel().select(_count_);
+
+                        ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) arqueo_tipo_permiso.getSkin();
+                        ((ListView<?>) skin.getPopupContent()).scrollTo(_count_);
+                        break;
+                    }
+                    _count_++;
+                }
+            } else {
+                arqueo_tipo_permiso.getSelectionModel().select(0);
+                ComboBoxListViewSkin<?> skin = (ComboBoxListViewSkin<?>) arqueo_tipo_permiso.getSkin();
+                ((ListView<?>) skin.getPopupContent()).scrollTo(0);
+            }
+        });
+        arqueo_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                if (arqueo_tv.getSelectionModel().getSelectedItem() != null) {
+                    TableViewSelectionModel selectionModel = arqueo_tv.getSelectionModel();
+                    ObservableList selectedCells = selectionModel.getSelectedCells();
+                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                    Object val = tablePosition.getTableColumn().getCellData(newValue);
+                    if (val.equals("Ver")) {
+                        Alert alert = new Alert(AlertType.INFORMATION);
+                        alert.setTitle("Cuerpo Bomberos de Balzar");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Espere unos momentos....");
+                        alert.show();
+                        Permiso permiso = arqueo_tv.getSelectionModel().getSelectedItem();
+                        CompletableFuture<Void> thenRun = CompletableFuture.supplyAsync(() -> {
+                            getPermiso(permiso.getModo_permiso(), permiso.getCodigo_permiso());
+                            return null;
+                        }).thenRun(() -> {
+                            goToPrintDialog(_path_list_);
+                        });
+                    }
+                }
+            }
+        });
+        usuario_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
+                if (usuario_tv.getSelectionModel().getSelectedItem() != null) {
+                    TableViewSelectionModel selectionModel = usuario_tv.getSelectionModel();
+                    ObservableList selectedCells = selectionModel.getSelectedCells();
+                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
+                    Object val = tablePosition.getTableColumn().getCellData(newValue);
+                    Usuario usuario = usuario_tv.getSelectionModel().getSelectedItem();
+                    usuario_nombre.setText(usuario.getFirst_name());
+                    usuario_apellido.setText(usuario.getLast_name());
+                    usuario_usuario.setText(usuario.getUsuario());
+                    usuario_contrasena.setText(usuario.getPassword());
+                    if (usuario.getIs_active()) {
+                        usuario_active.setSelected(true);
+                    } else {
+                        usuario_active.setSelected(false);
+                    }
+                    if (usuario.getIs_superuser()) {
+                        usuario_is_superuser.setSelected(true);
+                    } else {
+                        usuario_is_superuser.setSelected(false);
+                    }
+                    user_id = usuario.getId();
+                }
+            }
+        });
+
     }
 
     // LISTA Y EDITAR USUARIOS
@@ -5532,33 +5583,6 @@ public class MainPageController implements Initializable {
                     }
                 });
                 return row;
-            }
-        });
-        usuario_tv.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue observableValue, Object oldValue, Object newValue) {
-                if (usuario_tv.getSelectionModel().getSelectedItem() != null) {
-                    TableViewSelectionModel selectionModel = usuario_tv.getSelectionModel();
-                    ObservableList selectedCells = selectionModel.getSelectedCells();
-                    TablePosition tablePosition = (TablePosition) selectedCells.get(0);
-                    Object val = tablePosition.getTableColumn().getCellData(newValue);
-                    Usuario usuario = usuario_tv.getSelectionModel().getSelectedItem();
-                    usuario_nombre.setText(usuario.getFirst_name());
-                    usuario_apellido.setText(usuario.getLast_name());
-                    usuario_usuario.setText(usuario.getUsuario());
-                    usuario_contrasena.setText(usuario.getPassword());
-                    if (usuario.getIs_active()) {
-                        usuario_active.setSelected(true);
-                    } else {
-                        usuario_active.setSelected(false);
-                    }
-                    if (usuario.getIs_superuser()) {
-                        usuario_is_superuser.setSelected(true);
-                    } else {
-                        usuario_is_superuser.setSelected(false);
-                    }
-                    user_id = usuario.getId();
-                }
             }
         });
     }
