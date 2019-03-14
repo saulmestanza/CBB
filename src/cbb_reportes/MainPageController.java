@@ -1457,6 +1457,9 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format("%s", permiso.getVehiculo_marca()));
+            if(permiso.getVehiculo_marca().length() <= 5){
+                _p1_.add(Chunk.TABBING);
+            }
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
@@ -1623,6 +1626,9 @@ public class MainPageController implements Initializable {
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(String.format("%s", permiso.getVehiculo_marca()));
+            if(permiso.getVehiculo_marca().length() <= 5){
+                _p1_.add(Chunk.TABBING);
+            }
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
             _p1_.add(Chunk.TABBING);
