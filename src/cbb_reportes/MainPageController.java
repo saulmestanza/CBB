@@ -2532,12 +2532,28 @@ public class MainPageController implements Initializable {
             _p1_.add(String.format("%s", permiso.getDireccion()));
             p1.add(_p1_);
             document.add(p1);
+            
+            p1.clear();
+            if (isLonger) {
+                p1.setSpacingBefore(0f);
+            } else {
+                p1.setSpacingBefore(5f);
+            }
+            _p1_.clear();
+            _p1_.setFont(smallfont);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
+            p1.add(_p1_);
+            document.add(p1);
 
             p1.clear();
             if (isLonger) {
                 p1.setSpacingBefore(6f);
             } else {
-                p1.setSpacingBefore(8f);
+                p1.setSpacingBefore(6f);
             }
             _p1_.clear();
             _p1_.setFont(font);
@@ -2573,7 +2589,6 @@ public class MainPageController implements Initializable {
             Phrase _p1_ = new Phrase();
             Paragraph p1 = new Paragraph();
 
-            document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
             document.add(Chunk.NEWLINE);
@@ -2699,7 +2714,7 @@ public class MainPageController implements Initializable {
             if (isLonger) {
                 p1.setSpacingBefore(0f);
             } else {
-                p1.setSpacingBefore(10f);
+                p1.setSpacingBefore(8f);
             }
             _p1_.clear();
             _p1_.setFont(smallfont);
@@ -2713,9 +2728,25 @@ public class MainPageController implements Initializable {
 
             p1.clear();
             if (isLonger) {
+                p1.setSpacingBefore(0f);
+            } else {
+                p1.setSpacingBefore(5f);
+            }
+            _p1_.clear();
+            _p1_.setFont(smallfont);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(Chunk.TABBING);
+            _p1_.add(String.format("%s", permiso.getFecha_expiracion()));
+            p1.add(_p1_);
+            document.add(p1);
+            
+            p1.clear();
+            if (isLonger) {
                 p1.setSpacingBefore(6f);
             } else {
-                p1.setSpacingBefore(8f);
+                p1.setSpacingBefore(6f);
             }
             _p1_.clear();
             _p1_.setFont(font);
