@@ -386,6 +386,55 @@ public class MainPageController implements Initializable {
     private TableColumn<Clientes, String> liquidar_liquidar;
     @FXML
     private TextField liquidar_cedula;
+    
+    @FXML
+    private Pane pane_reporteria;
+    @FXML
+    private DatePicker reporteria_desde;
+    @FXML
+    private DatePicker reporteria_hasta;
+    int estado_reporteria = 0;
+    // Reporteria
+    
+    @FXML
+    private void reporteriaEvent(ActionEvent event) {
+        String _desde_ = "";
+        String query = "";
+        if (reporteria_desde.getValue() != null) {
+            _desde_ = reporteria_desde.getValue().toString();
+        }
+        String _hasta_ = "";
+        if (reporteria_hasta.getValue() != null) {
+            _hasta_ = reporteria_hasta.getValue().toString();
+        }
+        if (!_desde_.isEmpty() && _hasta_.isEmpty()) {
+            showDialog("Error", "Debe de elegir una fecha de finalización de búsqueda", AlertType.ERROR);
+        } else if (!_desde_.isEmpty() && !_hasta_.isEmpty()) {
+            query = " AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ";
+        }else{
+            query = "";
+        }
+        switch(estado_reporteria){
+            case 0:
+                makePDFEmpresa(query);
+                break;
+            case 1:
+                generate_Construccion_Funcionamiento("Construcción", query);
+                break;
+            case 2:
+                generate_Construccion_Funcionamiento("Funcionamiento", query);
+                break;
+            case 3:
+                generate_Ocasional_Transporte("Ocasional", query);
+                break;
+            case 4:
+                generate_Ocasional_Transporte("Transporte", query);
+                break;
+            default:
+                makePDFEmpresa(query);
+                break;
+        }
+    }
 
     // VERSION
     @FXML
@@ -400,7 +449,7 @@ public class MainPageController implements Initializable {
     // LIQUIDAR
     @FXML
     private void liquidarMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, false, false, false, false, false, true);
+        setVisiblePane(false, false, false, false, false, false, false, false, false, false, true, false);
         ArrayList<Clientes> clientesList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
@@ -855,7 +904,7 @@ public class MainPageController implements Initializable {
     @FXML
     private void emisionMenuAction(ActionEvent event) {
         limpiarEmision();
-        setVisiblePane(true, false, false, false, false, false, false, false, false, false, false);
+        setVisiblePane(true, false, false, false, false, false, false, false, false, false, false, false);
         isEdit = false;
         setEmisionPermisos();
     }
@@ -2776,7 +2825,7 @@ public class MainPageController implements Initializable {
     // EDITAR - ELIMINAR PERMISOS GENERADOS
     @FXML
     private void eliminarGeneradosMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, false, false, false, true, false, false);
+        setVisiblePane(false, false, false, false, false, false, false, false, true, false, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         generado_parametro.setText("");
@@ -3119,7 +3168,7 @@ public class MainPageController implements Initializable {
     // VISUALIZAR PERMISOS
     @FXML
     private void consultarMenuAction(ActionEvent event) {
-        setVisiblePane(false, true, false, false, false, false, false, false, false, false, false);
+        setVisiblePane(false, true, false, false, false, false, false, false, false, false, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         consultar_parametro.setText("");
@@ -3389,7 +3438,7 @@ public class MainPageController implements Initializable {
     @FXML
     private void editarMenuAction(ActionEvent event) {
         tps = new ArrayList<>();
-        setVisiblePane(false, false, true, false, false, false, false, false, false, false, false);
+        setVisiblePane(false, false, true, false, false, false, false, false, false, false, false, false);
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
             String sql = "SELECT * FROM tipo_permiso;";
@@ -3473,7 +3522,7 @@ public class MainPageController implements Initializable {
     // AGREGAR TIPO PERMISO
     @FXML
     private void agregarMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, true, false, false, false, false, false);
+        setVisiblePane(false, false, false, false, false, true, false, false, false, false, false, false);
         agregar_permiso_nombre.setText("");
         agregar_permiso_precio.setText("");
         agregar_permiso_is_active.setSelected(false);
@@ -3509,7 +3558,7 @@ public class MainPageController implements Initializable {
     // DETALLE PERMISOS
     @FXML
     private void detalleMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, true, false, false, false, false, false, false, false);
+        setVisiblePane(false, false, false, true, false, false, false, false, false, false, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         ObservableList cursors = FXCollections.observableArrayList();
@@ -3829,7 +3878,7 @@ public class MainPageController implements Initializable {
     // ARQUEO PERMISOS
     @FXML
     private void arqueoMenuAction(ActionEvent event) {
-        setVisiblePane(false, false, false, false, true, false, false, false, false, false, false);
+        setVisiblePane(false, false, false, false, true, false, false, false, false, false, false, false);
         tps = new ArrayList<>();
         permisos = new ArrayList<>();
         ObservableList cursors = FXCollections.observableArrayList();
@@ -4331,27 +4380,82 @@ public class MainPageController implements Initializable {
     }
 
     // REPORTES
+    
+    private void initReporteriaDates(){
+        reporteria_desde.setValue(null);
+        reporteria_desde.setValue(null);
+        reporteria_hasta.setDisable(true);
+        reporteria_hasta.setEditable(false);
+
+        // detalle_date_picker_desde.setValue(LocalDate.now());
+        final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        try {
+                            if (item.isBefore(reporteria_desde.getValue())) {
+                                setDisable(true);
+                                setStyle("-fx-background-color: #ffc0cb;");
+                            }
+                        } catch (NullPointerException e) {
+                        }
+                    }
+                };
+            }
+        };
+        reporteria_hasta.setDayCellFactory(dayCellFactory);
+
+        final Callback<DatePicker, DateCell> desdeCellFactory = new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        reporteria_hasta.setDisable(false);
+                    }
+                };
+            }
+        };
+        reporteria_desde.setDayCellFactory(desdeCellFactory);
+    }
+    
     @FXML
     private void generarPDFConstruccion(ActionEvent event) {
-        generate_Construccion_Funcionamiento("Construcción");
+        initReporteriaDates();
+        setVisiblePane(false, false, false, false, false, false, false, false, false, false, false, true);
+        estado_reporteria = 1;
+        // generate_Construccion_Funcionamiento("Construcción");
     }
 
     @FXML
     private void generarPDFFuncionamiento(ActionEvent event) {
-        generate_Construccion_Funcionamiento("Funcionamiento");
+        initReporteriaDates();
+        setVisiblePane(false, false, false, false, false, false, false, false, false, false, false, true);
+        estado_reporteria = 2;
+        // generate_Construccion_Funcionamiento("Funcionamiento");
     }
 
     @FXML
     private void generarPDFOcasional(ActionEvent event) {
-        generate_Ocasional_Transporte("Ocasional");
+        initReporteriaDates();
+        setVisiblePane(false, false, false, false, false, false, false, false, false, false, false, true);
+        estado_reporteria = 3;
+        // generate_Ocasional_Transporte("Ocasional");
     }
 
     @FXML
     private void generarPDFTransporte(ActionEvent event) {
-        generate_Ocasional_Transporte("Transporte");
+        initReporteriaDates();
+        setVisiblePane(false, false, false, false, false, false, false, false, false, false, false, true);
+        estado_reporteria = 4;
+        // generate_Ocasional_Transporte("Transporte");
     }
 
-    private void generate_Construccion_Funcionamiento(String titulo) {
+    private void generate_Construccion_Funcionamiento(String titulo, String dateQuery) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
@@ -4374,7 +4478,9 @@ public class MainPageController implements Initializable {
                     + "WHERE clientes.id = permisos.id_clientes AND "
                     + "permisos.id_tipo_permiso = tipo_permiso.id AND "
                     + "permisos.modo_permiso = '" + titulo + "' "
+                    + dateQuery
                     + "ORDER BY permisos.ID;";
+            System.out.println(sql);
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
@@ -4562,7 +4668,7 @@ public class MainPageController implements Initializable {
         }
     }
 
-    private void generate_Ocasional_Transporte(String titulo) {
+    private void generate_Ocasional_Transporte(String titulo, String dateQuery) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
@@ -4584,6 +4690,7 @@ public class MainPageController implements Initializable {
                     + "WHERE clientes.id = permisos.id_clientes AND "
                     + "permisos.id_tipo_permiso = tipo_permiso.id AND "
                     + "permisos.modo_permiso = '" + titulo + "' "
+                    + dateQuery
                     + "ORDER BY permisos.ID;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
@@ -4784,6 +4891,12 @@ public class MainPageController implements Initializable {
 
     @FXML
     private void generarPDFempresa(ActionEvent event) {
+        initReporteriaDates();
+        setVisiblePane(false, false, false, false, false, false, false, false, false, false, false, true);
+        estado_reporteria = 0;
+    }
+    
+    private void makePDFEmpresa(String dateQuery){
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Cuerpo Bomberos de Balzar");
         alert.setHeaderText(null);
@@ -4793,7 +4906,7 @@ public class MainPageController implements Initializable {
         ArrayList<Cantidad> cantidads = new ArrayList();
         MysqlConnect mysqlConnect = new MysqlConnect();
         try {
-            String sql = "SELECT tipo_permiso.tipo_permiso, tipo_permiso.precio, nombre, apellido, cedula, razon_social, fecha_emision, fecha_expiracion, `permisos`.`codigo_permiso`, permisos.id FROM cbb_db.permisos, cbb_db.clientes, cbb_db.tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY cedula, razon_social;";
+            String sql = "SELECT tipo_permiso.tipo_permiso, tipo_permiso.precio, nombre, apellido, cedula, razon_social, fecha_emision, fecha_expiracion, `permisos`.`codigo_permiso`, permisos.id FROM cbb_db.permisos, cbb_db.clientes, cbb_db.tipo_permiso WHERE clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id "+dateQuery+" ORDER BY cedula, razon_social;";
             ResultSet rs;
             try (Statement st = (Statement) mysqlConnect.connect().createStatement()) {
                 rs = st.executeQuery(sql);
@@ -5000,7 +5113,7 @@ public class MainPageController implements Initializable {
             boolean b5, boolean b6,
             boolean b7, boolean b8,
             boolean b9, boolean b10,
-            boolean b11
+            boolean b11, boolean b12
     ) {
         pane_emision_permiso.setVisible(b1);
         pane_consultar_permiso.setVisible(b2);
@@ -5012,6 +5125,7 @@ public class MainPageController implements Initializable {
         pane_agregar_usuario.setVisible(b8);
         pane_generado_permiso.setVisible(b9);
         pane_liquidacion.setVisible(b11);
+        pane_reporteria.setVisible(b12);
     }
 
     private void showDialog(String titulo, String text, AlertType alert_type) {
@@ -5300,7 +5414,7 @@ public class MainPageController implements Initializable {
                     Object val = tablePosition.getTableColumn().getCellData(newValue);
                     Permiso _permiso_ = editar_generados_tv.getSelectionModel().getSelectedItem();
                     if (val.equals("Editar")) {
-                        setVisiblePane(true, false, false, false, false, false, false, false, false, false, false);
+                        setVisiblePane(true, false, false, false, false, false, false, false, false, false, false, false);
                         isEdit = true;
                         setEmisionPermisos();
                         setEditarPermiso(_permiso_);
@@ -5573,7 +5687,7 @@ public class MainPageController implements Initializable {
     // LISTA Y EDITAR USUARIOS
     @FXML
     private void listaMenuUsuarios(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, false, true, false, false, false, false);
+        setVisiblePane(false, false, false, false, false, false, true, false, false, false, false, false);
 
         usuarioList = new ArrayList<>();
         MysqlConnect mysqlConnect = new MysqlConnect();
@@ -5688,7 +5802,7 @@ public class MainPageController implements Initializable {
     // AGREGAR USUARIOS
     @FXML
     private void agregarMenuUsuarios(ActionEvent event) {
-        setVisiblePane(false, false, false, false, false, false, false, true, false, false, false);
+        setVisiblePane(false, false, false, false, false, false, false, true, false, false, false, false);
     }
 
     private boolean user_agregar_empty() {

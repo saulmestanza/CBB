@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
 <?import javafx.geometry.*?>
 <?import com.jfoenix.controls.*?>
 <?import javafx.scene.image.*?>
@@ -335,6 +336,23 @@
                         <Font size="18.0" />
                      </font>
                   </JFXButton>
+               </children>
+            </Pane>
+            <Pane fx:id="pane_reporteria" layoutX="-2.0" prefHeight="632.0" prefWidth="1081.0" style="-fx-background-color: F5F5F5;" visible="false">
+               <children>
+                  <DatePicker fx:id="reporteria_desde" layoutX="119.0" layoutY="45.0" prefHeight="27.0" prefWidth="350.0" />
+                  <DatePicker fx:id="reporteria_hasta" layoutX="608.0" layoutY="45.0" prefHeight="27.0" prefWidth="350.0" />
+                  <Label layoutX="65.0" layoutY="50.0" text="Desde:">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="559.0" layoutY="50.0" text="Hasta:">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+                  <Button layoutX="421.0" layoutY="135.0" mnemonicParsing="false" onAction="#reporteriaEvent" prefHeight="37.0" prefWidth="226.0" style="-fx-background-radius: 15; -fx-background-color: 6A9D67;" text="GENERAR" />
                </children>
             </Pane>
          </children>
