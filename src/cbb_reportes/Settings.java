@@ -11,10 +11,10 @@ package cbb_reportes;
  */
 public class Settings {
     private static final boolean DEBUG = false;
-    public static String host = DEBUG ? "localhost" : "167.99.11.161";
-    public static String username = DEBUG ? "cbc_user" : "cbb_user";
-    public static String password = DEBUG ? "cbc_password" : "g/u}5?n~sA2x<fR>*(5~es(v]P}MC<fg";
-    public static String version = "1.5";
+    public static String host = "lgg2gx1ha7yp2w0k.cbetxkdyhwsb.us-east-1.rds.amazonaws.com";
+    public static String username = "les3q9tv7dqgwvev";
+    public static String password = "mruo1942bnwvhx9i";
+    public static String version = "1.5.1";
     public static int user_id = 1;
     public static int LENGTH_NATIONAL_ID = 15;
     public static int LENGTH_NAMES = 250;
