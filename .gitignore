@@ -32,3 +32,5 @@ recreate_db.sql
 Credenciales.txt
 cbb.sql
 create_db.sql
+/build/
+/dist/

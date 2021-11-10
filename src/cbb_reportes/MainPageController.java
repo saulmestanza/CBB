@@ -4162,7 +4162,7 @@ public class MainPageController implements Initializable {
             p1.add(_p1_);
             document.add(p1);
 
-            PdfPTable table = new PdfPTable(6);
+            PdfPTable table = new PdfPTable(7);
             table.setTotalWidth(450);
             table.setLockedWidth(true);
 
@@ -4183,6 +4183,10 @@ public class MainPageController implements Initializable {
             table.addCell(cell);
 
             cell = new PdfPCell(new Phrase("Permiso"));
+            cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+            table.addCell(cell);
+            
+            cell = new PdfPCell(new Phrase("Número del documento"));
             cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
             table.addCell(cell);
 
@@ -4217,6 +4221,11 @@ public class MainPageController implements Initializable {
                 table.addCell(cel);
 
                 p = new Phrase(permiso.getActividad_economica(), smallFont);
+                cel = new PdfPCell(p);
+                cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
+                table.addCell(cel);
+                
+                p = new Phrase(permiso.getNumero_deposito(), smallFont);
                 cel = new PdfPCell(p);
                 cel.setHorizontalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cel);
@@ -4302,18 +4311,18 @@ public class MainPageController implements Initializable {
             String sql = "";
             // RANGO TIEMPO
             if (!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `iknqkp0ked7o0xf6`.`clientes`, `iknqkp0ked7o0xf6`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`,  `permisos`.`numero_deposito`,`permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `iknqkp0ked7o0xf6`.`clientes`, `iknqkp0ked7o0xf6`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' ORDER BY permisos.id;";
                 // TIPO PERMISO
             } else if (_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = arqueo_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `iknqkp0ked7o0xf6`.`clientes`, `iknqkp0ked7o0xf6`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`,  `permisos`.`numero_deposito`,`permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `iknqkp0ked7o0xf6`.`clientes`, `iknqkp0ked7o0xf6`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // AMBOS
             } else if (!_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() != null) {
                 _ddl_ = arqueo_tipo_permiso.getSelectionModel().getSelectedItem().toString();
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `iknqkp0ked7o0xf6`.`clientes`, `iknqkp0ked7o0xf6`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`,  `permisos`.`numero_deposito`,`permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `iknqkp0ked7o0xf6`.`clientes`, `iknqkp0ked7o0xf6`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id AND fecha_emision BETWEEN '" + _desde_ + "' AND '" + _hasta_ + "' AND tipo_permiso.tipo_permiso LIKE '%" + _ddl_ + "%' ORDER BY permisos.id;";
                 // NINGUNO
             } else if (_desde_.isEmpty() && arqueo_tipo_permiso.getSelectionModel().getSelectedItem() == null) {
-                sql = "SELECT `permisos`.`id`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `iknqkp0ked7o0xf6`.`clientes`, `iknqkp0ked7o0xf6`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
+                sql = "SELECT `permisos`.`id`, `permisos`.`numero_deposito`, `permisos`.`deleted`, `clientes`.`id` as clientes_id, `clientes`.`nombre`, `clientes`.`apellido`, `clientes`.`cedula`, `permisos`.`razon_social`, `permisos`.`direccion`, `permisos`.`actividad_economica`, `permisos`.`modo_permiso`, `permisos`.`codigo_permiso`, `permisos`.`descripcion`, `permisos`.`fecha_emision`, `permisos`.`fecha_expiracion`, `permisos`.`ruta_pdf`, `permisos`.`id_tipo_permiso`, `tipo_permiso`.precio, `tipo_permiso`.tipo_permiso, `tipo_permiso`.is_active FROM `iknqkp0ked7o0xf6`.`clientes`, `iknqkp0ked7o0xf6`.`permisos`, tipo_permiso WHERE " + _modo_permiso_ + " clientes.id = permisos.id_clientes AND permisos.id_tipo_permiso = tipo_permiso.id ORDER BY permisos.id;";
             }
             permisos = new ArrayList<>();
             MysqlConnect mysqlConnect = new MysqlConnect();
@@ -4334,6 +4343,7 @@ public class MainPageController implements Initializable {
                         permiso.setModo_permiso(rs.getString("modo_permiso"));
                         permiso.setCodigo_permiso(rs.getString("codigo_permiso"));
                         permiso.setDeleted(rs.getBoolean("deleted"));
+                        permiso.setNumero_deposito(rs.getString("numero_deposito"));
                         permiso.setRazon_social(rs.getString("razon_social"));
                         permiso.setDireccion(rs.getString("direccion"));
                         permiso.setActividad_economica(rs.getString("actividad_economica"));

@@ -3,8 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/saulmestanza/Documents/workspace/CBB/src/cbb_reportes/CBB_Reportes.java</file>
-            <file>file:/Users/saulmestanza/Documents/workspace/CBB/src/cbb_reportes/Settings.java</file>
+            <file>file:/Users/saul/Documents/workspace/CBB/src/cbb_reportes/Settings.java</file>
+            <file>file:/Users/saul/Documents/workspace/CBB/src/cbb_reportes/MainPageController.java</file>
+            <file>file:/Users/saul/Documents/workspace/CBB/src/cbb_reportes/CBB_Reportes.java</file>
+            <file>file:/Users/saul/Documents/workspace/CBB/src/cbb_reportes/FXMLDocumentController.java</file>
+            <file>file:/Users/saul/Documents/workspace/CBB/src/mysql/MysqlConnect.java</file>
         </group>
     </open-files>
 </project-private>
